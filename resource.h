@@ -55,34 +55,34 @@
 #include <stdio.h>
 
 /* maximum number of resource classes supported */
-#define MAX_RES_CLASSES		16
+#define MAX_RES_CLASSES         16
 
 /* maximum number of resource instances for a class supported */
-#define MAX_INSTS_PER_CLASS	8
+#define MAX_INSTS_PER_CLASS     8
 
 /* resource descriptor */
 struct res_desc {
-  char *name;				/* name of functional unit */
-  int quantity;				/* total instances of this unit */
-  int busy;				/* non-zero if this unit is busy */
+  char *name;                           /* name of functional unit */
+  int quantity;                         /* total instances of this unit */
+  int busy;                             /* non-zero if this unit is busy */
   struct res_template {
-    int class;				/* matching resource class: insts
-					   with this resource class will be
-					   able to execute on this unit */
-    int oplat;				/* operation latency: cycles until
-					   result is ready for use */
-    int issuelat;			/* issue latency: number of cycles
-					   before another operation can be
-					   issued on this resource */
-    struct res_desc *master;		/* master resource record */
+    int class;                          /* matching resource class: insts
+                                           with this resource class will be
+                                           able to execute on this unit */
+    int oplat;                          /* operation latency: cycles until
+                                           result is ready for use */
+    int issuelat;                       /* issue latency: number of cycles
+                                           before another operation can be
+                                           issued on this resource */
+    struct res_desc *master;            /* master resource record */
   } x[MAX_RES_CLASSES];
 };
 
 /* resource pool: one entry per resource instance */
 struct res_pool {
-  char *name;				/* pool name */
-  int num_resources;			/* total number of res instances */
-  struct res_desc *resources;		/* resource instances */
+  char *name;                           /* pool name */
+  int num_resources;                    /* total number of res instances */
+  struct res_desc *resources;           /* resource instances */
   /* res class -> res template mapping table, lists are NULL terminated */
   int nents[MAX_RES_CLASSES];
   struct res_template *table[MAX_RES_CLASSES][MAX_INSTS_PER_CLASS];

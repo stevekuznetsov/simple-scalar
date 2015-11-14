@@ -75,15 +75,15 @@
 #endif
 
 /* for printing out "long long" vars */
-#define LLHIGH(L)		((int)(((L)>>32) & 0xffffffff))
-#define LLLOW(L)		((int)((L) & 0xffffffff))
+#define LLHIGH(L)               ((int)(((L)>>32) & 0xffffffff))
+#define LLLOW(L)                ((int)((L) & 0xffffffff))
 
 /* size of an array, in elements */
 #define N_ELT(ARR)   (sizeof(ARR)/sizeof((ARR)[0]))
 
 /* rounding macros, assumes ALIGN is a power of two */
-#define ROUND_UP(N,ALIGN)	(((N) + ((ALIGN)-1)) & ~((ALIGN)-1))
-#define ROUND_DOWN(N,ALIGN)	((N) & ~((ALIGN)-1))
+#define ROUND_UP(N,ALIGN)       (((N) + ((ALIGN)-1)) & ~((ALIGN)-1))
+#define ROUND_DOWN(N,ALIGN)     ((N) & ~((ALIGN)-1))
 
 /* verbose output flag */
 extern int verbose;
@@ -95,11 +95,11 @@ extern int debugging;
 
 /* register a function to be called when an error is detected */
 void
-fatal_hook(void (*hook_fn)(FILE *stream));	/* fatal hook function */
+fatal_hook(void (*hook_fn)(FILE *stream));      /* fatal hook function */
 
 #ifdef __GNUC__
 /* declare a fatal run-time error, calls fatal hook function */
-#define fatal(fmt, args...)	\
+#define fatal(fmt, args...)     \
   _fatal(__FILE__, __FUNCTION__, __LINE__, fmt, ## args)
 
 void
@@ -112,7 +112,7 @@ fatal(char *fmt, ...);
 
 #ifdef __GNUC__
 /* declare a panic situation, dumps core */
-#define panic(fmt, args...)	\
+#define panic(fmt, args...)     \
   _panic(__FILE__, __FUNCTION__, __LINE__, fmt, ## args)
 
 void
@@ -125,7 +125,7 @@ panic(char *fmt, ...);
 
 #ifdef __GNUC__
 /* declare a warning */
-#define warn(fmt, args...)	\
+#define warn(fmt, args...)      \
   _warn(__FILE__, __FUNCTION__, __LINE__, fmt, ## args)
 
 void
@@ -137,7 +137,7 @@ warn(char *fmt, ...);
 
 #ifdef __GNUC__
 /* print general information */
-#define info(fmt, args...)	\
+#define info(fmt, args...)      \
   _info(__FILE__, __FUNCTION__, __LINE__, fmt, ## args)
 
 void
@@ -151,9 +151,9 @@ info(char *fmt, ...);
 
 #ifdef __GNUC__
 /* print a debugging message */
-#define debug(fmt, args...)	\
+#define debug(fmt, args...)     \
     do {                        \
-        if (debugging)         	\
+        if (debugging)          \
             _debug(__FILE__, __FUNCTION__, __LINE__, fmt, ## args); \
     } while(0)
 
@@ -177,15 +177,15 @@ static void debug(char *fmt, ...) {}
 
 /* seed the random number generator */
 void
-mysrand(unsigned int seed);	/* random number generator seed */
+mysrand(unsigned int seed);     /* random number generator seed */
 
 /* get a random number */
-int myrand(void);		/* returns random number */
+int myrand(void);               /* returns random number */
 
 /* copy a string to a new storage allocation (NOTE: many machines are missing
    this trivial function, so I funcdup() it here...) */
-char *				/* duplicated string */
-mystrdup(char *s);		/* string to duplicate to heap storage */
+char *                          /* duplicated string */
+mystrdup(char *s);              /* string to duplicate to heap storage */
 
 /* find the last occurrence of a character in a string */
 char *
@@ -193,8 +193,8 @@ mystrrchr(char *s, char c);
 
 /* case insensitive string compare (NOTE: many machines are missing this
    trivial function, so I funcdup() it here...) */
-int				/* compare result, see strcmp() */
-mystricmp(char *s1, char *s2);	/* strings to compare, case insensitive */
+int                             /* compare result, see strcmp() */
+mystricmp(char *s1, char *s2);  /* strings to compare, case insensitive */
 
 /* allocate some core, this memory has overhead no larger than a page
    in size and it cannot be released. the storage is returned cleared */
@@ -212,9 +212,9 @@ char *elapsed_time(long sec);
    bit, for example, extractl(word, 6, 3) w/ 8 bit word = 01101011 returns
    00000110 */
 unsigned int
-extractl(int word,		/* the word from which to extract */
-         int pos,		/* bit positions 31 to 0 */
-         int num);		/* number of bits to extract */
+extractl(int word,              /* the word from which to extract */
+         int pos,               /* bit positions 31 to 0 */
+         int num);              /* number of bits to extract */
 
 #if defined(sparc) && !defined(__svr4__)
 #define strtoul strtol

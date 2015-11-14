@@ -59,35 +59,35 @@
  *
 
  *
- * help			 - print command reference
- * version		 - print DLite version information
- * terminate		 - terminate the simulation with statistics
- * quit			 - exit the simulator
- * cont {<addr>}	 - continue program execution (optionally at <addr>)
- * step			 - step program one instruction
- * next			 - step program one instruction in current procedure
- * print <expr>		 - print the value of <expr>
- * regs			 - print register contents
- * mstate		 - print machine specific state (simulator dependent)
+ * help                  - print command reference
+ * version               - print DLite version information
+ * terminate             - terminate the simulation with statistics
+ * quit                  - exit the simulator
+ * cont {<addr>}         - continue program execution (optionally at <addr>)
+ * step                  - step program one instruction
+ * next                  - step program one instruction in current procedure
+ * print <expr>          - print the value of <expr>
+ * regs                  - print register contents
+ * mstate                - print machine specific state (simulator dependent)
  * display/<mods> <addr> - display the value at <addr> using format <modifiers>
  * dump {<addr>} {<cnt>} - dump memory at <addr> (optionally for <cnt> words)
- * dis <addr> {<cnt>}	 - disassemble instructions at <addr> (for <cnt> insts)
- * break <addr>		 - set breakpoint at <addr>, returns <id> of breakpoint
+ * dis <addr> {<cnt>}    - disassemble instructions at <addr> (for <cnt> insts)
+ * break <addr>          - set breakpoint at <addr>, returns <id> of breakpoint
  * dbreak <addr> {r|w|x} - set data breakpoint at <addr> (for (r)ead, (w)rite,
- *			   and/or e(x)ecute, returns <id> of breakpoint
- * breaks		 - list active code and data breakpoints
- * delete <id>		 - delete breakpoint <id>
- * clear		 - clear all breakpoints (code and data)
+ *                         and/or e(x)ecute, returns <id> of breakpoint
+ * breaks                - list active code and data breakpoints
+ * delete <id>           - delete breakpoint <id>
+ * clear                 - clear all breakpoints (code and data)
  *
  * ** command args <addr>, <cnt>, <expr>, and <id> are any legal expression:
  *
- * <expr>		<- <factor> +|- <expr>
- * <factor>		<- <term> *|/ <factor>
- * <term>		<- ( <expr> )
- *			   | - <term>
- *			   | <const>
- *			   | <symbol>
- *			   | <file:loc>
+ * <expr>               <- <factor> +|- <expr>
+ * <factor>             <- <term> *|/ <factor>
+ * <term>               <- ( <expr> )
+ *                         | - <term>
+ *                         | <const>
+ *                         | <symbol>
+ *                         | <file:loc>
  *
  * ** command modifiers <mods> are any of the following:
  *
@@ -120,59 +120,59 @@
 
 /* DLite register access function, the debugger uses this function to access
    simulator register state */
-typedef char *					/* error str, NULL if none */
-(*dlite_reg_obj_t)(struct regs_t *regs,		/* registers to access */
-		   int is_write,		/* access type */
-		   enum md_reg_type rt,		/* reg bank to access */
-		   int reg,			/* register number */
-		   struct eval_value_t *val);	/* input, output */
+typedef char *                                  /* error str, NULL if none */
+(*dlite_reg_obj_t)(struct regs_t *regs,         /* registers to access */
+                   int is_write,                /* access type */
+                   enum md_reg_type rt,         /* reg bank to access */
+                   int reg,                     /* register number */
+                   struct eval_value_t *val);   /* input, output */
 
 /* DLite memory access function, the debugger uses this function to access
    simulator memory state */
-typedef char *					/* error str, NULL if none */
-(*dlite_mem_obj_t)(struct mem_t *mem,		/* memory space to access */
-		   int is_write,		/* access type */
-		   md_addr_t addr,		/* address to access */
-		   char *p,			/* input/output buffer */
-		   int nbytes);			/* size of access */
+typedef char *                                  /* error str, NULL if none */
+(*dlite_mem_obj_t)(struct mem_t *mem,           /* memory space to access */
+                   int is_write,                /* access type */
+                   md_addr_t addr,              /* address to access */
+                   char *p,                     /* input/output buffer */
+                   int nbytes);                 /* size of access */
 
 /* DLite memory access function, the debugger uses this function to display
    the state of machine-specific state */
-typedef char *					/* error str, NULL if none */
-(*dlite_mstate_obj_t)(FILE *stream,		/* output stream */
-		      char *cmd,		/* optional command string */
-		      struct regs_t *regs,	/* registers to access */
-		      struct mem_t *mem);	/* memory space to access */
+typedef char *                                  /* error str, NULL if none */
+(*dlite_mstate_obj_t)(FILE *stream,             /* output stream */
+                      char *cmd,                /* optional command string */
+                      struct regs_t *regs,      /* registers to access */
+                      struct mem_t *mem);       /* memory space to access */
 
 /* initialize the DLite debugger */
 void
-dlite_init(dlite_reg_obj_t reg_obj,		/* register state object */
-	   dlite_mem_obj_t mem_obj,		/* memory state object */
-	   dlite_mstate_obj_t mstate_obj);	/* machine state object */
+dlite_init(dlite_reg_obj_t reg_obj,             /* register state object */
+           dlite_mem_obj_t mem_obj,             /* memory state object */
+           dlite_mstate_obj_t mstate_obj);      /* machine state object */
 
 /*
  * default architected/machine state accessors
  */
 
 /* default architected memory state accessor */
-char *						/* err str, NULL for no err */
-dlite_mem_obj(struct mem_t *mem,		/* memory space to access */
-	      int is_write,			/* access type */
-	      md_addr_t addr,			/* address to access */
-	      char *p,				/* input, output */
-	      int nbytes);			/* size of access */
+char *                                          /* err str, NULL for no err */
+dlite_mem_obj(struct mem_t *mem,                /* memory space to access */
+              int is_write,                     /* access type */
+              md_addr_t addr,                   /* address to access */
+              char *p,                          /* input, output */
+              int nbytes);                      /* size of access */
 
 /* default architected machine-specific state accessor */
-char *						/* err str, NULL for no err */
-dlite_mstate_obj(FILE *stream,			/* output stream */
-		 char *cmd,			/* optional command string */
-		 struct regs_t *regs,		/* registers to access */
-		 struct mem_t *mem);		/* memory space to access */
+char *                                          /* err str, NULL for no err */
+dlite_mstate_obj(FILE *stream,                  /* output stream */
+                 char *cmd,                     /* optional command string */
+                 struct regs_t *regs,           /* registers to access */
+                 struct mem_t *mem);            /* memory space to access */
 
 /* state access masks */
-#define ACCESS_READ	0x01			/* read access allowed */
-#define ACCESS_WRITE	0x02			/* write access allowed */
-#define ACCESS_EXEC	0x04			/* execute access allowed */
+#define ACCESS_READ     0x01                    /* read access allowed */
+#define ACCESS_WRITE    0x02                    /* write access allowed */
+#define ACCESS_EXEC     0x04                    /* execute access allowed */
 
 /* non-zero iff one breakpoint is set, for fast break check */
 extern md_addr_t dlite_fastbreak /* = 0 */;
@@ -184,25 +184,25 @@ extern int dlite_active /* = FALSE */;
 extern int dlite_check /* = FALSE */;
 
 /* internal break check interface */
-int						/* non-zero if brkpt hit */
-__check_break(md_addr_t next_PC,		/* address of next inst */
-	      int access,			/* mem access of last inst */
-	      md_addr_t addr,			/* mem addr of last inst */
-	      counter_t icount,			/* instruction count */
-	      counter_t cycle);			/* cycle count */
+int                                             /* non-zero if brkpt hit */
+__check_break(md_addr_t next_PC,                /* address of next inst */
+              int access,                       /* mem access of last inst */
+              md_addr_t addr,                   /* mem addr of last inst */
+              counter_t icount,                 /* instruction count */
+              counter_t cycle);                 /* cycle count */
 
 /* check for a break condition */
-#define dlite_check_break(NPC, ACCESS, ADDR, ICNT, CYCLE)		\
-  ((dlite_check || dlite_active)					\
-   ? __check_break((NPC), (ACCESS), (ADDR), (ICNT), (CYCLE))		\
+#define dlite_check_break(NPC, ACCESS, ADDR, ICNT, CYCLE)               \
+  ((dlite_check || dlite_active)                                        \
+   ? __check_break((NPC), (ACCESS), (ADDR), (ICNT), (CYCLE))            \
    : FALSE)
 
 /* DLite debugger main loop */
 void
-dlite_main(md_addr_t regs_PC,			/* addr of last inst to exec */
-	   md_addr_t next_PC,			/* addr of next inst to exec */
-	   counter_t cycle,			/* current processor cycle */
-	   struct regs_t *regs,			/* registers to access */
-	   struct mem_t *mem);			/* memory to access */
+dlite_main(md_addr_t regs_PC,                   /* addr of last inst to exec */
+           md_addr_t next_PC,                   /* addr of next inst to exec */
+           counter_t cycle,                     /* current processor cycle */
+           struct regs_t *regs,                 /* registers to access */
+           struct mem_t *mem);                  /* memory to access */
 
 #endif /* DLITE_H */

@@ -67,14 +67,14 @@ enum eval_err_t eval_error = ERR_NOERR;
 
 /* enum eval_err_t -> error description string map */
 char *eval_err_str[ERR_NUM] = {
-  /* ERR_NOERR */	"!! no error!!",
-  /* ERR_UPAREN */	"unmatched parenthesis",
-  /* ERR_NOTERM */	"expression term is missing",
-  /* ERR_DIV0 */	"divide by zero",
-  /* ERR_BADCONST */	"badly formed constant",
-  /* ERR_BADEXPR */	"badly formed expression",
-  /* ERR_UNDEFVAR */	"variable is undefined",
-  /* ERR_EXTRA */	"extra characters at end of expression"
+  /* ERR_NOERR */       "!! no error!!",
+  /* ERR_UPAREN */      "unmatched parenthesis",
+  /* ERR_NOTERM */      "expression term is missing",
+  /* ERR_DIV0 */        "divide by zero",
+  /* ERR_BADCONST */    "badly formed constant",
+  /* ERR_BADEXPR */     "badly formed expression",
+  /* ERR_UNDEFVAR */    "variable is undefined",
+  /* ERR_EXTRA */       "extra characters at end of expression"
 };
 
 /* *first* token character -> enum eval_token_t map */
@@ -117,8 +117,8 @@ init_tok_map(void)
 }
 
 /* get next token from the expression string */
-static enum eval_token_t		/* token parsed */
-get_next_token(struct eval_state_t *es)	/* expression evaluator */
+static enum eval_token_t                /* token parsed */
+get_next_token(struct eval_state_t *es) /* expression evaluator */
 {
   int allow_hex;
   enum eval_token_t tok;
@@ -158,34 +158,34 @@ get_next_token(struct eval_state_t *es)	/* expression evaluator */
     case tok_ident:
       /* parse off next identifier */
       while (*es->p
-	     && (tok_map[(int)*es->p] == tok_ident
-		 || tok_map[(int)*es->p] == tok_const))
-	{
-	  *ptok_buf++ = *es->p++;
-	}
+             && (tok_map[(int)*es->p] == tok_ident
+                 || tok_map[(int)*es->p] == tok_const))
+        {
+          *ptok_buf++ = *es->p++;
+        }
       break;
     case tok_const:
       /* parse off next numeric literal */
       last_char = '\0';
       allow_hex = FALSE;
       while (*es->p &&
-	     (tok_map[(int)*es->p] == tok_const
-	      || (*es->p == '-' && last_char == 'e')
-	      || (*es->p == '+' && last_char == 'e')
-	      || tolower(*es->p) == 'e'
-	      || tolower(*es->p) == 'x'
-	      || (tolower(*es->p) == 'a' && allow_hex)
-	      || (tolower(*es->p) == 'b' && allow_hex)
-	      || (tolower(*es->p) == 'c' && allow_hex)
-	      || (tolower(*es->p) == 'd' && allow_hex)
-	      || (tolower(*es->p) == 'e' && allow_hex)
-	      || (tolower(*es->p) == 'f' && allow_hex)))
-	{
-	  last_char = tolower(*es->p);
-	  if (*es->p == 'x' || *es->p == 'X')
-	    allow_hex = TRUE;
-	  *ptok_buf++ = *es->p++;
-	}
+             (tok_map[(int)*es->p] == tok_const
+              || (*es->p == '-' && last_char == 'e')
+              || (*es->p == '+' && last_char == 'e')
+              || tolower(*es->p) == 'e'
+              || tolower(*es->p) == 'x'
+              || (tolower(*es->p) == 'a' && allow_hex)
+              || (tolower(*es->p) == 'b' && allow_hex)
+              || (tolower(*es->p) == 'c' && allow_hex)
+              || (tolower(*es->p) == 'd' && allow_hex)
+              || (tolower(*es->p) == 'e' && allow_hex)
+              || (tolower(*es->p) == 'f' && allow_hex)))
+        {
+          last_char = tolower(*es->p);
+          if (*es->p == 'x' || *es->p == 'X')
+            allow_hex = TRUE;
+          *ptok_buf++ = *es->p++;
+        }
       break;
     case tok_plus:
     case tok_minus:
@@ -208,7 +208,7 @@ get_next_token(struct eval_state_t *es)	/* expression evaluator */
 
 /* peek ahead at the next token from the expression stream, currently
    only the next token can be peek'ed at */
-static enum eval_token_t		 /* next token in expression */
+static enum eval_token_t                 /* next token in expression */
 peek_next_token(struct eval_state_t *es) /* expression evalutor */
 {
   /* if there is no peek ahead token, get one */
@@ -230,22 +230,22 @@ static struct eval_value_t err_value = { et_int, { 0 } };
 
 /* expression type strings */
 char *eval_type_str[et_NUM] = {
-  /* et_int */		"int",
-  /* et_uint */		"unsigned int",
-  /* et_addr */		"md_addr_t",
+  /* et_int */          "int",
+  /* et_uint */         "unsigned int",
+  /* et_addr */         "md_addr_t",
 #ifdef HOST_HAS_QWORD
-  /* et_qword */	"qword_t",
-  /* et_sqword */	"sqword_t",
+  /* et_qword */        "qword_t",
+  /* et_sqword */       "sqword_t",
 #endif /* HOST_HAS_QWORD */
-  /* et_float */	"float",
-  /* et_double */	"double",
-  /* et_symbol */	"symbol"
+  /* et_float */        "float",
+  /* et_double */       "double",
+  /* et_symbol */       "symbol"
 };
 
 /* determine necessary arithmetic conversion on T1 <op> T2 */
-static enum eval_type_t			/* type of expression result */
-result_type(enum eval_type_t t1,	/* left operand type */
-	    enum eval_type_t t2)	/* right operand type */
+static enum eval_type_t                 /* type of expression result */
+result_type(enum eval_type_t t1,        /* left operand type */
+            enum eval_type_t t2)        /* right operand type */
 {
   /* sanity check, symbols should not show up in arithmetic exprs */
   if (t1 == et_symbol || t2 == et_symbol)
@@ -757,36 +757,36 @@ f_neg(struct eval_value_t val1)
       break;
     case et_uint:
       if ((unsigned int)val1.value.as_uint > 2147483648U)
-	{
-	  /* promote type */
+        {
+          /* promote type */
 #ifdef HOST_HAS_QWORD
-	  val.type = et_sqword;
-	  val.value.as_sqword = - ((sqword_t)val1.value.as_uint);
+          val.type = et_sqword;
+          val.value.as_sqword = - ((sqword_t)val1.value.as_uint);
 #else /* !HOST_HAS_QWORD */
-	  val.type = et_double;
-	  val.value.as_double = - ((double)val1.value.as_uint);
+          val.type = et_double;
+          val.value.as_double = - ((double)val1.value.as_uint);
 #endif /* HOST_HAS_QWORD */
-	}
+        }
       else
-	{
-	  /* don't promote type */
-	  val.type = et_int;
-	  val.value.as_int = - ((int)val1.value.as_uint);
-	}
+        {
+          /* don't promote type */
+          val.type = et_int;
+          val.value.as_int = - ((int)val1.value.as_uint);
+        }
       break;
     case et_int:
       if ((unsigned int)val1.value.as_int == 0x80000000U)
-	{
-	  /* promote type */
-	  val.type = et_uint;
-	  val.value.as_uint = 2147483648U;
-	}
+        {
+          /* promote type */
+          val.type = et_uint;
+          val.value.as_uint = 2147483648U;
+        }
       else
-	{
-	  /* don't promote type */
-	  val.type = et_int;
-	  val.value.as_int = - val1.value.as_int;
-	}
+        {
+          /* don't promote type */
+          val.type = et_int;
+          val.value.as_int = - val1.value.as_int;
+        }
       break;
     default:
       panic("bogus expression type");
@@ -843,8 +843,8 @@ f_eq_zero(struct eval_value_t val1)
 /* evaluate the value of the numeric literal constant in ES->TOK_BUF,
    eval_err is set to a value other than ERR_NOERR if the constant cannot
    be parsed and converted to an expression value */
-static struct eval_value_t		/* value of the literal constant */
-constant(struct eval_state_t *es)	/* expression evaluator */
+static struct eval_value_t              /* value of the literal constant */
+constant(struct eval_state_t *es)       /* expression evaluator */
 {
   struct eval_value_t val;
   int int_val;
@@ -934,8 +934,8 @@ constant(struct eval_state_t *es)	/* expression evaluator */
 
 /* evaluate an expression factor, eval_err will indicate it any
    expression evaluation occurs */
-static struct eval_value_t		/* value of factor */
-factor(struct eval_state_t *es)		/* expression evaluator */
+static struct eval_value_t              /* value of factor */
+factor(struct eval_state_t *es)         /* expression evaluator */
 {
   enum eval_token_t tok;
   struct eval_value_t val;
@@ -947,14 +947,14 @@ factor(struct eval_state_t *es)		/* expression evaluator */
       (void)get_next_token(es);
       val = expr(es);
       if (eval_error)
-	return err_value;
+        return err_value;
 
       tok = peek_next_token(es);
       if (tok != tok_cparen)
-	{
-	  eval_error = ERR_UPAREN;
-	  return err_value;
-	}
+        {
+          eval_error = ERR_UPAREN;
+          return err_value;
+        }
       (void)get_next_token(es);
       break;
 
@@ -963,7 +963,7 @@ factor(struct eval_state_t *es)		/* expression evaluator */
       (void)get_next_token(es);
       val = factor(es);
       if (eval_error)
-	return err_value;
+        return err_value;
       val = f_neg(val);
       break;
 
@@ -972,14 +972,14 @@ factor(struct eval_state_t *es)		/* expression evaluator */
       /* evaluate the identifier in TOK_BUF */
       val = es->f_eval_ident(es);
       if (eval_error)
-	return err_value;
+        return err_value;
       break;
 
     case tok_const:
       (void)get_next_token(es);
       val = constant(es);
       if (eval_error)
-	return err_value;
+        return err_value;
       break;
 
     default:
@@ -992,8 +992,8 @@ factor(struct eval_state_t *es)		/* expression evaluator */
 
 /* evaluate an expression term, eval_err will indicate it any
    expression evaluation occurs */
-static struct eval_value_t		/* value to expression term */
-term(struct eval_state_t *es)		/* expression evaluator */
+static struct eval_value_t              /* value to expression term */
+term(struct eval_state_t *es)           /* expression evaluator */
 {
   enum eval_token_t tok;
   struct eval_value_t val, val1;
@@ -1009,19 +1009,19 @@ term(struct eval_state_t *es)		/* expression evaluator */
       (void)get_next_token(es);
       val = f_mult(val, term(es));
       if (eval_error)
-	return err_value;
+        return err_value;
       break;
 
     case tok_div:
       (void)get_next_token(es);
       val1 = term(es);
       if (eval_error)
-	return err_value;
+        return err_value;
       if (f_eq_zero(val1))
-	{
-	  eval_error = ERR_DIV0;
-	  return err_value;
-	}
+        {
+          eval_error = ERR_DIV0;
+          return err_value;
+        }
       val = f_div(val, val1);
       break;
 
@@ -1033,8 +1033,8 @@ term(struct eval_state_t *es)		/* expression evaluator */
 
 /* evaluate an expression, eval_err will indicate it any expression
    evaluation occurs */
-static struct eval_value_t		/* value of the expression */
-expr(struct eval_state_t *es)		/* expression evaluator */
+static struct eval_value_t              /* value of the expression */
+expr(struct eval_state_t *es)           /* expression evaluator */
 {
   enum eval_token_t tok;
   struct eval_value_t val;
@@ -1050,14 +1050,14 @@ expr(struct eval_state_t *es)		/* expression evaluator */
       (void)get_next_token(es);
       val = f_add(val, expr(es));
       if (eval_error)
-	return err_value;
+        return err_value;
       break;
 
     case tok_minus:
       (void)get_next_token(es);
       val = f_sub(val, expr(es));
       if (eval_error)
-	return err_value;
+        return err_value;
       break;
 
     default:;
@@ -1067,9 +1067,9 @@ expr(struct eval_state_t *es)		/* expression evaluator */
 }
 
 /* create an evaluator */
-struct eval_state_t *			/* expression evaluator */
-eval_new(eval_ident_t f_eval_ident,	/* user ident evaluator */
-	 void *user_ptr)		/* user ptr passed to ident fn */
+struct eval_state_t *                   /* expression evaluator */
+eval_new(eval_ident_t f_eval_ident,     /* user ident evaluator */
+         void *user_ptr)                /* user ptr passed to ident fn */
 {
   struct eval_state_t *es;
 
@@ -1085,17 +1085,17 @@ eval_new(eval_ident_t f_eval_ident,	/* user ident evaluator */
 
 /* delete an evaluator */
 void
-eval_delete(struct eval_state_t *es)	/* evaluator to delete */
+eval_delete(struct eval_state_t *es)    /* evaluator to delete */
 {
   free(es);
 }
 
 /* evaluate an expression, if an error occurs during evaluation, the
    global variable eval_error will be set to a value other than ERR_NOERR */
-struct eval_value_t			/* value of the expression */
-eval_expr(struct eval_state_t *es,	/* expression evaluator */
-	  char *p,			/* ptr to expression string */
-	  char **endp)			/* returns ptr to 1st unused char */
+struct eval_value_t                     /* value of the expression */
+eval_expr(struct eval_state_t *es,      /* expression evaluator */
+          char *p,                      /* ptr to expression string */
+          char **endp)                  /* returns ptr to 1st unused char */
 {
   struct eval_value_t val;
 
@@ -1112,12 +1112,12 @@ eval_expr(struct eval_state_t *es,	/* expression evaluator */
   if (endp)
     {
       if (es->peek_tok != tok_invalid)
-	{
-	  /* did not consume peek'ed token, so return last p */
-	  *endp = es->lastp;
-	}
+        {
+          /* did not consume peek'ed token, so return last p */
+          *endp = es->lastp;
+        }
       else
-	*endp = es->p;
+        *endp = es->p;
     }
 
   return val;
@@ -1125,8 +1125,8 @@ eval_expr(struct eval_state_t *es,	/* expression evaluator */
 
 /* print an expression value */
 void
-eval_print(FILE *stream,		/* output stream */
-	   struct eval_value_t val)	/* expression value to print */
+eval_print(FILE *stream,                /* output stream */
+           struct eval_value_t val)     /* expression value to print */
 {
   switch (val.type)
     {
@@ -1192,7 +1192,7 @@ my_eval_ident(struct eval_state_t *es)
   for (sym=sym_map; sym->symbol != NULL; sym++)
     {
       if (!strcmp(sym->symbol, es->tok_buf))
-	return *sym->value;
+        return *sym->value;
     }
 
   eval_error = ERR_UNDEFVAR;
@@ -1223,20 +1223,20 @@ main(void)
 
       /* chop */
       if (expr_buf[strlen(expr_buf)-1] == '\n')
-	expr_buf[strlen(expr_buf)-1] = '\0';
+        expr_buf[strlen(expr_buf)-1] = '\0';
 
       if (expr_buf[0] == '\0')
-	exit(0);
+        exit(0);
 
       val = eval_expr(es, expr_buf, NULL);
       if (eval_error)
-	fprintf(stdout, "eval error: %s\n", eval_err_str[eval_error]);
+        fprintf(stdout, "eval error: %s\n", eval_err_str[eval_error]);
       else
-	{
-	  fprintf(stdout, "%s == ", expr_buf);
-	  eval_print(stdout, val);
-	  fprintf(stdout, "\n");
-	}
+        {
+          fprintf(stdout, "%s == ", expr_buf);
+          eval_print(stdout, val);
+          fprintf(stdout, "\n");
+        }
     }
 }
 

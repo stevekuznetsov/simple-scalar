@@ -149,7 +149,7 @@ static int nice_priority;
 #endif
 
 /* default simulator scheduling priority */
-#define NICE_DEFAULT_VALUE		0
+#define NICE_DEFAULT_VALUE              0
 
 static int
 orphan_fn(int i, int argc, char **argv)
@@ -164,15 +164,15 @@ banner(FILE *fd, int argc, char **argv)
   char *s;
 
   fprintf(fd,
-	  "%s: SimpleScalar/%s Tool Set version %d.%d of %s.\n"
-	  "Copyright (c) 1994-2003 by Todd M. Austin, Ph.D. and SimpleScalar, LLC.\n"
-	  "All Rights Reserved. This version of SimpleScalar is licensed for academic\n"
-	  "non-commercial use.  No portion of this work may be used by any commercial\n"
-	  "entity, or for any commercial purpose, without the prior written permission\n"
-	  "of SimpleScalar, LLC (info@simplescalar.com).\n"
-	  "\n",
-	  ((s = strrchr(argv[0], '/')) ? s+1 : argv[0]),
-	  VER_TARGET, VER_MAJOR, VER_MINOR, VER_UPDATE);
+          "%s: SimpleScalar/%s Tool Set version %d.%d of %s.\n"
+          "Copyright (c) 1994-2003 by Todd M. Austin, Ph.D. and SimpleScalar, LLC.\n"
+          "All Rights Reserved. This version of SimpleScalar is licensed for academic\n"
+          "non-commercial use.  No portion of this work may be used by any commercial\n"
+          "entity, or for any commercial purpose, without the prior written permission\n"
+          "of SimpleScalar, LLC (info@simplescalar.com).\n"
+          "\n",
+          ((s = strrchr(argv[0], '/')) ? s+1 : argv[0]),
+          VER_TARGET, VER_MAJOR, VER_MINOR, VER_UPDATE);
 }
 
 static void
@@ -186,7 +186,7 @@ static int running = FALSE;
 
 /* print all simulator stats */
 void
-sim_print_stats(FILE *fd)		/* output stream */
+sim_print_stats(FILE *fd)               /* output stream */
 {
 #if 0 /* not portable... :-( */
   extern char etext, *sbrk(int);
@@ -252,37 +252,37 @@ main(int argc, char **argv, char **envp)
   /* register global options */
   sim_odb = opt_new(orphan_fn);
   opt_reg_flag(sim_odb, "-h", "print help message",
-	       &help_me, /* default */FALSE, /* !print */FALSE, NULL);
+               &help_me, /* default */FALSE, /* !print */FALSE, NULL);
   opt_reg_flag(sim_odb, "-v", "verbose operation",
-	       &verbose, /* default */FALSE, /* !print */FALSE, NULL);
+               &verbose, /* default */FALSE, /* !print */FALSE, NULL);
 #ifdef DEBUG
   opt_reg_flag(sim_odb, "-d", "enable debug message",
-	       &debugging, /* default */FALSE, /* !print */FALSE, NULL);
+               &debugging, /* default */FALSE, /* !print */FALSE, NULL);
 #endif /* DEBUG */
   opt_reg_flag(sim_odb, "-i", "start in Dlite debugger",
-	       &dlite_active, /* default */FALSE, /* !print */FALSE, NULL);
+               &dlite_active, /* default */FALSE, /* !print */FALSE, NULL);
   opt_reg_int(sim_odb, "-seed",
-	      "random number generator seed (0 for timer seed)",
-	      &rand_seed, /* default */1, /* print */TRUE, NULL);
+              "random number generator seed (0 for timer seed)",
+              &rand_seed, /* default */1, /* print */TRUE, NULL);
   opt_reg_flag(sim_odb, "-q", "initialize and terminate immediately",
-	       &init_quit, /* default */FALSE, /* !print */FALSE, NULL);
+               &init_quit, /* default */FALSE, /* !print */FALSE, NULL);
   opt_reg_string(sim_odb, "-chkpt", "restore EIO trace execution from <fname>",
-		 &sim_chkpt_fname, /* default */NULL, /* !print */FALSE, NULL);
+                 &sim_chkpt_fname, /* default */NULL, /* !print */FALSE, NULL);
 
   /* stdio redirection options */
   opt_reg_string(sim_odb, "-redir:sim",
-		 "redirect simulator output to file (non-interactive only)",
-		 &sim_simout,
-		 /* default */NULL, /* !print */FALSE, NULL);
+                 "redirect simulator output to file (non-interactive only)",
+                 &sim_simout,
+                 /* default */NULL, /* !print */FALSE, NULL);
   opt_reg_string(sim_odb, "-redir:prog",
-		 "redirect simulated program output to file",
-		 &sim_progout, /* default */NULL, /* !print */FALSE, NULL);
+                 "redirect simulated program output to file",
+                 &sim_progout, /* default */NULL, /* !print */FALSE, NULL);
 
 #ifndef _MSC_VER
   /* scheduling priority option */
   opt_reg_int(sim_odb, "-nice",
-	      "simulator scheduling priority", &nice_priority,
-	      /* default */NICE_DEFAULT_VALUE, /* print */TRUE, NULL);
+              "simulator scheduling priority", &nice_priority,
+              /* default */NICE_DEFAULT_VALUE, /* print */TRUE, NULL);
 #endif
 
   /* FIXME: add stats intervals and max insts... */
@@ -300,7 +300,7 @@ main(int argc, char **argv, char **envp)
       /* send simulator non-interactive output (STDERR) to file SIM_SIMOUT */
       fflush(stderr);
       if (!freopen(sim_simout, "w", stderr))
-	fatal("unable to redirect simulator output to file `%s'", sim_simout);
+        fatal("unable to redirect simulator output to file `%s'", sim_simout);
     }
 
   if (sim_progout != NULL)
@@ -308,7 +308,7 @@ main(int argc, char **argv, char **envp)
       /* redirect simulated program output to file SIM_PROGOUT */
       sim_progfd = fopen(sim_progout, "w");
       if (!sim_progfd)
-	fatal("unable to redirect program output to file `%s'", sim_progout);
+        fatal("unable to redirect program output to file `%s'", sim_progout);
     }
 
   /* need at least two argv values to run */
@@ -385,8 +385,8 @@ main(int argc, char **argv, char **envp)
   sim_reg_stats(sim_sdb);
 #if 0 /* not portable... :-( */
   stat_reg_uint(sim_sdb, "sim_mem_usage",
-		"total simulator (data) memory usage",
-		&sim_mem_usage, sim_mem_usage, "%11dk");
+                "total simulator (data) memory usage",
+                &sim_mem_usage, sim_mem_usage, "%11dk");
 #endif
 
   /* record start of execution time, used in rate stats */

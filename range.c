@@ -62,9 +62,9 @@
 #include "range.h"
 
 /* parse execution position *PSTR to *POS */
-char *						/* error string, or NULL */
-range_parse_pos(char *pstr,			/* execution position string */
-		struct range_pos_t *pos)	/* position return buffer */
+char *                                          /* error string, or NULL */
+range_parse_pos(char *pstr,                     /* execution position string */
+                struct range_pos_t *pos)        /* position return buffer */
 {
   char *s, *endp;
   struct sym_sym_t *sym;
@@ -123,8 +123,8 @@ range_parse_pos(char *pstr,			/* execution position string */
 
 /* print execution position *POS */
 void
-range_print_pos(struct range_pos_t *pos,	/* execution position */
-		FILE *stream)			/* output stream */
+range_print_pos(struct range_pos_t *pos,        /* execution position */
+                FILE *stream)                   /* output stream */
 {
   switch (pos->ptype)
     {
@@ -143,9 +143,9 @@ range_print_pos(struct range_pos_t *pos,	/* execution position */
 }
 
 /* parse execution range *RSTR to *RANGE */
-char *						/* error string, or NULL */
-range_parse_range(char *rstr,			/* execution range string */
-		  struct range_range_t *range)	/* range return buffer */
+char *                                          /* error string, or NULL */
+range_parse_range(char *rstr,                   /* execution range string */
+                  struct range_range_t *range)  /* range return buffer */
 {
   char *pos1, *pos2, *p, buf[512], *errstr;
 
@@ -171,7 +171,7 @@ range_parse_range(char *rstr,			/* execution range string */
     {
       errstr = range_parse_pos(pos1, &range->start);
       if (errstr)
-	return errstr;
+        return errstr;
     }
   else
     {
@@ -184,31 +184,31 @@ range_parse_range(char *rstr,			/* execution range string */
   if (*pos2)
     {
       if (*pos2 == '+')
-	{
-	  int delta;
-	  char *endp;
+        {
+          int delta;
+          char *endp;
 
-	  /* get delta value */
-	  errno = 0;
-	  delta = strtol(pos2 + 1, &endp, /* parse base */0);
-	  if (!errno && !*endp)
-	    {
-	      /* good conversion */
-	      range->end.ptype = range->start.ptype;
-	      range->end.pos = range->start.pos + delta;
-	    }
-	  else
-	    {
-	      /* bad conversion */
-	      return "badly formed execution range delta";
-	    }
-	}
+          /* get delta value */
+          errno = 0;
+          delta = strtol(pos2 + 1, &endp, /* parse base */0);
+          if (!errno && !*endp)
+            {
+              /* good conversion */
+              range->end.ptype = range->start.ptype;
+              range->end.pos = range->start.pos + delta;
+            }
+          else
+            {
+              /* bad conversion */
+              return "badly formed execution range delta";
+            }
+        }
       else
-	{
-	  errstr = range_parse_pos(pos2, &range->end);
-	  if (errstr)
-	    return errstr;
-	}
+        {
+          errstr = range_parse_pos(pos2, &range->end);
+          if (errstr)
+            return errstr;
+        }
     }
   else
     {
@@ -227,8 +227,8 @@ range_parse_range(char *rstr,			/* execution range string */
 
 /* print execution range *RANGE */
 void
-range_print_range(struct range_range_t *range,	/* execution range */
-		  FILE *stream)			/* output stream */
+range_print_range(struct range_range_t *range,  /* execution range */
+                  FILE *stream)                 /* output stream */
 {
   range_print_pos(&range->start, stream);
   fprintf(stream, ":");
@@ -236,9 +236,9 @@ range_print_range(struct range_range_t *range,	/* execution range */
 }
 
 /* determine if inputs match execution position */
-int						/* relation to position */
-range_cmp_pos(struct range_pos_t *pos,		/* execution position */
-	      counter_t val)			/* position value */
+int                                             /* relation to position */
+range_cmp_pos(struct range_pos_t *pos,          /* execution position */
+              counter_t val)                    /* position value */
 {
   if (val < pos->pos)
     return /* before */-1;
@@ -249,9 +249,9 @@ range_cmp_pos(struct range_pos_t *pos,		/* execution position */
 }
 
 /* determine if inputs are in range */
-int						/* relation to range */
-range_cmp_range(struct range_range_t *range,	/* execution range */
-		counter_t val)			/* position value */
+int                                             /* relation to range */
+range_cmp_range(struct range_range_t *range,    /* execution range */
+                counter_t val)                  /* position value */
 {
   if (range->start.ptype != range->end.ptype)
     panic("invalid range");
@@ -265,11 +265,11 @@ range_cmp_range(struct range_range_t *range,	/* execution range */
 }
 
 /* determine if inputs are in range, passes all possible info needed */
-int						/* relation to range */
-range_cmp_range1(struct range_range_t *range,	/* execution range */
-		 md_addr_t addr,		/* address value */
-		 counter_t icount,		/* instruction count */
-		 counter_t cycle)		/* cycle count */
+int                                             /* relation to range */
+range_cmp_range1(struct range_range_t *range,   /* execution range */
+                 md_addr_t addr,                /* address value */
+                 counter_t icount,              /* instruction count */
+                 counter_t cycle)               /* cycle count */
 {
   if (range->start.ptype != range->end.ptype)
     panic("invalid range");
@@ -278,27 +278,27 @@ range_cmp_range1(struct range_range_t *range,	/* execution range */
     {
     case pt_addr:
       if (addr < (md_addr_t)range->start.pos)
-	return /* before */-1;
+        return /* before */-1;
       else if ((md_addr_t)range->start.pos <= addr && addr <= (md_addr_t)range->end.pos)
-	return /* inside */0;
+        return /* inside */0;
       else /* if (range->end.pos < addr) */
-	return /* after */1;
+        return /* after */1;
       break;
     case pt_inst:
       if (icount < range->start.pos)
-	return /* before */-1;
+        return /* before */-1;
       else if (range->start.pos <= icount && icount <= range->end.pos)
-	return /* inside */0;
+        return /* inside */0;
       else /* if (range->end.pos < icount) */
-	return /* after */1;
+        return /* after */1;
       break;
     case pt_cycle:
       if (cycle < range->start.pos)
-	return /* before */-1;
+        return /* before */-1;
       else if (range->start.pos <= cycle && cycle <= range->end.pos)
-	return /* inside */0;
+        return /* inside */0;
       else /* if (range->end.pos < cycle) */
-	return /* after */1;
+        return /* after */1;
       break;
     default:
       panic("bogus range type");

@@ -73,10 +73,10 @@ stat_eval_ident(struct eval_state_t *es)/* an expression evaluator */
   for (stat = sdb->stats; stat != NULL; stat = stat->next)
     {
       if (!strcmp(stat->name, es->tok_buf))
-	{
-	  /* found it! */
-	  break;
-	}
+        {
+          /* found it! */
+          break;
+        }
     }
   if (!stat)
     {
@@ -127,18 +127,18 @@ stat_eval_ident(struct eval_state_t *es)/* an expression evaluator */
       break;
     case sc_formula:
       {
-	/* instantiate a new evaluator to avoid recursion problems */
-	struct eval_state_t *es = eval_new(stat_eval_ident, sdb);
-	char *endp;
+        /* instantiate a new evaluator to avoid recursion problems */
+        struct eval_state_t *es = eval_new(stat_eval_ident, sdb);
+        char *endp;
 
-	val = eval_expr(es, stat->variant.for_formula.formula, &endp);
-	if (eval_error != ERR_NOERR || *endp != '\0')
-	  {
-	    /* pass through eval_error */
-	    val = err_value;
-	  }
-	/* else, use value returned */
-	eval_delete(es);
+        val = eval_expr(es, stat->variant.for_formula.formula, &endp);
+        if (eval_error != ERR_NOERR || *endp != '\0')
+          {
+            /* pass through eval_error */
+            val = err_value;
+          }
+        /* else, use value returned */
+        eval_delete(es);
       }
       break;
     default:
@@ -166,7 +166,7 @@ stat_new(void)
 
 /* delete a stats database */
 void
-stat_delete(struct stat_sdb_t *sdb)	/* stats database */
+stat_delete(struct stat_sdb_t *sdb)     /* stats database */
 {
   int i;
   struct stat_stat_t *stat, *stat_next;
@@ -180,44 +180,44 @@ stat_delete(struct stat_sdb_t *sdb)	/* stats database */
 
       /* free stat */
       switch (stat->sc)
-	{
-	case sc_int:
-	case sc_uint:
+        {
+        case sc_int:
+        case sc_uint:
 #ifdef HOST_HAS_QWORD
-	case sc_qword:
-	case sc_sqword:
+        case sc_qword:
+        case sc_sqword:
 #endif /* HOST_HAS_QWORD */
-	case sc_float:
-	case sc_double:
-	case sc_formula:
-	  /* no other storage to deallocate */
-	  break;
-	case sc_dist:
-	  /* free distribution array */
-	  free(stat->variant.for_dist.arr);
-	  stat->variant.for_dist.arr = NULL;
-	  break;
-	case sc_sdist:
-	  /* free all hash table buckets */
-	  for (i=0; i<HTAB_SZ; i++)
-	    {
-	      for (bucket = stat->variant.for_sdist.sarr[i];
-		   bucket != NULL;
-		   bucket = bucket_next)
-		{
-		  bucket_next = bucket->next;
-		  bucket->next = NULL;
-		  free(bucket);
-		}
-	      stat->variant.for_sdist.sarr[i] = NULL;
-	    }
-	  /* free hash table array */
-	  free(stat->variant.for_sdist.sarr);
-	  stat->variant.for_sdist.sarr = NULL;
-	  break;
-	default:
-	  panic("bogus stat class");
-	}
+        case sc_float:
+        case sc_double:
+        case sc_formula:
+          /* no other storage to deallocate */
+          break;
+        case sc_dist:
+          /* free distribution array */
+          free(stat->variant.for_dist.arr);
+          stat->variant.for_dist.arr = NULL;
+          break;
+        case sc_sdist:
+          /* free all hash table buckets */
+          for (i=0; i<HTAB_SZ; i++)
+            {
+              for (bucket = stat->variant.for_sdist.sarr[i];
+                   bucket != NULL;
+                   bucket = bucket_next)
+                {
+                  bucket_next = bucket->next;
+                  bucket->next = NULL;
+                  free(bucket);
+                }
+              stat->variant.for_sdist.sarr[i] = NULL;
+            }
+          /* free hash table array */
+          free(stat->variant.for_sdist.sarr);
+          stat->variant.for_sdist.sarr = NULL;
+          break;
+        default:
+          panic("bogus stat class");
+        }
       /* free stat variable record */
       free(stat);
     }
@@ -229,8 +229,8 @@ stat_delete(struct stat_sdb_t *sdb)	/* stats database */
 
 /* add stat variable STAT to stat database SDB */
 static void
-add_stat(struct stat_sdb_t *sdb,	/* stat database */
-	 struct stat_stat_t *stat)	/* stat variable */
+add_stat(struct stat_sdb_t *sdb,        /* stat database */
+         struct stat_stat_t *stat)      /* stat variable */
 {
   struct stat_stat_t *elt, *prev;
 
@@ -248,12 +248,12 @@ add_stat(struct stat_sdb_t *sdb,	/* stat database */
 
 /* register an integer statistical variable */
 struct stat_stat_t *
-stat_reg_int(struct stat_sdb_t *sdb,	/* stat database */
-	     char *name,		/* stat variable name */
-	     char *desc,		/* stat variable description */
-	     int *var,			/* stat variable */
-	     int init_val,		/* stat variable initial value */
-	     char *format)		/* optional variable output format */
+stat_reg_int(struct stat_sdb_t *sdb,    /* stat database */
+             char *name,                /* stat variable name */
+             char *desc,                /* stat variable description */
+             int *var,                  /* stat variable */
+             int init_val,              /* stat variable initial value */
+             char *format)              /* optional variable output format */
 {
   struct stat_stat_t *stat;
 
@@ -279,12 +279,12 @@ stat_reg_int(struct stat_sdb_t *sdb,	/* stat database */
 
 /* register an unsigned integer statistical variable */
 struct stat_stat_t *
-stat_reg_uint(struct stat_sdb_t *sdb,	/* stat database */
-	      char *name,		/* stat variable name */
-	      char *desc,		/* stat variable description */
-	      unsigned int *var,	/* stat variable */
-	      unsigned int init_val,	/* stat variable initial value */
-	      char *format)		/* optional variable output format */
+stat_reg_uint(struct stat_sdb_t *sdb,   /* stat database */
+              char *name,               /* stat variable name */
+              char *desc,               /* stat variable description */
+              unsigned int *var,        /* stat variable */
+              unsigned int init_val,    /* stat variable initial value */
+              char *format)             /* optional variable output format */
 {
   struct stat_stat_t *stat;
 
@@ -311,12 +311,12 @@ stat_reg_uint(struct stat_sdb_t *sdb,	/* stat database */
 #ifdef HOST_HAS_QWORD
 /* register a qword integer statistical variable */
 struct stat_stat_t *
-stat_reg_qword(struct stat_sdb_t *sdb,	/* stat database */
-	      char *name,		/* stat variable name */
-	      char *desc,		/* stat variable description */
-	      qword_t *var,		/* stat variable */
-	      qword_t init_val,		/* stat variable initial value */
-	      char *format)		/* optional variable output format */
+stat_reg_qword(struct stat_sdb_t *sdb,  /* stat database */
+              char *name,               /* stat variable name */
+              char *desc,               /* stat variable description */
+              qword_t *var,             /* stat variable */
+              qword_t init_val,         /* stat variable initial value */
+              char *format)             /* optional variable output format */
 {
   struct stat_stat_t *stat;
 
@@ -342,12 +342,12 @@ stat_reg_qword(struct stat_sdb_t *sdb,	/* stat database */
 
 /* register a signed qword integer statistical variable */
 struct stat_stat_t *
-stat_reg_sqword(struct stat_sdb_t *sdb,	/* stat database */
-	       char *name,		/* stat variable name */
-	       char *desc,		/* stat variable description */
-	       sqword_t *var,		/* stat variable */
-	       sqword_t init_val,	/* stat variable initial value */
-	       char *format)		/* optional variable output format */
+stat_reg_sqword(struct stat_sdb_t *sdb, /* stat database */
+               char *name,              /* stat variable name */
+               char *desc,              /* stat variable description */
+               sqword_t *var,           /* stat variable */
+               sqword_t init_val,       /* stat variable initial value */
+               char *format)            /* optional variable output format */
 {
   struct stat_stat_t *stat;
 
@@ -374,12 +374,12 @@ stat_reg_sqword(struct stat_sdb_t *sdb,	/* stat database */
 
 /* register a float statistical variable */
 struct stat_stat_t *
-stat_reg_float(struct stat_sdb_t *sdb,	/* stat database */
-	       char *name,		/* stat variable name */
-	       char *desc,		/* stat variable description */
-	       float *var,		/* stat variable */
-	       float init_val,		/* stat variable initial value */
-	       char *format)		/* optional variable output format */
+stat_reg_float(struct stat_sdb_t *sdb,  /* stat database */
+               char *name,              /* stat variable name */
+               char *desc,              /* stat variable description */
+               float *var,              /* stat variable */
+               float init_val,          /* stat variable initial value */
+               char *format)            /* optional variable output format */
 {
   struct stat_stat_t *stat;
 
@@ -405,12 +405,12 @@ stat_reg_float(struct stat_sdb_t *sdb,	/* stat database */
 
 /* register a double statistical variable */
 struct stat_stat_t *
-stat_reg_double(struct stat_sdb_t *sdb,	/* stat database */
-		char *name,		/* stat variable name */
-		char *desc,		/* stat variable description */
-		double *var,		/* stat variable */
-		double init_val,	/* stat variable initial value */
-		char *format)		/* optional variable output format */
+stat_reg_double(struct stat_sdb_t *sdb, /* stat database */
+                char *name,             /* stat variable name */
+                char *desc,             /* stat variable description */
+                double *var,            /* stat variable */
+                double init_val,        /* stat variable initial value */
+                char *format)           /* optional variable output format */
 {
   struct stat_stat_t *stat;
 
@@ -441,16 +441,16 @@ stat_reg_double(struct stat_sdb_t *sdb,	/* stat database */
    IMAP, or the entire distribution can be printed with the optional
    user-specified print function PRINT_FN */
 struct stat_stat_t *
-stat_reg_dist(struct stat_sdb_t *sdb,	/* stat database */
-	      char *name,		/* stat variable name */
-	      char *desc,		/* stat variable description */
-	      unsigned int init_val,	/* dist initial value */
-	      unsigned int arr_sz,	/* array size */
-	      unsigned int bucket_sz,	/* array bucket size */
-	      int pf,			/* print format, use PF_* defs */
-	      char *format,		/* optional variable output format */
-	      char **imap,		/* optional index -> string map */
-	      print_fn_t print_fn)	/* optional user print function */
+stat_reg_dist(struct stat_sdb_t *sdb,   /* stat database */
+              char *name,               /* stat variable name */
+              char *desc,               /* stat variable description */
+              unsigned int init_val,    /* dist initial value */
+              unsigned int arr_sz,      /* array size */
+              unsigned int bucket_sz,   /* array bucket size */
+              int pf,                   /* print format, use PF_* defs */
+              char *format,             /* optional variable output format */
+              char **imap,              /* optional index -> string map */
+              print_fn_t print_fn)      /* optional user print function */
 {
   unsigned int i;
   struct stat_stat_t *stat;
@@ -495,13 +495,13 @@ stat_reg_dist(struct stat_sdb_t *sdb,	/* stat database */
    distribution can be printed with the optional user-specified print function
    PRINT_FN */
 struct stat_stat_t *
-stat_reg_sdist(struct stat_sdb_t *sdb,	/* stat database */
-	       char *name,		/* stat variable name */
-	       char *desc,		/* stat variable description */
-	       unsigned int init_val,	/* dist initial value */
-	       int pf,			/* print format, use PF_* defs */
-	       char *format,		/* optional variable output format */
-	       print_fn_t print_fn)	/* optional user print function */
+stat_reg_sdist(struct stat_sdb_t *sdb,  /* stat database */
+               char *name,              /* stat variable name */
+               char *desc,              /* stat variable description */
+               unsigned int init_val,   /* dist initial value */
+               int pf,                  /* print format, use PF_* defs */
+               char *format,            /* optional variable output format */
+               print_fn_t print_fn)     /* optional user print function */
 {
   struct stat_stat_t *stat;
   struct bucket_t **sarr;
@@ -533,53 +533,53 @@ stat_reg_sdist(struct stat_sdb_t *sdb,	/* stat database */
 /* add NSAMPLES to array or sparse array distribution STAT */
 void
 stat_add_samples(struct stat_stat_t *stat,/* stat database */
-		 md_addr_t index,	/* distribution index of samples */
-		 int nsamples)		/* number of samples to add to dist */
+                 md_addr_t index,       /* distribution index of samples */
+                 int nsamples)          /* number of samples to add to dist */
 {
   switch (stat->sc)
     {
     case sc_dist:
       {
-	unsigned int i;
+        unsigned int i;
 
-	/* compute array index */
-	i = index / stat->variant.for_dist.bucket_sz;
+        /* compute array index */
+        i = index / stat->variant.for_dist.bucket_sz;
 
-	/* check for overflow */
-	if (i >= stat->variant.for_dist.arr_sz)
-	  stat->variant.for_dist.overflows += nsamples;
-	else
-	  stat->variant.for_dist.arr[i] += nsamples;
+        /* check for overflow */
+        if (i >= stat->variant.for_dist.arr_sz)
+          stat->variant.for_dist.overflows += nsamples;
+        else
+          stat->variant.for_dist.arr[i] += nsamples;
       }
       break;
     case sc_sdist:
       {
-	struct bucket_t *bucket;
-	int hash = HTAB_HASH(index);
+        struct bucket_t *bucket;
+        int hash = HTAB_HASH(index);
 
-	if (hash < 0 || hash >= HTAB_SZ)
-	  panic("hash table index overflow");
+        if (hash < 0 || hash >= HTAB_SZ)
+          panic("hash table index overflow");
 
-	/* find bucket */
-	for (bucket = stat->variant.for_sdist.sarr[hash];
-	     bucket != NULL;
-	     bucket = bucket->next)
-	  {
-	    if (bucket->index == index)
-	      break;
-	  }
-	if (!bucket)
-	  {
-	    /* add a new sample bucket */
-	    bucket = (struct bucket_t *)calloc(1, sizeof(struct bucket_t));
-	    if (!bucket)
-	      fatal("out of virtual memory");
-	    bucket->next = stat->variant.for_sdist.sarr[hash];
-	    stat->variant.for_sdist.sarr[hash] = bucket;
-	    bucket->index = index;
-	    bucket->count = stat->variant.for_sdist.init_val;
-	  }
-	bucket->count += nsamples;
+        /* find bucket */
+        for (bucket = stat->variant.for_sdist.sarr[hash];
+             bucket != NULL;
+             bucket = bucket->next)
+          {
+            if (bucket->index == index)
+              break;
+          }
+        if (!bucket)
+          {
+            /* add a new sample bucket */
+            bucket = (struct bucket_t *)calloc(1, sizeof(struct bucket_t));
+            if (!bucket)
+              fatal("out of virtual memory");
+            bucket->next = stat->variant.for_sdist.sarr[hash];
+            stat->variant.for_sdist.sarr[hash] = bucket;
+            bucket->index = index;
+            bucket->count = stat->variant.for_sdist.init_val;
+          }
+        bucket->count += nsamples;
       }
       break;
     default:
@@ -590,7 +590,7 @@ stat_add_samples(struct stat_stat_t *stat,/* stat database */
 /* add a single sample to array or sparse array distribution STAT */
 void
 stat_add_sample(struct stat_stat_t *stat,/* stat variable */
-		md_addr_t index)	/* index of sample */
+                md_addr_t index)        /* index of sample */
 {
   stat_add_samples(stat, index, 1);
 }
@@ -604,10 +604,10 @@ stat_add_sample(struct stat_stat_t *stat,/* stat variable */
    for more information on formulas */
 struct stat_stat_t *
 stat_reg_formula(struct stat_sdb_t *sdb,/* stat database */
-		 char *name,		/* stat variable name */
-		 char *desc,		/* stat variable description */
-		 char *formula,		/* formula expression */
-		 char *format)		/* optional variable output format */
+                 char *name,            /* stat variable name */
+                 char *desc,            /* stat variable description */
+                 char *formula,         /* formula expression */
+                 char *format)          /* optional variable output format */
 {
   struct stat_stat_t *stat;
 
@@ -645,8 +645,8 @@ compare_fn(void *p1, void *p2)
 
 /* print an array distribution */
 static void
-print_dist(struct stat_stat_t *stat,	/* stat variable */
-	   FILE *fd)			/* output stream */
+print_dist(struct stat_stat_t *stat,    /* stat variable */
+           FILE *fd)                    /* output stream */
 {
   unsigned int i, bcount, imax, imin;
   double btotal, bsum, bvar, bavg, bsqsum;
@@ -661,19 +661,19 @@ print_dist(struct stat_stat_t *stat,	/* stat variable */
       btotal += stat->variant.for_dist.arr[i];
       /* on-line variance computation, tres cool, no!?! */
       bsqsum += ((double)stat->variant.for_dist.arr[i] *
-		 (double)stat->variant.for_dist.arr[i]);
+                 (double)stat->variant.for_dist.arr[i]);
       bavg = btotal / MAX((double)bcount, 1.0);
       bvar = (bsqsum - ((double)bcount * bavg * bavg)) / 
-	(double)(((bcount - 1) > 0) ? (bcount - 1) : 1);
+        (double)(((bcount - 1) > 0) ? (bcount - 1) : 1);
     }
 
   /* print header */
   fprintf(fd, "\n");
   fprintf(fd, "%-22s # %s\n", stat->name, stat->desc);
   fprintf(fd, "%s.array_size = %u\n",
-	  stat->name, stat->variant.for_dist.arr_sz);
+          stat->name, stat->variant.for_dist.arr_sz);
   fprintf(fd, "%s.bucket_size = %u\n",
-	  stat->name, stat->variant.for_dist.bucket_sz);
+          stat->name, stat->variant.for_dist.bucket_sz);
 
   fprintf(fd, "%s.count = %u\n", stat->name, bcount);
   fprintf(fd, "%s.total = %.0f\n", stat->name, btotal);
@@ -690,7 +690,7 @@ print_dist(struct stat_stat_t *stat,	/* stat variable */
   fprintf(fd, "%s.average = %8.4f\n", stat->name, btotal/MAX(bcount, 1.0));
   fprintf(fd, "%s.std_dev = %8.4f\n", stat->name, sqrt(bvar));
   fprintf(fd, "%s.overflows = %u\n",
-	  stat->name, stat->variant.for_dist.overflows);
+          stat->name, stat->variant.for_dist.overflows);
 
   fprintf(fd, "# pdf == prob dist fn, cdf == cumulative dist fn\n");
   fprintf(fd, "# %14s ", "index");
@@ -709,59 +709,59 @@ print_dist(struct stat_stat_t *stat,	/* stat variable */
       /* print the array */
       bsum = 0.0;
       for (i=0; i<bcount; i++)
-	{
-	  bsum += (double)stat->variant.for_dist.arr[i];
-	  if (stat->variant.for_dist.print_fn)
-	    {
-	      stat->variant.for_dist.print_fn(stat,
-					      i,
-					      stat->variant.for_dist.arr[i],
-					      bsum,
-					      btotal);
-	    }
-	  else
-	    {
-	      if (stat->format == NULL)
-		{
-		  if (stat->variant.for_dist.imap)
-		    fprintf(fd, "%-16s ", stat->variant.for_dist.imap[i]);
-		  else
-		    fprintf(fd, "%16u ",
-			    i * stat->variant.for_dist.bucket_sz);
-		  if (pf & PF_COUNT)
-		    fprintf(fd, "%10u ", stat->variant.for_dist.arr[i]);
-		  if (pf & PF_PDF)
-		    fprintf(fd, "%6.2f ",
-			    (double)stat->variant.for_dist.arr[i] /
-			    MAX(btotal, 1.0) * 100.0);
-		  if (pf & PF_CDF)
-		    fprintf(fd, "%6.2f ", bsum/MAX(btotal, 1.0) * 100.0);
-		}
-	      else
-		{
-		  if (pf == (PF_COUNT|PF_PDF|PF_CDF))
-		    {
-		      if (stat->variant.for_dist.imap)
-		        fprintf(fd, stat->format,
-			        stat->variant.for_dist.imap[i],
-			        stat->variant.for_dist.arr[i],
-			        (double)stat->variant.for_dist.arr[i] /
-			        MAX(btotal, 1.0) * 100.0,
-			        bsum/MAX(btotal, 1.0) * 100.0);
-		      else
-		        fprintf(fd, stat->format,
-			        i * stat->variant.for_dist.bucket_sz,
-			        stat->variant.for_dist.arr[i],
-			        (double)stat->variant.for_dist.arr[i] /
-			        MAX(btotal, 1.0) * 100.0,
-			        bsum/MAX(btotal, 1.0) * 100.0);
-		    }
-		  else
-		    fatal("distribution format not yet implemented");
-		}
-	      fprintf(fd, "\n");
-	    }
-	}
+        {
+          bsum += (double)stat->variant.for_dist.arr[i];
+          if (stat->variant.for_dist.print_fn)
+            {
+              stat->variant.for_dist.print_fn(stat,
+                                              i,
+                                              stat->variant.for_dist.arr[i],
+                                              bsum,
+                                              btotal);
+            }
+          else
+            {
+              if (stat->format == NULL)
+                {
+                  if (stat->variant.for_dist.imap)
+                    fprintf(fd, "%-16s ", stat->variant.for_dist.imap[i]);
+                  else
+                    fprintf(fd, "%16u ",
+                            i * stat->variant.for_dist.bucket_sz);
+                  if (pf & PF_COUNT)
+                    fprintf(fd, "%10u ", stat->variant.for_dist.arr[i]);
+                  if (pf & PF_PDF)
+                    fprintf(fd, "%6.2f ",
+                            (double)stat->variant.for_dist.arr[i] /
+                            MAX(btotal, 1.0) * 100.0);
+                  if (pf & PF_CDF)
+                    fprintf(fd, "%6.2f ", bsum/MAX(btotal, 1.0) * 100.0);
+                }
+              else
+                {
+                  if (pf == (PF_COUNT|PF_PDF|PF_CDF))
+                    {
+                      if (stat->variant.for_dist.imap)
+                        fprintf(fd, stat->format,
+                                stat->variant.for_dist.imap[i],
+                                stat->variant.for_dist.arr[i],
+                                (double)stat->variant.for_dist.arr[i] /
+                                MAX(btotal, 1.0) * 100.0,
+                                bsum/MAX(btotal, 1.0) * 100.0);
+                      else
+                        fprintf(fd, stat->format,
+                                i * stat->variant.for_dist.bucket_sz,
+                                stat->variant.for_dist.arr[i],
+                                (double)stat->variant.for_dist.arr[i] /
+                                MAX(btotal, 1.0) * 100.0,
+                                bsum/MAX(btotal, 1.0) * 100.0);
+                    }
+                  else
+                    fatal("distribution format not yet implemented");
+                }
+              fprintf(fd, "\n");
+            }
+        }
     }
 
   fprintf(fd, "%s.end_dist\n", stat->name);
@@ -769,8 +769,8 @@ print_dist(struct stat_stat_t *stat,	/* stat variable */
 
 /* print a sparse array distribution */
 static void
-print_sdist(struct stat_stat_t *stat,	/* stat variable */
-	    FILE *fd)			/* output stream */
+print_sdist(struct stat_stat_t *stat,   /* stat variable */
+            FILE *fd)                   /* output stream */
 {
   unsigned int i, bcount;
   md_addr_t imax, imin;
@@ -784,21 +784,21 @@ print_sdist(struct stat_stat_t *stat,	/* stat variable */
   for (i=0; i<HTAB_SZ; i++)
     {
       for (bucket = stat->variant.for_sdist.sarr[i];
-	   bucket != NULL;
-	   bucket = bucket->next)
-	{
-	  bcount++;
-	  btotal += bucket->count;
-	  /* on-line variance computation, tres cool, no!?! */
-	  bsqsum += ((double)bucket->count * (double)bucket->count);
-	  bavg = btotal / (double)bcount;
-	  bvar = (bsqsum - ((double)bcount * bavg * bavg)) / 
-	    (double)(((bcount - 1) > 0) ? (bcount - 1) : 1);
-	  if (bucket->index < imin)
-	    imin = bucket->index;
-	  if (bucket->index > imax)
-	    imax = bucket->index;
-	}
+           bucket != NULL;
+           bucket = bucket->next)
+        {
+          bcount++;
+          btotal += bucket->count;
+          /* on-line variance computation, tres cool, no!?! */
+          bsqsum += ((double)bucket->count * (double)bucket->count);
+          bavg = btotal / (double)bcount;
+          bvar = (bsqsum - ((double)bcount * bavg * bavg)) / 
+            (double)(((bcount - 1) > 0) ? (bcount - 1) : 1);
+          if (bucket->index < imin)
+            imin = bucket->index;
+          if (bucket->index > imax)
+            imax = bucket->index;
+        }
     }
 
   /* print header */
@@ -840,16 +840,16 @@ print_sdist(struct stat_stat_t *stat,	/* stat variable */
       /* collect all buckets */
       barr = (struct bucket_t **)calloc(bcount, sizeof(struct bucket_t *));
       if (!barr)
-	fatal("out of virtual memory");
+        fatal("out of virtual memory");
       for (bindex=0,i=0; i<HTAB_SZ; i++)
-	{
-	  for (bucket = stat->variant.for_sdist.sarr[i];
-	       bucket != NULL;
-	       bucket = bucket->next)
-	    {
-	      barr[bindex++] = bucket;
-	    }
-	}
+        {
+          for (bucket = stat->variant.for_sdist.sarr[i];
+               bucket != NULL;
+               bucket = bucket->next)
+            {
+              barr[bindex++] = bucket;
+            }
+        }
 
       /* sort the array by index */
       qsort(barr, bcount, sizeof(struct bucket_t *), (void *)compare_fn);
@@ -857,55 +857,55 @@ print_sdist(struct stat_stat_t *stat,	/* stat variable */
       /* print the array */
       bsum = 0.0;
       for (i=0; i<bcount; i++)
-	{
-	  bsum += (double)barr[i]->count;
-	  if (stat->variant.for_sdist.print_fn)
-	    {
-	      stat->variant.for_sdist.print_fn(stat,
-					       barr[i]->index,
-					       barr[i]->count,
-					       bsum,
-					       btotal);
-	    }
-	  else
-	    {
-	      if (stat->format == NULL)
-		{
-		  myfprintf(fd, "0x%p ", barr[i]->index);
-		  if (pf & PF_COUNT)
-		    fprintf(fd, "%10u ", barr[i]->count);
-		  if (pf & PF_PDF)
-		    fprintf(fd, "%6.2f ",
-			    (double)barr[i]->count/MAX(btotal, 1.0) * 100.0);
-		  if (pf & PF_CDF)
-		    fprintf(fd, "%6.2f ", bsum/MAX(btotal, 1.0) * 100.0);
-		}
-	      else
-		{
-		  if (pf == (PF_COUNT|PF_PDF|PF_CDF))
-		    {
-		      myfprintf(fd, stat->format,
-				barr[i]->index, barr[i]->count,
-				(double)barr[i]->count/MAX(btotal, 1.0)*100.0,
-				bsum/MAX(btotal, 1.0) * 100.0);
-		    }
-		  else if (pf == (PF_COUNT|PF_PDF))
-		    {
-		      myfprintf(fd, stat->format,
-				barr[i]->index, barr[i]->count,
-				(double)barr[i]->count/MAX(btotal, 1.0)*100.0);
-		    }
-		  else if (pf == PF_COUNT)
-		    {
-		      myfprintf(fd, stat->format,
-				barr[i]->index, barr[i]->count);
-		    }
-		  else
-		    fatal("distribution format not yet implemented");
-		}
-	      fprintf(fd, "\n");
-	    }
-	}
+        {
+          bsum += (double)barr[i]->count;
+          if (stat->variant.for_sdist.print_fn)
+            {
+              stat->variant.for_sdist.print_fn(stat,
+                                               barr[i]->index,
+                                               barr[i]->count,
+                                               bsum,
+                                               btotal);
+            }
+          else
+            {
+              if (stat->format == NULL)
+                {
+                  myfprintf(fd, "0x%p ", barr[i]->index);
+                  if (pf & PF_COUNT)
+                    fprintf(fd, "%10u ", barr[i]->count);
+                  if (pf & PF_PDF)
+                    fprintf(fd, "%6.2f ",
+                            (double)barr[i]->count/MAX(btotal, 1.0) * 100.0);
+                  if (pf & PF_CDF)
+                    fprintf(fd, "%6.2f ", bsum/MAX(btotal, 1.0) * 100.0);
+                }
+              else
+                {
+                  if (pf == (PF_COUNT|PF_PDF|PF_CDF))
+                    {
+                      myfprintf(fd, stat->format,
+                                barr[i]->index, barr[i]->count,
+                                (double)barr[i]->count/MAX(btotal, 1.0)*100.0,
+                                bsum/MAX(btotal, 1.0) * 100.0);
+                    }
+                  else if (pf == (PF_COUNT|PF_PDF))
+                    {
+                      myfprintf(fd, stat->format,
+                                barr[i]->index, barr[i]->count,
+                                (double)barr[i]->count/MAX(btotal, 1.0)*100.0);
+                    }
+                  else if (pf == PF_COUNT)
+                    {
+                      myfprintf(fd, stat->format,
+                                barr[i]->index, barr[i]->count);
+                    }
+                  else
+                    fatal("distribution format not yet implemented");
+                }
+              fprintf(fd, "\n");
+            }
+        }
 
       /* all done, release bucket pointer array */
       free(barr);
@@ -916,9 +916,9 @@ print_sdist(struct stat_stat_t *stat,	/* stat variable */
 
 /* print the value of stat variable STAT */
 void
-stat_print_stat(struct stat_sdb_t *sdb,	/* stat database */
-		struct stat_stat_t *stat,/* stat variable */
-		FILE *fd)		/* output stream */
+stat_print_stat(struct stat_sdb_t *sdb, /* stat database */
+                struct stat_stat_t *stat,/* stat variable */
+                FILE *fd)               /* output stream */
 {
   struct eval_value_t val;
 
@@ -937,20 +937,20 @@ stat_print_stat(struct stat_sdb_t *sdb,	/* stat database */
 #ifdef HOST_HAS_QWORD
     case sc_qword:
       {
-	char buf[128];
+        char buf[128];
 
-	fprintf(fd, "%-22s ", stat->name);
-	mysprintf(buf, stat->format, *stat->variant.for_qword.var);
-	fprintf(fd, "%s # %s", buf, stat->desc);
+        fprintf(fd, "%-22s ", stat->name);
+        mysprintf(buf, stat->format, *stat->variant.for_qword.var);
+        fprintf(fd, "%s # %s", buf, stat->desc);
       }
       break;
     case sc_sqword:
       {
-	char buf[128];
+        char buf[128];
 
-	fprintf(fd, "%-22s ", stat->name);
-	mysprintf(buf, stat->format, *stat->variant.for_sqword.var);
-	fprintf(fd, "%s # %s", buf, stat->desc);
+        fprintf(fd, "%-22s ", stat->name);
+        mysprintf(buf, stat->format, *stat->variant.for_sqword.var);
+        fprintf(fd, "%s # %s", buf, stat->desc);
       }
       break;
 #endif /* HOST_HAS_QWORD */
@@ -972,20 +972,20 @@ stat_print_stat(struct stat_sdb_t *sdb,	/* stat database */
       break;
     case sc_formula:
       {
-	/* instantiate a new evaluator to avoid recursion problems */
-	struct eval_state_t *es = eval_new(stat_eval_ident, sdb);
-	char *endp;
+        /* instantiate a new evaluator to avoid recursion problems */
+        struct eval_state_t *es = eval_new(stat_eval_ident, sdb);
+        char *endp;
 
-	fprintf(fd, "%-22s ", stat->name);
-	val = eval_expr(es, stat->variant.for_formula.formula, &endp);
-	if (eval_error != ERR_NOERR || *endp != '\0')
-	  fprintf(fd, "<error: %s>", eval_err_str[eval_error]);
-	else
-	  myfprintf(fd, stat->format, eval_as_double(val));
-	fprintf(fd, " # %s", stat->desc);
+        fprintf(fd, "%-22s ", stat->name);
+        val = eval_expr(es, stat->variant.for_formula.formula, &endp);
+        if (eval_error != ERR_NOERR || *endp != '\0')
+          fprintf(fd, "<error: %s>", eval_err_str[eval_error]);
+        else
+          myfprintf(fd, stat->format, eval_as_double(val));
+        fprintf(fd, " # %s", stat->desc);
 
-	/* done with the evaluator */
-	eval_delete(es);
+        /* done with the evaluator */
+        eval_delete(es);
       }
       break;
     default:
@@ -997,7 +997,7 @@ stat_print_stat(struct stat_sdb_t *sdb,	/* stat database */
 /* print the value of all stat variables in stat database SDB */
 void
 stat_print_stats(struct stat_sdb_t *sdb,/* stat database */
-		 FILE *fd)		/* output stream */
+                 FILE *fd)              /* output stream */
 {
   struct stat_stat_t *stat;
 
@@ -1013,15 +1013,15 @@ stat_print_stats(struct stat_sdb_t *sdb,/* stat database */
 
 /* find a stat variable, returns NULL if it is not found */
 struct stat_stat_t *
-stat_find_stat(struct stat_sdb_t *sdb,	/* stat database */
-	       char *stat_name)		/* stat name */
+stat_find_stat(struct stat_sdb_t *sdb,  /* stat database */
+               char *stat_name)         /* stat name */
 {
   struct stat_stat_t *stat;
 
   for (stat = sdb->stats; stat != NULL; stat = stat->next)
     {
       if (!strcmp(stat->name, stat_name))
-	break;
+        break;
     }
   return stat;
 }
@@ -1046,33 +1046,33 @@ main(void)
 
   /* register stat variables */
   stat_reg_int(sdb, "stat.an_int", "An integer stat variable.",
-	       &an_int, 1, NULL);
+               &an_int, 1, NULL);
   stat_reg_uint(sdb, "stat.a_uint", "An unsigned integer stat variable.",
-		&a_uint, 2, "%u (unsigned)");
+                &a_uint, 2, "%u (unsigned)");
   stat_reg_float(sdb, "stat.a_float", "A float stat variable.",
-		 &a_float, 3, NULL);
+                 &a_float, 3, NULL);
   stat_reg_double(sdb, "stat.a_double", "A double stat variable.",
-		  &a_double, 4, NULL);
+                  &a_double, 4, NULL);
   stat_reg_formula(sdb, "stat.a_formula", "A double stat formula.",
-		   "stat.a_float / stat.a_uint", NULL);
+                   "stat.a_float / stat.a_uint", NULL);
   stat_reg_formula(sdb, "stat.a_formula1", "A double stat formula #1.",
-		   "2 * (stat.a_formula / (1.5 * stat.an_int))", NULL);
+                   "2 * (stat.a_formula / (1.5 * stat.an_int))", NULL);
   stat_reg_formula(sdb, "stat.a_bad_formula", "A double stat formula w/error.",
-		   "stat.a_float / (stat.a_uint - 2)", NULL);
+                   "stat.a_float / (stat.a_uint - 2)", NULL);
   stat = stat_reg_dist(sdb, "stat.a_dist", "An array distribution.",
-		       0, 8, 1, PF_ALL, NULL, NULL, NULL);
+                       0, 8, 1, PF_ALL, NULL, NULL, NULL);
   stat1 = stat_reg_dist(sdb, "stat.a_dist1", "An array distribution #1.",
-			0, 8, 4, PF_ALL, NULL, NULL, NULL);
+                        0, 8, 4, PF_ALL, NULL, NULL, NULL);
   stat2 = stat_reg_dist(sdb, "stat.a_dist2", "An array distribution #2.",
-			0, 8, 1, (PF_PDF|PF_CDF), NULL, NULL, NULL);
+                        0, 8, 1, (PF_PDF|PF_CDF), NULL, NULL, NULL);
   stat3 = stat_reg_dist(sdb, "stat.a_dist3", "An array distribution #3.",
-			0, 8, 1, PF_ALL, NULL, my_imap, NULL);
+                        0, 8, 1, PF_ALL, NULL, my_imap, NULL);
   stat4 = stat_reg_sdist(sdb, "stat.a_sdist", "A sparse array distribution.",
-			 0, PF_ALL, NULL, NULL);
+                         0, PF_ALL, NULL, NULL);
   stat5 = stat_reg_sdist(sdb, "stat.a_sdist1",
-			 "A sparse array distribution #1.",
-			 0, PF_ALL, "0x%08lx        %10lu %6.2f %6.2f",
-			 NULL);
+                         "A sparse array distribution #1.",
+                         0, PF_ALL, "0x%08lx        %10lu %6.2f %6.2f",
+                         NULL);
 
   /* print initial stats */
   fprintf(stdout, "** Initial stats...\n");

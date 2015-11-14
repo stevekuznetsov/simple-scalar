@@ -82,14 +82,14 @@ res_create_pool(char *name, struct res_desc *pool, int ndesc)
   for (index=0,i=0; i<ndesc; i++)
     {
       for (j=0; j<pool[i].quantity; j++)
-	{
-	  inst_pool[index] = pool[i];
-	  inst_pool[index].quantity = 1;
-	  inst_pool[index].busy = FALSE;
-	  for (k=0; k<MAX_RES_CLASSES && inst_pool[index].x[k].class; k++)
-	    inst_pool[index].x[k].master = &inst_pool[index];
-	  index++;
-	}
+        {
+          inst_pool[index] = pool[i];
+          inst_pool[index].quantity = 1;
+          inst_pool[index].busy = FALSE;
+          for (k=0; k<MAX_RES_CLASSES && inst_pool[index].x[k].class; k++)
+            inst_pool[index].x[k].master = &inst_pool[index];
+          index++;
+        }
     }
   assert(index == ninsts);
 
@@ -106,17 +106,17 @@ res_create_pool(char *name, struct res_desc *pool, int ndesc)
     {
       struct res_template *plate;
       for (j=0; j<MAX_RES_CLASSES; j++)
-	{
-	  plate = &res->resources[i].x[j];
-	  if (plate->class)
-	    {
-	      assert(plate->class < MAX_RES_CLASSES);
-	      res->table[plate->class][res->nents[plate->class]++] = plate;
-	    }
-	  else
-	    /* all done with this instance */
-	    break;
-	}
+        {
+          plate = &res->resources[i].x[j];
+          if (plate->class)
+            {
+              assert(plate->class < MAX_RES_CLASSES);
+              res->table[plate->class][res->nents[plate->class]++] = plate;
+            }
+          else
+            /* all done with this instance */
+            break;
+        }
     }
 
   return res;
@@ -142,12 +142,12 @@ res_get(struct res_pool *pool, int class)
   for (i=0; i<MAX_INSTS_PER_CLASS; i++)
     {
       if (pool->table[class][i])
-	{
-	  if (!pool->table[class][i]->master->busy)
-	    return pool->table[class][i];
-	}
+        {
+          if (!pool->table[class][i]->master->busy)
+            return pool->table[class][i];
+        }
       else
-	break;
+        break;
     }
   /* none found */
   return NULL;
@@ -167,16 +167,16 @@ res_dump(struct res_pool *pool, FILE *stream)
   for (i=0; i<MAX_RES_CLASSES; i++)
     {
       fprintf(stream, "\tclass: %d: %d matching instances\n",
-	      i, pool->nents[i]);
+              i, pool->nents[i]);
       fprintf(stream, "\tmatching: ");
       for (j=0; j<MAX_INSTS_PER_CLASS; j++)
-	{
-	  if (!pool->table[i][j])
-	    break;
-	  fprintf(stream, "\t%s (busy for %d cycles) ",
-		  pool->table[i][j]->master->name,
-		  pool->table[i][j]->master->busy);
-	}
+        {
+          if (!pool->table[i][j])
+            break;
+          fprintf(stream, "\t%s (busy for %d cycles) ",
+                  pool->table[i][j]->master->name,
+                  pool->table[i][j]->master->busy);
+        }
       assert(j == pool->nents[i]);
       fprintf(stream, "\n");
     }

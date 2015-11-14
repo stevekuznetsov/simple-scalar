@@ -60,33 +60,33 @@
 /*
  * pipeline events:
  *
- *	+ <iseq> <pc> <addr> <inst>	- new instruction def
- *	- <iseq>			- instruction squashed or retired
- *	@ <cycle>			- new cycle def
- *	* <iseq> <stage> <events>	- instruction stage transition
+ *      + <iseq> <pc> <addr> <inst>     - new instruction def
+ *      - <iseq>                        - instruction squashed or retired
+ *      @ <cycle>                       - new cycle def
+ *      * <iseq> <stage> <events>       - instruction stage transition
  *
  */
 
 /*
-	[IF]   [DA]   [EX]   [WB]   [CT]
+        [IF]   [DA]   [EX]   [WB]   [CT]
          aa     dd     jj     ll     nn
          bb     ee     kk     mm     oo
          cc                          pp
  */
 
 /* pipeline stages */
-#define PST_IFETCH		"IF"
-#define PST_DISPATCH		"DA"
-#define PST_EXECUTE		"EX"
-#define PST_WRITEBACK		"WB"
-#define PST_COMMIT		"CT"
+#define PST_IFETCH              "IF"
+#define PST_DISPATCH            "DA"
+#define PST_EXECUTE             "EX"
+#define PST_WRITEBACK           "WB"
+#define PST_COMMIT              "CT"
 
 /* pipeline events */
-#define PEV_CACHEMISS		0x00000001	/* I/D-cache miss */
-#define PEV_TLBMISS		0x00000002	/* I/D-tlb miss */
-#define PEV_MPOCCURED		0x00000004	/* mis-pred branch occurred */
-#define PEV_MPDETECT		0x00000008	/* mis-pred branch detected */
-#define PEV_AGEN		0x00000010	/* address generation */
+#define PEV_CACHEMISS           0x00000001      /* I/D-cache miss */
+#define PEV_TLBMISS             0x00000002      /* I/D-tlb miss */
+#define PEV_MPOCCURED           0x00000004      /* mis-pred branch occurred */
+#define PEV_MPDETECT            0x00000008      /* mis-pred branch detected */
+#define PEV_AGEN                0x00000010      /* address generation */
 
 /* pipetrace file */
 extern FILE *ptrace_outfd;
@@ -102,8 +102,8 @@ extern int ptrace_oneshot;
 
 /* open pipeline trace */
 void
-ptrace_open(char *range,		/* trace range */
-	    char *fname);		/* output filename */
+ptrace_open(char *range,                /* trace range */
+            char *fname);               /* output filename */
 
 /* close pipeline trace */
 void
@@ -111,53 +111,53 @@ ptrace_close(void);
 
 /* NOTE: pipetracing is a one-shot switch, since turning on a trace more than
    once will mess up the pipetrace viewer */
-#define ptrace_check_active(PC, ICNT, CYCLE)				\
-  ((ptrace_outfd != NULL						\
-    && !range_cmp_range1(&ptrace_range, (PC), (ICNT), (CYCLE)))		\
+#define ptrace_check_active(PC, ICNT, CYCLE)                            \
+  ((ptrace_outfd != NULL                                                \
+    && !range_cmp_range1(&ptrace_range, (PC), (ICNT), (CYCLE)))         \
    ? (!ptrace_oneshot ? (ptrace_active = ptrace_oneshot = TRUE) : FALSE)\
    : (ptrace_active = FALSE))
 
 /* main interfaces, with fast checks */
-#define ptrace_newinst(A,B,C,D)						\
+#define ptrace_newinst(A,B,C,D)                                         \
   if (ptrace_active) __ptrace_newinst((A),(B),(C),(D))
-#define ptrace_newuop(A,B,C,D)						\
+#define ptrace_newuop(A,B,C,D)                                          \
   if (ptrace_active) __ptrace_newuop((A),(B),(C),(D))
-#define ptrace_endinst(A)						\
+#define ptrace_endinst(A)                                               \
   if (ptrace_active) __ptrace_endinst((A))
-#define ptrace_newcycle(A)						\
+#define ptrace_newcycle(A)                                              \
   if (ptrace_active) __ptrace_newcycle((A))
-#define ptrace_newstage(A,B,C)						\
+#define ptrace_newstage(A,B,C)                                          \
   if (ptrace_active) __ptrace_newstage((A),(B),(C))
 
-#define ptrace_active(A,I,C)						\
-  (ptrace_outfd != NULL	&& !range_cmp_range(&ptrace_range, (A), (I), (C)))
+#define ptrace_active(A,I,C)                                            \
+  (ptrace_outfd != NULL && !range_cmp_range(&ptrace_range, (A), (I), (C)))
 
 /* declare a new instruction */
 void
-__ptrace_newinst(unsigned int iseq,	/* instruction sequence number */
-		 md_inst_t inst,	/* new instruction */
-		 md_addr_t pc,		/* program counter of instruction */
-		 md_addr_t addr);	/* address referenced, if load/store */
+__ptrace_newinst(unsigned int iseq,     /* instruction sequence number */
+                 md_inst_t inst,        /* new instruction */
+                 md_addr_t pc,          /* program counter of instruction */
+                 md_addr_t addr);       /* address referenced, if load/store */
 
 /* declare a new uop */
 void
-__ptrace_newuop(unsigned int iseq,	/* instruction sequence number */
-		char *uop_desc,		/* new uop description */
-		md_addr_t pc,		/* program counter of instruction */
-		md_addr_t addr);	/* address referenced, if load/store */
+__ptrace_newuop(unsigned int iseq,      /* instruction sequence number */
+                char *uop_desc,         /* new uop description */
+                md_addr_t pc,           /* program counter of instruction */
+                md_addr_t addr);        /* address referenced, if load/store */
 
 /* declare instruction retirement or squash */
 void
-__ptrace_endinst(unsigned int iseq);	/* instruction sequence number */
+__ptrace_endinst(unsigned int iseq);    /* instruction sequence number */
 
 /* declare a new cycle */
 void
-__ptrace_newcycle(tick_t cycle);	/* new cycle */
+__ptrace_newcycle(tick_t cycle);        /* new cycle */
 
 /* indicate instruction transition to a new pipeline stage */
 void
-__ptrace_newstage(unsigned int iseq,	/* instruction sequence number */
-		  char *pstage,		/* pipeline stage entered */
-		  unsigned int pevents);/* pipeline events while in stage */
+__ptrace_newstage(unsigned int iseq,    /* instruction sequence number */
+                  char *pstage,         /* pipeline stage entered */
+                  unsigned int pevents);/* pipeline events while in stage */
 
 #endif /* PTRACE_H */

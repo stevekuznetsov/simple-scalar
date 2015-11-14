@@ -226,13 +226,13 @@ static char *pcstat_vars[MAX_PCSTAT_VARS];
 
 /* convert 64-bit inst text addresses to 32-bit inst equivalents */
 #ifdef TARGET_PISA
-#define IACOMPRESS(A)							\
+#define IACOMPRESS(A)                                                   \
   (compress_icache_addrs ? ((((A) - ld_text_base) >> 1) + ld_text_base) : (A))
-#define ISCOMPRESS(SZ)							\
+#define ISCOMPRESS(SZ)                                                  \
   (compress_icache_addrs ? ((SZ) >> 1) : (SZ))
 #else /* !TARGET_PISA */
-#define IACOMPRESS(A)		(A)
-#define ISCOMPRESS(SZ)		(SZ)
+#define IACOMPRESS(A)           (A)
+#define ISCOMPRESS(SZ)          (SZ)
 #endif /* TARGET_PISA */
 
 /* operate in backward-compatible bugs mode (for testing only) */
@@ -243,11 +243,11 @@ static int bugcompat_mode;
  */
 
 /* resource pool indices, NOTE: update these if you change FU_CONFIG */
-#define FU_IALU_INDEX			0
-#define FU_IMULT_INDEX			1
-#define FU_MEMPORT_INDEX		2
-#define FU_FPALU_INDEX			3
-#define FU_FPMULT_INDEX			4
+#define FU_IALU_INDEX                   0
+#define FU_IMULT_INDEX                  1
+#define FU_MEMPORT_INDEX                2
+#define FU_FPALU_INDEX                  3
+#define FU_FPMULT_INDEX                 4
 
 /* resource pool definition, NOTE: update FU_*_INDEX defs if you change this */
 struct res_desc fu_config[] = {
@@ -331,12 +331,12 @@ static counter_t sim_total_branches = 0;
 static tick_t sim_cycle = 0;
 
 /* occupancy counters */
-static counter_t IFQ_count;		/* cumulative IFQ occupancy */
-static counter_t IFQ_fcount;		/* cumulative IFQ full count */
-static counter_t RUU_count;		/* cumulative RUU occupancy */
-static counter_t RUU_fcount;		/* cumulative RUU full count */
-static counter_t LSQ_count;		/* cumulative LSQ occupancy */
-static counter_t LSQ_fcount;		/* cumulative LSQ full count */
+static counter_t IFQ_count;             /* cumulative IFQ occupancy */
+static counter_t IFQ_fcount;            /* cumulative IFQ full count */
+static counter_t RUU_count;             /* cumulative RUU occupancy */
+static counter_t RUU_fcount;            /* cumulative RUU full count */
+static counter_t LSQ_count;             /* cumulative LSQ occupancy */
+static counter_t LSQ_fcount;            /* cumulative LSQ full count */
 
 /* total non-speculative bogus addresses seen (debug var) */
 static counter_t sim_invalid_addrs;
@@ -397,26 +397,26 @@ static counter_t pcstat_lastvals[MAX_PCSTAT_VARS];
 static struct stat_stat_t *pcstat_sdists[MAX_PCSTAT_VARS];
 
 /* wedge all stat values into a counter_t */
-#define STATVAL(STAT)							\
-  ((STAT)->sc == sc_int							\
-   ? (counter_t)*((STAT)->variant.for_int.var)			\
-   : ((STAT)->sc == sc_uint						\
-      ? (counter_t)*((STAT)->variant.for_uint.var)		\
-      : ((STAT)->sc == sc_counter					\
-	 ? *((STAT)->variant.for_counter.var)				\
-	 : (panic("bad stat class"), 0))))
+#define STATVAL(STAT)                                                   \
+  ((STAT)->sc == sc_int                                                 \
+   ? (counter_t)*((STAT)->variant.for_int.var)                  \
+   : ((STAT)->sc == sc_uint                                             \
+      ? (counter_t)*((STAT)->variant.for_uint.var)              \
+      : ((STAT)->sc == sc_counter                                       \
+         ? *((STAT)->variant.for_counter.var)                           \
+         : (panic("bad stat class"), 0))))
 
 
 /* memory access latency, assumed to not cross a page boundary */
-static unsigned int			/* total latency of access */
-mem_access_latency(int blk_sz)		/* block size accessed */
+static unsigned int                     /* total latency of access */
+mem_access_latency(int blk_sz)          /* block size accessed */
 {
   int chunks = (blk_sz + (mem_bus_width - 1)) / mem_bus_width;
 
   assert(chunks > 0);
 
   return (/* first chunk latency */mem_lat[0] +
-	  (/* remainder chunk latency */mem_lat[1] * (chunks - 1)));
+          (/* remainder chunk latency */mem_lat[1] * (chunks - 1)));
 }
 
 
@@ -425,12 +425,12 @@ mem_access_latency(int blk_sz)		/* block size accessed */
  */
 
 /* l1 data cache l1 block miss handler function */
-static unsigned int			/* latency of block access */
-dl1_access_fn(enum mem_cmd cmd,		/* access cmd, Read or Write */
-	      md_addr_t baddr,		/* block address to access */
-	      int bsize,		/* size of block to access */
-	      struct cache_blk_t *blk,	/* ptr to block in upper level */
-	      tick_t now)		/* time of access */
+static unsigned int                     /* latency of block access */
+dl1_access_fn(enum mem_cmd cmd,         /* access cmd, Read or Write */
+              md_addr_t baddr,          /* block address to access */
+              int bsize,                /* size of block to access */
+              struct cache_blk_t *blk,  /* ptr to block in upper level */
+              tick_t now)               /* time of access */
 {
   unsigned int lat;
 
@@ -438,35 +438,35 @@ dl1_access_fn(enum mem_cmd cmd,		/* access cmd, Read or Write */
     {
       /* access next level of data cache hierarchy */
       lat = cache_access(cache_dl2, cmd, baddr, NULL, bsize,
-			 /* now */now, /* pudata */NULL, /* repl addr */NULL);
+                         /* now */now, /* pudata */NULL, /* repl addr */NULL);
       if (cmd == Read)
-	return lat;
+        return lat;
       else
-	{
-	  /* FIXME: unlimited write buffers */
-	  return 0;
-	}
+        {
+          /* FIXME: unlimited write buffers */
+          return 0;
+        }
     }
   else
     {
       /* access main memory */
       if (cmd == Read)
-	return mem_access_latency(bsize);
+        return mem_access_latency(bsize);
       else
-	{
-	  /* FIXME: unlimited write buffers */
-	  return 0;
-	}
+        {
+          /* FIXME: unlimited write buffers */
+          return 0;
+        }
     }
 }
 
 /* l2 data cache block miss handler function */
-static unsigned int			/* latency of block access */
-dl2_access_fn(enum mem_cmd cmd,		/* access cmd, Read or Write */
-	      md_addr_t baddr,		/* block address to access */
-	      int bsize,		/* size of block to access */
-	      struct cache_blk_t *blk,	/* ptr to block in upper level */
-	      tick_t now)		/* time of access */
+static unsigned int                     /* latency of block access */
+dl2_access_fn(enum mem_cmd cmd,         /* access cmd, Read or Write */
+              md_addr_t baddr,          /* block address to access */
+              int bsize,                /* size of block to access */
+              struct cache_blk_t *blk,  /* ptr to block in upper level */
+              tick_t now)               /* time of access */
 {
   /* this is a miss to the lowest level, so access main memory */
   if (cmd == Read)
@@ -479,12 +479,12 @@ dl2_access_fn(enum mem_cmd cmd,		/* access cmd, Read or Write */
 }
 
 /* l1 inst cache l1 block miss handler function */
-static unsigned int			/* latency of block access */
-il1_access_fn(enum mem_cmd cmd,		/* access cmd, Read or Write */
-	      md_addr_t baddr,		/* block address to access */
-	      int bsize,		/* size of block to access */
-	      struct cache_blk_t *blk,	/* ptr to block in upper level */
-	      tick_t now)		/* time of access */
+static unsigned int                     /* latency of block access */
+il1_access_fn(enum mem_cmd cmd,         /* access cmd, Read or Write */
+              md_addr_t baddr,          /* block address to access */
+              int bsize,                /* size of block to access */
+              struct cache_blk_t *blk,  /* ptr to block in upper level */
+              tick_t now)               /* time of access */
 {
   unsigned int lat;
 
@@ -492,29 +492,29 @@ if (cache_il2)
     {
       /* access next level of inst cache hierarchy */
       lat = cache_access(cache_il2, cmd, baddr, NULL, bsize,
-			 /* now */now, /* pudata */NULL, /* repl addr */NULL);
+                         /* now */now, /* pudata */NULL, /* repl addr */NULL);
       if (cmd == Read)
-	return lat;
+        return lat;
       else
-	panic("writes to instruction memory not supported");
+        panic("writes to instruction memory not supported");
     }
   else
     {
       /* access main memory */
       if (cmd == Read)
-	return mem_access_latency(bsize);
+        return mem_access_latency(bsize);
       else
-	panic("writes to instruction memory not supported");
+        panic("writes to instruction memory not supported");
     }
 }
 
 /* l2 inst cache block miss handler function */
-static unsigned int			/* latency of block access */
-il2_access_fn(enum mem_cmd cmd,		/* access cmd, Read or Write */
-	      md_addr_t baddr,		/* block address to access */
-	      int bsize,		/* size of block to access */
-	      struct cache_blk_t *blk,	/* ptr to block in upper level */
-	      tick_t now)		/* time of access */
+static unsigned int                     /* latency of block access */
+il2_access_fn(enum mem_cmd cmd,         /* access cmd, Read or Write */
+              md_addr_t baddr,          /* block address to access */
+              int bsize,                /* size of block to access */
+              struct cache_blk_t *blk,  /* ptr to block in upper level */
+              tick_t now)               /* time of access */
 {
   /* this is a miss to the lowest level, so access main memory */
   if (cmd == Read)
@@ -529,12 +529,12 @@ il2_access_fn(enum mem_cmd cmd,		/* access cmd, Read or Write */
  */
 
 /* inst cache block miss handler function */
-static unsigned int			/* latency of block access */
-itlb_access_fn(enum mem_cmd cmd,	/* access cmd, Read or Write */
-	       md_addr_t baddr,		/* block address to access */
-	       int bsize,		/* size of block to access */
-	       struct cache_blk_t *blk,	/* ptr to block in upper level */
-	       tick_t now)		/* time of access */
+static unsigned int                     /* latency of block access */
+itlb_access_fn(enum mem_cmd cmd,        /* access cmd, Read or Write */
+               md_addr_t baddr,         /* block address to access */
+               int bsize,               /* size of block to access */
+               struct cache_blk_t *blk, /* ptr to block in upper level */
+               tick_t now)              /* time of access */
 {
   md_addr_t *phy_page_ptr = (md_addr_t *)blk->user_data;
 
@@ -549,12 +549,12 @@ itlb_access_fn(enum mem_cmd cmd,	/* access cmd, Read or Write */
 }
 
 /* data cache block miss handler function */
-static unsigned int			/* latency of block access */
-dtlb_access_fn(enum mem_cmd cmd,	/* access cmd, Read or Write */
-	       md_addr_t baddr,	/* block address to access */
-	       int bsize,		/* size of block to access */
-	       struct cache_blk_t *blk,	/* ptr to block in upper level */
-	       tick_t now)		/* time of access */
+static unsigned int                     /* latency of block access */
+dtlb_access_fn(enum mem_cmd cmd,        /* access cmd, Read or Write */
+               md_addr_t baddr, /* block address to access */
+               int bsize,               /* size of block to access */
+               struct cache_blk_t *blk, /* ptr to block in upper level */
+               tick_t now)              /* time of access */
 {
   md_addr_t *phy_page_ptr = (md_addr_t *)blk->user_data;
 
@@ -578,23 +578,23 @@ sim_reg_options(struct opt_odb_t *odb)
 "superscalar processor with a two-level memory system and speculative\n"
 "execution support.  This simulator is a performance simulator, tracking the\n"
 "latency of all pipeline operations.\n"
-		 );
+                 );
 
   /* instruction limit */
 
   opt_reg_uint(odb, "-max:inst", "maximum number of inst's to execute",
-	       &max_insts, /* default */0,
-	       /* print */TRUE, /* format */NULL);
+               &max_insts, /* default */0,
+               /* print */TRUE, /* format */NULL);
 
   /* trace options */
 
   opt_reg_int(odb, "-fastfwd", "number of insts skipped before timing starts",
-	      &fastfwd_count, /* default */0,
-	      /* print */TRUE, /* format */NULL);
+              &fastfwd_count, /* default */0,
+              /* print */TRUE, /* format */NULL);
   opt_reg_string_list(odb, "-ptrace",
-	      "generate pipetrace, i.e., <fname|stdout|stderr> <range>",
-	      ptrace_opts, /* arr_sz */2, &ptrace_nelt, /* default */NULL,
-	      /* !print */FALSE, /* format */NULL, /* !accrue */FALSE);
+              "generate pipetrace, i.e., <fname|stdout|stderr> <range>",
+              ptrace_opts, /* arr_sz */2, &ptrace_nelt, /* default */NULL,
+              /* !print */FALSE, /* format */NULL, /* !accrue */FALSE);
 
   opt_reg_note(odb,
 "  Pipetrace range arguments are formatted as follows:\n"
@@ -614,22 +614,22 @@ sim_reg_options(struct opt_odb_t *odb)
 "                -ptrace BLAH.trc :1500\n"
 "                -ptrace UXXE.trc :\n"
 "                -ptrace FOOBAR.trc @main:+278\n"
-	       );
+               );
 
   /* ifetch options */
 
   opt_reg_int(odb, "-fetch:ifqsize", "instruction fetch queue size (in insts)",
-	      &ruu_ifq_size, /* default */4,
-	      /* print */TRUE, /* format */NULL);
+              &ruu_ifq_size, /* default */4,
+              /* print */TRUE, /* format */NULL);
 
   opt_reg_int(odb, "-fetch:mplat", "extra branch mis-prediction latency",
-	      &ruu_branch_penalty, /* default */3,
-	      /* print */TRUE, /* format */NULL);
+              &ruu_branch_penalty, /* default */3,
+              /* print */TRUE, /* format */NULL);
 
   opt_reg_int(odb, "-fetch:speed",
-	      "speed of front-end of machine relative to execution core",
-	      &fetch_speed, /* default */1,
-	      /* print */TRUE, /* format */NULL);
+              "speed of front-end of machine relative to execution core",
+              &fetch_speed, /* default */1,
+              /* print */TRUE, /* format */NULL);
 
   /* branch predictor options */
 
@@ -650,28 +650,28 @@ sim_reg_options(struct opt_odb_t *odb)
                );
 
   opt_reg_string(odb, "-bpred",
-		 "branch predictor type {nottaken|taken|perfect|bimod|2lev|comb}",
+                 "branch predictor type {nottaken|taken|perfect|bimod|2lev|comb}",
                  &pred_type, /* default */"bimod",
                  /* print */TRUE, /* format */NULL);
 
   opt_reg_int_list(odb, "-bpred:bimod",
-		   "bimodal predictor config (<table size>)",
-		   bimod_config, bimod_nelt, &bimod_nelt,
-		   /* default */bimod_config,
-		   /* print */TRUE, /* format */NULL, /* !accrue */FALSE);
+                   "bimodal predictor config (<table size>)",
+                   bimod_config, bimod_nelt, &bimod_nelt,
+                   /* default */bimod_config,
+                   /* print */TRUE, /* format */NULL, /* !accrue */FALSE);
 
   opt_reg_int_list(odb, "-bpred:2lev",
                    "2-level predictor config "
-		   "(<l1size> <l2size> <hist_size> <xor>)",
+                   "(<l1size> <l2size> <hist_size> <xor>)",
                    twolev_config, twolev_nelt, &twolev_nelt,
-		   /* default */twolev_config,
+                   /* default */twolev_config,
                    /* print */TRUE, /* format */NULL, /* !accrue */FALSE);
 
   opt_reg_int_list(odb, "-bpred:comb",
-		   "combining predictor config (<meta_table_size>)",
-		   comb_config, comb_nelt, &comb_nelt,
-		   /* default */comb_config,
-		   /* print */TRUE, /* format */NULL, /* !accrue */FALSE);
+                   "combining predictor config (<meta_table_size>)",
+                   comb_config, comb_nelt, &comb_nelt,
+                   /* default */comb_config,
+                   /* print */TRUE, /* format */NULL, /* !accrue */FALSE);
 
   opt_reg_int(odb, "-bpred:ras",
               "return address stack size (0 for no return stack)",
@@ -679,66 +679,66 @@ sim_reg_options(struct opt_odb_t *odb)
               /* print */TRUE, /* format */NULL);
 
   opt_reg_int_list(odb, "-bpred:btb",
-		   "BTB config (<num_sets> <associativity>)",
-		   btb_config, btb_nelt, &btb_nelt,
-		   /* default */btb_config,
-		   /* print */TRUE, /* format */NULL, /* !accrue */FALSE);
+                   "BTB config (<num_sets> <associativity>)",
+                   btb_config, btb_nelt, &btb_nelt,
+                   /* default */btb_config,
+                   /* print */TRUE, /* format */NULL, /* !accrue */FALSE);
 
   opt_reg_string(odb, "-bpred:spec_update",
-		 "speculative predictors update in {ID|WB} (default non-spec)",
-		 &bpred_spec_opt, /* default */NULL,
-		 /* print */TRUE, /* format */NULL);
+                 "speculative predictors update in {ID|WB} (default non-spec)",
+                 &bpred_spec_opt, /* default */NULL,
+                 /* print */TRUE, /* format */NULL);
 
   /* decode options */
 
   opt_reg_int(odb, "-decode:width",
-	      "instruction decode B/W (insts/cycle)",
-	      &ruu_decode_width, /* default */4,
-	      /* print */TRUE, /* format */NULL);
+              "instruction decode B/W (insts/cycle)",
+              &ruu_decode_width, /* default */4,
+              /* print */TRUE, /* format */NULL);
 
   /* issue options */
 
   opt_reg_int(odb, "-issue:width",
-	      "instruction issue B/W (insts/cycle)",
-	      &ruu_issue_width, /* default */4,
-	      /* print */TRUE, /* format */NULL);
+              "instruction issue B/W (insts/cycle)",
+              &ruu_issue_width, /* default */4,
+              /* print */TRUE, /* format */NULL);
 
   opt_reg_flag(odb, "-issue:inorder", "run pipeline with in-order issue",
-	       &ruu_inorder_issue, /* default */FALSE,
-	       /* print */TRUE, /* format */NULL);
+               &ruu_inorder_issue, /* default */FALSE,
+               /* print */TRUE, /* format */NULL);
 
   opt_reg_flag(odb, "-issue:wrongpath",
-	       "issue instructions down wrong execution paths",
-	       &ruu_include_spec, /* default */TRUE,
-	       /* print */TRUE, /* format */NULL);
+               "issue instructions down wrong execution paths",
+               &ruu_include_spec, /* default */TRUE,
+               /* print */TRUE, /* format */NULL);
 
   /* commit options */
 
   opt_reg_int(odb, "-commit:width",
-	      "instruction commit B/W (insts/cycle)",
-	      &ruu_commit_width, /* default */4,
-	      /* print */TRUE, /* format */NULL);
+              "instruction commit B/W (insts/cycle)",
+              &ruu_commit_width, /* default */4,
+              /* print */TRUE, /* format */NULL);
 
   /* register scheduler options */
 
   opt_reg_int(odb, "-ruu:size",
-	      "register update unit (RUU) size",
-	      &RUU_size, /* default */16,
-	      /* print */TRUE, /* format */NULL);
+              "register update unit (RUU) size",
+              &RUU_size, /* default */16,
+              /* print */TRUE, /* format */NULL);
 
   /* memory scheduler options  */
 
   opt_reg_int(odb, "-lsq:size",
-	      "load/store queue (LSQ) size",
-	      &LSQ_size, /* default */8,
-	      /* print */TRUE, /* format */NULL);
+              "load/store queue (LSQ) size",
+              &LSQ_size, /* default */8,
+              /* print */TRUE, /* format */NULL);
 
   /* cache options */
 
   opt_reg_string(odb, "-cache:dl1",
-		 "l1 data cache config, i.e., {<config>|none}",
-		 &cache_dl1_opt, "dl1:128:32:4:l",
-		 /* print */TRUE, NULL);
+                 "l1 data cache config, i.e., {<config>|none}",
+                 &cache_dl1_opt, "dl1:128:32:4:l",
+                 /* print */TRUE, NULL);
 
   opt_reg_note(odb,
 "  The cache config parameter <config> has the following format:\n"
@@ -753,27 +753,27 @@ sim_reg_options(struct opt_odb_t *odb)
 "\n"
 "    Examples:   -cache:dl1 dl1:4096:32:1:l\n"
 "                -dtlb dtlb:128:4096:32:r\n"
-	       );
+               );
 
   opt_reg_int(odb, "-cache:dl1lat",
-	      "l1 data cache hit latency (in cycles)",
-	      &cache_dl1_lat, /* default */1,
-	      /* print */TRUE, /* format */NULL);
+              "l1 data cache hit latency (in cycles)",
+              &cache_dl1_lat, /* default */1,
+              /* print */TRUE, /* format */NULL);
 
   opt_reg_string(odb, "-cache:dl2",
-		 "l2 data cache config, i.e., {<config>|none}",
-		 &cache_dl2_opt, "ul2:1024:64:4:l",
-		 /* print */TRUE, NULL);
+                 "l2 data cache config, i.e., {<config>|none}",
+                 &cache_dl2_opt, "ul2:1024:64:4:l",
+                 /* print */TRUE, NULL);
 
   opt_reg_int(odb, "-cache:dl2lat",
-	      "l2 data cache hit latency (in cycles)",
-	      &cache_dl2_lat, /* default */6,
-	      /* print */TRUE, /* format */NULL);
+              "l2 data cache hit latency (in cycles)",
+              &cache_dl2_lat, /* default */6,
+              /* print */TRUE, /* format */NULL);
 
   opt_reg_string(odb, "-cache:il1",
-		 "l1 inst cache config, i.e., {<config>|dl1|dl2|none}",
-		 &cache_il1_opt, "il1:512:32:1:l",
-		 /* print */TRUE, NULL);
+                 "l1 inst cache config, i.e., {<config>|dl1|dl2|none}",
+                 &cache_il1_opt, "il1:512:32:1:l",
+                 /* print */TRUE, NULL);
 
   opt_reg_note(odb,
 "  Cache levels can be unified by pointing a level of the instruction cache\n"
@@ -787,97 +787,97 @@ sim_reg_options(struct opt_odb_t *odb)
 "    Or, a fully unified cache hierarchy (il1 pointed at dl1):\n"
 "      -cache:il1 dl1\n"
 "      -cache:dl1 ul1:256:32:1:l -cache:dl2 ul2:1024:64:2:l\n"
-	       );
+               );
 
   opt_reg_int(odb, "-cache:il1lat",
-	      "l1 instruction cache hit latency (in cycles)",
-	      &cache_il1_lat, /* default */1,
-	      /* print */TRUE, /* format */NULL);
+              "l1 instruction cache hit latency (in cycles)",
+              &cache_il1_lat, /* default */1,
+              /* print */TRUE, /* format */NULL);
 
   opt_reg_string(odb, "-cache:il2",
-		 "l2 instruction cache config, i.e., {<config>|dl2|none}",
-		 &cache_il2_opt, "dl2",
-		 /* print */TRUE, NULL);
+                 "l2 instruction cache config, i.e., {<config>|dl2|none}",
+                 &cache_il2_opt, "dl2",
+                 /* print */TRUE, NULL);
 
   opt_reg_int(odb, "-cache:il2lat",
-	      "l2 instruction cache hit latency (in cycles)",
-	      &cache_il2_lat, /* default */6,
-	      /* print */TRUE, /* format */NULL);
+              "l2 instruction cache hit latency (in cycles)",
+              &cache_il2_lat, /* default */6,
+              /* print */TRUE, /* format */NULL);
 
   opt_reg_flag(odb, "-cache:flush", "flush caches on system calls",
-	       &flush_on_syscalls, /* default */FALSE, /* print */TRUE, NULL);
+               &flush_on_syscalls, /* default */FALSE, /* print */TRUE, NULL);
 
   opt_reg_flag(odb, "-cache:icompress",
-	       "convert 64-bit inst addresses to 32-bit inst equivalents",
-	       &compress_icache_addrs, /* default */FALSE,
-	       /* print */TRUE, NULL);
+               "convert 64-bit inst addresses to 32-bit inst equivalents",
+               &compress_icache_addrs, /* default */FALSE,
+               /* print */TRUE, NULL);
 
   /* mem options */
   opt_reg_int_list(odb, "-mem:lat",
-		   "memory access latency (<first_chunk> <inter_chunk>)",
-		   mem_lat, mem_nelt, &mem_nelt, mem_lat,
-		   /* print */TRUE, /* format */NULL, /* !accrue */FALSE);
+                   "memory access latency (<first_chunk> <inter_chunk>)",
+                   mem_lat, mem_nelt, &mem_nelt, mem_lat,
+                   /* print */TRUE, /* format */NULL, /* !accrue */FALSE);
 
   opt_reg_int(odb, "-mem:width", "memory access bus width (in bytes)",
-	      &mem_bus_width, /* default */8,
-	      /* print */TRUE, /* format */NULL);
+              &mem_bus_width, /* default */8,
+              /* print */TRUE, /* format */NULL);
 
   /* TLB options */
 
   opt_reg_string(odb, "-tlb:itlb",
-		 "instruction TLB config, i.e., {<config>|none}",
-		 &itlb_opt, "itlb:16:4096:4:l", /* print */TRUE, NULL);
+                 "instruction TLB config, i.e., {<config>|none}",
+                 &itlb_opt, "itlb:16:4096:4:l", /* print */TRUE, NULL);
 
   opt_reg_string(odb, "-tlb:dtlb",
-		 "data TLB config, i.e., {<config>|none}",
-		 &dtlb_opt, "dtlb:32:4096:4:l", /* print */TRUE, NULL);
+                 "data TLB config, i.e., {<config>|none}",
+                 &dtlb_opt, "dtlb:32:4096:4:l", /* print */TRUE, NULL);
 
   opt_reg_int(odb, "-tlb:lat",
-	      "inst/data TLB miss latency (in cycles)",
-	      &tlb_miss_lat, /* default */30,
-	      /* print */TRUE, /* format */NULL);
+              "inst/data TLB miss latency (in cycles)",
+              &tlb_miss_lat, /* default */30,
+              /* print */TRUE, /* format */NULL);
 
   /* resource configuration */
 
   opt_reg_int(odb, "-res:ialu",
-	      "total number of integer ALU's available",
-	      &res_ialu, /* default */fu_config[FU_IALU_INDEX].quantity,
-	      /* print */TRUE, /* format */NULL);
+              "total number of integer ALU's available",
+              &res_ialu, /* default */fu_config[FU_IALU_INDEX].quantity,
+              /* print */TRUE, /* format */NULL);
 
   opt_reg_int(odb, "-res:imult",
-	      "total number of integer multiplier/dividers available",
-	      &res_imult, /* default */fu_config[FU_IMULT_INDEX].quantity,
-	      /* print */TRUE, /* format */NULL);
+              "total number of integer multiplier/dividers available",
+              &res_imult, /* default */fu_config[FU_IMULT_INDEX].quantity,
+              /* print */TRUE, /* format */NULL);
 
   opt_reg_int(odb, "-res:memport",
-	      "total number of memory system ports available (to CPU)",
-	      &res_memport, /* default */fu_config[FU_MEMPORT_INDEX].quantity,
-	      /* print */TRUE, /* format */NULL);
+              "total number of memory system ports available (to CPU)",
+              &res_memport, /* default */fu_config[FU_MEMPORT_INDEX].quantity,
+              /* print */TRUE, /* format */NULL);
 
   opt_reg_int(odb, "-res:fpalu",
-	      "total number of floating point ALU's available",
-	      &res_fpalu, /* default */fu_config[FU_FPALU_INDEX].quantity,
-	      /* print */TRUE, /* format */NULL);
+              "total number of floating point ALU's available",
+              &res_fpalu, /* default */fu_config[FU_FPALU_INDEX].quantity,
+              /* print */TRUE, /* format */NULL);
 
   opt_reg_int(odb, "-res:fpmult",
-	      "total number of floating point multiplier/dividers available",
-	      &res_fpmult, /* default */fu_config[FU_FPMULT_INDEX].quantity,
-	      /* print */TRUE, /* format */NULL);
+              "total number of floating point multiplier/dividers available",
+              &res_fpmult, /* default */fu_config[FU_FPMULT_INDEX].quantity,
+              /* print */TRUE, /* format */NULL);
 
   opt_reg_string_list(odb, "-pcstat",
-		      "profile stat(s) against text addr's (mult uses ok)",
-		      pcstat_vars, MAX_PCSTAT_VARS, &pcstat_nelt, NULL,
-		      /* !print */FALSE, /* format */NULL, /* accrue */TRUE);
+                      "profile stat(s) against text addr's (mult uses ok)",
+                      pcstat_vars, MAX_PCSTAT_VARS, &pcstat_nelt, NULL,
+                      /* !print */FALSE, /* format */NULL, /* accrue */TRUE);
 
   opt_reg_flag(odb, "-bugcompat",
-	       "operate in backward-compatible bugs mode (for testing only)",
-	       &bugcompat_mode, /* default */FALSE, /* print */TRUE, NULL);
+               "operate in backward-compatible bugs mode (for testing only)",
+               &bugcompat_mode, /* default */FALSE, /* print */TRUE, NULL);
 }
 
 /* check simulator-specific option values */
 void
 sim_check_options(struct opt_odb_t *odb,        /* options database */
-		  int argc, char **argv)        /* command line arguments */
+                  int argc, char **argv)        /* command line arguments */
 {
   char name[128], c;
   int nsets, bsize, assoc;
@@ -914,63 +914,63 @@ sim_check_options(struct opt_odb_t *odb,        /* options database */
     {
       /* bimodal predictor, bpred_create() checks BTB_SIZE */
       if (bimod_nelt != 1)
-	fatal("bad bimod predictor config (<table_size>)");
+        fatal("bad bimod predictor config (<table_size>)");
       if (btb_nelt != 2)
-	fatal("bad btb config (<num_sets> <associativity>)");
+        fatal("bad btb config (<num_sets> <associativity>)");
 
       /* bimodal predictor, bpred_create() checks BTB_SIZE */
       pred = bpred_create(BPred2bit,
-			  /* bimod table size */bimod_config[0],
-			  /* 2lev l1 size */0,
-			  /* 2lev l2 size */0,
-			  /* meta table size */0,
-			  /* history reg size */0,
-			  /* history xor address */0,
-			  /* btb sets */btb_config[0],
-			  /* btb assoc */btb_config[1],
-			  /* ret-addr stack size */ras_size);
+                          /* bimod table size */bimod_config[0],
+                          /* 2lev l1 size */0,
+                          /* 2lev l2 size */0,
+                          /* meta table size */0,
+                          /* history reg size */0,
+                          /* history xor address */0,
+                          /* btb sets */btb_config[0],
+                          /* btb assoc */btb_config[1],
+                          /* ret-addr stack size */ras_size);
     }
   else if (!mystricmp(pred_type, "2lev"))
     {
       /* 2-level adaptive predictor, bpred_create() checks args */
       if (twolev_nelt != 4)
-	fatal("bad 2-level pred config (<l1size> <l2size> <hist_size> <xor>)");
+        fatal("bad 2-level pred config (<l1size> <l2size> <hist_size> <xor>)");
       if (btb_nelt != 2)
-	fatal("bad btb config (<num_sets> <associativity>)");
+        fatal("bad btb config (<num_sets> <associativity>)");
 
       pred = bpred_create(BPred2Level,
-			  /* bimod table size */0,
-			  /* 2lev l1 size */twolev_config[0],
-			  /* 2lev l2 size */twolev_config[1],
-			  /* meta table size */0,
-			  /* history reg size */twolev_config[2],
-			  /* history xor address */twolev_config[3],
-			  /* btb sets */btb_config[0],
-			  /* btb assoc */btb_config[1],
-			  /* ret-addr stack size */ras_size);
+                          /* bimod table size */0,
+                          /* 2lev l1 size */twolev_config[0],
+                          /* 2lev l2 size */twolev_config[1],
+                          /* meta table size */0,
+                          /* history reg size */twolev_config[2],
+                          /* history xor address */twolev_config[3],
+                          /* btb sets */btb_config[0],
+                          /* btb assoc */btb_config[1],
+                          /* ret-addr stack size */ras_size);
     }
   else if (!mystricmp(pred_type, "comb"))
     {
       /* combining predictor, bpred_create() checks args */
       if (twolev_nelt != 4)
-	fatal("bad 2-level pred config (<l1size> <l2size> <hist_size> <xor>)");
+        fatal("bad 2-level pred config (<l1size> <l2size> <hist_size> <xor>)");
       if (bimod_nelt != 1)
-	fatal("bad bimod predictor config (<table_size>)");
+        fatal("bad bimod predictor config (<table_size>)");
       if (comb_nelt != 1)
-	fatal("bad combining predictor config (<meta_table_size>)");
+        fatal("bad combining predictor config (<meta_table_size>)");
       if (btb_nelt != 2)
-	fatal("bad btb config (<num_sets> <associativity>)");
+        fatal("bad btb config (<num_sets> <associativity>)");
 
       pred = bpred_create(BPredComb,
-			  /* bimod table size */bimod_config[0],
-			  /* l1 size */twolev_config[0],
-			  /* l2 size */twolev_config[1],
-			  /* meta table size */comb_config[0],
-			  /* history reg size */twolev_config[2],
-			  /* history xor address */twolev_config[3],
-			  /* btb sets */btb_config[0],
-			  /* btb assoc */btb_config[1],
-			  /* ret-addr stack size */ras_size);
+                          /* bimod table size */bimod_config[0],
+                          /* l1 size */twolev_config[0],
+                          /* l2 size */twolev_config[1],
+                          /* meta table size */comb_config[0],
+                          /* history reg size */twolev_config[2],
+                          /* history xor address */twolev_config[3],
+                          /* btb sets */btb_config[0],
+                          /* btb assoc */btb_config[1],
+                          /* ret-addr stack size */ras_size);
     }
   else
     fatal("cannot parse predictor type `%s'", pred_type);
@@ -1006,31 +1006,31 @@ sim_check_options(struct opt_odb_t *odb,        /* options database */
 
       /* the level 2 D-cache cannot be defined */
       if (strcmp(cache_dl2_opt, "none"))
-	fatal("the l1 data cache must defined if the l2 cache is defined");
+        fatal("the l1 data cache must defined if the l2 cache is defined");
       cache_dl2 = NULL;
     }
   else /* dl1 is defined */
     {
       if (sscanf(cache_dl1_opt, "%[^:]:%d:%d:%d:%c",
-		 name, &nsets, &bsize, &assoc, &c) != 5)
-	fatal("bad l1 D-cache parms: <name>:<nsets>:<bsize>:<assoc>:<repl>");
+                 name, &nsets, &bsize, &assoc, &c) != 5)
+        fatal("bad l1 D-cache parms: <name>:<nsets>:<bsize>:<assoc>:<repl>");
       cache_dl1 = cache_create(name, nsets, bsize, /* balloc */FALSE,
-			       /* usize */0, assoc, cache_char2policy(c),
-			       dl1_access_fn, /* hit lat */cache_dl1_lat);
+                               /* usize */0, assoc, cache_char2policy(c),
+                               dl1_access_fn, /* hit lat */cache_dl1_lat);
 
       /* is the level 2 D-cache defined? */
       if (!mystricmp(cache_dl2_opt, "none"))
-	cache_dl2 = NULL;
+        cache_dl2 = NULL;
       else
-	{
-	  if (sscanf(cache_dl2_opt, "%[^:]:%d:%d:%d:%c",
-		     name, &nsets, &bsize, &assoc, &c) != 5)
-	    fatal("bad l2 D-cache parms: "
-		  "<name>:<nsets>:<bsize>:<assoc>:<repl>");
-	  cache_dl2 = cache_create(name, nsets, bsize, /* balloc */FALSE,
-				   /* usize */0, assoc, cache_char2policy(c),
-				   dl2_access_fn, /* hit lat */cache_dl2_lat);
-	}
+        {
+          if (sscanf(cache_dl2_opt, "%[^:]:%d:%d:%d:%c",
+                     name, &nsets, &bsize, &assoc, &c) != 5)
+            fatal("bad l2 D-cache parms: "
+                  "<name>:<nsets>:<bsize>:<assoc>:<repl>");
+          cache_dl2 = cache_create(name, nsets, bsize, /* balloc */FALSE,
+                                   /* usize */0, assoc, cache_char2policy(c),
+                                   dl2_access_fn, /* hit lat */cache_dl2_lat);
+        }
     }
 
   /* use a level 1 I-cache? */
@@ -1040,59 +1040,59 @@ sim_check_options(struct opt_odb_t *odb,        /* options database */
 
       /* the level 2 I-cache cannot be defined */
       if (strcmp(cache_il2_opt, "none"))
-	fatal("the l1 inst cache must defined if the l2 cache is defined");
+        fatal("the l1 inst cache must defined if the l2 cache is defined");
       cache_il2 = NULL;
     }
   else if (!mystricmp(cache_il1_opt, "dl1"))
     {
       if (!cache_dl1)
-	fatal("I-cache l1 cannot access D-cache l1 as it's undefined");
+        fatal("I-cache l1 cannot access D-cache l1 as it's undefined");
       cache_il1 = cache_dl1;
 
       /* the level 2 I-cache cannot be defined */
       if (strcmp(cache_il2_opt, "none"))
-	fatal("the l1 inst cache must defined if the l2 cache is defined");
+        fatal("the l1 inst cache must defined if the l2 cache is defined");
       cache_il2 = NULL;
     }
   else if (!mystricmp(cache_il1_opt, "dl2"))
     {
       if (!cache_dl2)
-	fatal("I-cache l1 cannot access D-cache l2 as it's undefined");
+        fatal("I-cache l1 cannot access D-cache l2 as it's undefined");
       cache_il1 = cache_dl2;
 
       /* the level 2 I-cache cannot be defined */
       if (strcmp(cache_il2_opt, "none"))
-	fatal("the l1 inst cache must defined if the l2 cache is defined");
+        fatal("the l1 inst cache must defined if the l2 cache is defined");
       cache_il2 = NULL;
     }
   else /* il1 is defined */
     {
       if (sscanf(cache_il1_opt, "%[^:]:%d:%d:%d:%c",
-		 name, &nsets, &bsize, &assoc, &c) != 5)
-	fatal("bad l1 I-cache parms: <name>:<nsets>:<bsize>:<assoc>:<repl>");
+                 name, &nsets, &bsize, &assoc, &c) != 5)
+        fatal("bad l1 I-cache parms: <name>:<nsets>:<bsize>:<assoc>:<repl>");
       cache_il1 = cache_create(name, nsets, bsize, /* balloc */FALSE,
-			       /* usize */0, assoc, cache_char2policy(c),
-			       il1_access_fn, /* hit lat */cache_il1_lat);
+                               /* usize */0, assoc, cache_char2policy(c),
+                               il1_access_fn, /* hit lat */cache_il1_lat);
 
       /* is the level 2 D-cache defined? */
       if (!mystricmp(cache_il2_opt, "none"))
-	cache_il2 = NULL;
+        cache_il2 = NULL;
       else if (!mystricmp(cache_il2_opt, "dl2"))
-	{
-	  if (!cache_dl2)
-	    fatal("I-cache l2 cannot access D-cache l2 as it's undefined");
-	  cache_il2 = cache_dl2;
-	}
+        {
+          if (!cache_dl2)
+            fatal("I-cache l2 cannot access D-cache l2 as it's undefined");
+          cache_il2 = cache_dl2;
+        }
       else
-	{
-	  if (sscanf(cache_il2_opt, "%[^:]:%d:%d:%d:%c",
-		     name, &nsets, &bsize, &assoc, &c) != 5)
-	    fatal("bad l2 I-cache parms: "
-		  "<name>:<nsets>:<bsize>:<assoc>:<repl>");
-	  cache_il2 = cache_create(name, nsets, bsize, /* balloc */FALSE,
-				   /* usize */0, assoc, cache_char2policy(c),
-				   il2_access_fn, /* hit lat */cache_il2_lat);
-	}
+        {
+          if (sscanf(cache_il2_opt, "%[^:]:%d:%d:%d:%c",
+                     name, &nsets, &bsize, &assoc, &c) != 5)
+            fatal("bad l2 I-cache parms: "
+                  "<name>:<nsets>:<bsize>:<assoc>:<repl>");
+          cache_il2 = cache_create(name, nsets, bsize, /* balloc */FALSE,
+                                   /* usize */0, assoc, cache_char2policy(c),
+                                   il2_access_fn, /* hit lat */cache_il2_lat);
+        }
     }
 
   /* use an I-TLB? */
@@ -1101,12 +1101,12 @@ sim_check_options(struct opt_odb_t *odb,        /* options database */
   else
     {
       if (sscanf(itlb_opt, "%[^:]:%d:%d:%d:%c",
-		 name, &nsets, &bsize, &assoc, &c) != 5)
-	fatal("bad TLB parms: <name>:<nsets>:<page_size>:<assoc>:<repl>");
+                 name, &nsets, &bsize, &assoc, &c) != 5)
+        fatal("bad TLB parms: <name>:<nsets>:<page_size>:<assoc>:<repl>");
       itlb = cache_create(name, nsets, bsize, /* balloc */FALSE,
-			  /* usize */sizeof(md_addr_t), assoc,
-			  cache_char2policy(c), itlb_access_fn,
-			  /* hit latency */1);
+                          /* usize */sizeof(md_addr_t), assoc,
+                          cache_char2policy(c), itlb_access_fn,
+                          /* hit latency */1);
     }
 
   /* use a D-TLB? */
@@ -1115,12 +1115,12 @@ sim_check_options(struct opt_odb_t *odb,        /* options database */
   else
     {
       if (sscanf(dtlb_opt, "%[^:]:%d:%d:%d:%c",
-		 name, &nsets, &bsize, &assoc, &c) != 5)
-	fatal("bad TLB parms: <name>:<nsets>:<page_size>:<assoc>:<repl>");
+                 name, &nsets, &bsize, &assoc, &c) != 5)
+        fatal("bad TLB parms: <name>:<nsets>:<page_size>:<assoc>:<repl>");
       dtlb = cache_create(name, nsets, bsize, /* balloc */FALSE,
-			  /* usize */sizeof(md_addr_t), assoc,
-			  cache_char2policy(c), dtlb_access_fn,
-			  /* hit latency */1);
+                          /* usize */sizeof(md_addr_t), assoc,
+                          cache_char2policy(c), dtlb_access_fn,
+                          /* hit latency */1);
     }
 
   if (cache_dl1_lat < 1)
@@ -1191,59 +1191,59 @@ sim_reg_stats(struct stat_sdb_t *sdb)   /* stats database */
 {
   int i;
   stat_reg_counter(sdb, "sim_num_insn",
-		   "total number of instructions committed",
-		   &sim_num_insn, sim_num_insn, NULL);
+                   "total number of instructions committed",
+                   &sim_num_insn, sim_num_insn, NULL);
   stat_reg_counter(sdb, "sim_num_refs",
-		   "total number of loads and stores committed",
-		   &sim_num_refs, 0, NULL);
+                   "total number of loads and stores committed",
+                   &sim_num_refs, 0, NULL);
   stat_reg_counter(sdb, "sim_num_loads",
-		   "total number of loads committed",
-		   &sim_num_loads, 0, NULL);
+                   "total number of loads committed",
+                   &sim_num_loads, 0, NULL);
   stat_reg_formula(sdb, "sim_num_stores",
-		   "total number of stores committed",
-		   "sim_num_refs - sim_num_loads", NULL);
+                   "total number of stores committed",
+                   "sim_num_refs - sim_num_loads", NULL);
   stat_reg_counter(sdb, "sim_num_branches",
-		   "total number of branches committed",
-		   &sim_num_branches, /* initial value */0, /* format */NULL);
+                   "total number of branches committed",
+                   &sim_num_branches, /* initial value */0, /* format */NULL);
   stat_reg_int(sdb, "sim_elapsed_time",
-	       "total simulation time in seconds",
-	       &sim_elapsed_time, 0, NULL);
+               "total simulation time in seconds",
+               &sim_elapsed_time, 0, NULL);
   stat_reg_formula(sdb, "sim_inst_rate",
-		   "simulation speed (in insts/sec)",
-		   "sim_num_insn / sim_elapsed_time", NULL);
+                   "simulation speed (in insts/sec)",
+                   "sim_num_insn / sim_elapsed_time", NULL);
 
   stat_reg_counter(sdb, "sim_total_insn",
-		   "total number of instructions executed",
-		   &sim_total_insn, 0, NULL);
+                   "total number of instructions executed",
+                   &sim_total_insn, 0, NULL);
   stat_reg_counter(sdb, "sim_total_refs",
-		   "total number of loads and stores executed",
-		   &sim_total_refs, 0, NULL);
+                   "total number of loads and stores executed",
+                   &sim_total_refs, 0, NULL);
   stat_reg_counter(sdb, "sim_total_loads",
-		   "total number of loads executed",
-		   &sim_total_loads, 0, NULL);
+                   "total number of loads executed",
+                   &sim_total_loads, 0, NULL);
   stat_reg_formula(sdb, "sim_total_stores",
-		   "total number of stores executed",
-		   "sim_total_refs - sim_total_loads", NULL);
+                   "total number of stores executed",
+                   "sim_total_refs - sim_total_loads", NULL);
   stat_reg_counter(sdb, "sim_total_branches",
-		   "total number of branches executed",
-		   &sim_total_branches, /* initial value */0, /* format */NULL);
+                   "total number of branches executed",
+                   &sim_total_branches, /* initial value */0, /* format */NULL);
 
   /* register performance stats */
   stat_reg_counter(sdb, "sim_cycle",
-		   "total simulation time in cycles",
-		   &sim_cycle, /* initial value */0, /* format */NULL);
+                   "total simulation time in cycles",
+                   &sim_cycle, /* initial value */0, /* format */NULL);
   stat_reg_formula(sdb, "sim_IPC",
-		   "instructions per cycle",
-		   "sim_num_insn / sim_cycle", /* format */NULL);
+                   "instructions per cycle",
+                   "sim_num_insn / sim_cycle", /* format */NULL);
   stat_reg_formula(sdb, "sim_CPI",
-		   "cycles per instruction",
-		   "sim_cycle / sim_num_insn", /* format */NULL);
+                   "cycles per instruction",
+                   "sim_cycle / sim_num_insn", /* format */NULL);
   stat_reg_formula(sdb, "sim_exec_BW",
-		   "total instructions (mis-spec + committed) per cycle",
-		   "sim_total_insn / sim_cycle", /* format */NULL);
+                   "total instructions (mis-spec + committed) per cycle",
+                   "sim_total_insn / sim_cycle", /* format */NULL);
   stat_reg_formula(sdb, "sim_IPB",
-		   "instruction per branch",
-		   "sim_num_insn / sim_num_branches", /* format */NULL);
+                   "instruction per branch",
+                   "sim_num_insn / sim_num_branches", /* format */NULL);
 
   /* occupancy stats */
   stat_reg_counter(sdb, "IFQ_count", "cumulative IFQ occupancy",
@@ -1315,7 +1315,7 @@ sim_reg_stats(struct stat_sdb_t *sdb)   /* stats database */
 
   /* debug variable(s) */
   stat_reg_counter(sdb, "sim_invalid_addrs",
-		   "total non-speculative bogus addresses seen (debug var)",
+                   "total non-speculative bogus addresses seen (debug var)",
                    &sim_invalid_addrs, /* initial value */0, /* format */NULL);
 
   for (i=0; i<pcstat_nelt; i++)
@@ -1328,12 +1328,12 @@ sim_reg_stats(struct stat_sdb_t *sdb)   /* stats database */
       /* find it... */
       stat = stat_find_stat(sdb, pcstat_vars[i]);
       if (!stat)
-	fatal("cannot locate any statistic named `%s'", pcstat_vars[i]);
+        fatal("cannot locate any statistic named `%s'", pcstat_vars[i]);
 
       /* stat must be an integral type */
       if (stat->sc != sc_int && stat->sc != sc_uint && stat->sc != sc_counter)
-	fatal("`-pcstat' statistical variable `%s' is not an integral type",
-	      stat->name);
+        fatal("`-pcstat' statistical variable `%s' is not an integral type",
+              stat->name);
 
       /* register this stat */
       pcstat_stats[i] = stat;
@@ -1343,10 +1343,10 @@ sim_reg_stats(struct stat_sdb_t *sdb)   /* stats database */
       sprintf(buf, "%s_by_pc", stat->name);
       sprintf(buf1, "%s (by text address)", stat->desc);
       pcstat_sdists[i] = stat_reg_sdist(sdb, buf, buf1,
-					/* initial value */0,
-					/* print format */(PF_COUNT|PF_PDF),
-					/* format */"0x%lx %lu %.2f",
-					/* print fn */NULL);
+                                        /* initial value */0,
+                                        /* print format */(PF_COUNT|PF_PDF),
+                                        /* format */"0x%lx %lu %.2f",
+                                        /* print fn */NULL);
     }
   ld_reg_stats(sdb);
   mem_reg_stats(mem, sdb);
@@ -1377,36 +1377,36 @@ sim_init(void)
 }
 
 /* default register state accessor, used by DLite */
-static char *					/* err str, NULL for no err */
-simoo_reg_obj(struct regs_t *regs,		/* registers to access */
-	      int is_write,			/* access type */
-	      enum md_reg_type rt,		/* reg bank to probe */
-	      int reg,				/* register number */
-	      struct eval_value_t *val);	/* input, output */
+static char *                                   /* err str, NULL for no err */
+simoo_reg_obj(struct regs_t *regs,              /* registers to access */
+              int is_write,                     /* access type */
+              enum md_reg_type rt,              /* reg bank to probe */
+              int reg,                          /* register number */
+              struct eval_value_t *val);        /* input, output */
 
 /* default memory state accessor, used by DLite */
-static char *					/* err str, NULL for no err */
-simoo_mem_obj(struct mem_t *mem,		/* memory space to access */
-	      int is_write,			/* access type */
-	      md_addr_t addr,			/* address to access */
-	      char *p,				/* input/output buffer */
-	      int nbytes);			/* size of access */
+static char *                                   /* err str, NULL for no err */
+simoo_mem_obj(struct mem_t *mem,                /* memory space to access */
+              int is_write,                     /* access type */
+              md_addr_t addr,                   /* address to access */
+              char *p,                          /* input/output buffer */
+              int nbytes);                      /* size of access */
 
 /* default machine state accessor, used by DLite */
-static char *					/* err str, NULL for no err */
-simoo_mstate_obj(FILE *stream,			/* output stream */
-		 char *cmd,			/* optional command string */
-		 struct regs_t *regs,		/* registers to access */
-		 struct mem_t *mem);		/* memory space to access */
+static char *                                   /* err str, NULL for no err */
+simoo_mstate_obj(FILE *stream,                  /* output stream */
+                 char *cmd,                     /* optional command string */
+                 struct regs_t *regs,           /* registers to access */
+                 struct mem_t *mem);            /* memory space to access */
 
 /* total RS links allocated at program start */
 #define MAX_RS_LINKS                    4096
 
 /* load program into simulated state */
 void
-sim_load_prog(char *fname,		/* program to load */
-	      int argc, char **argv,	/* program arguments */
-	      char **envp)		/* program environment */
+sim_load_prog(char *fname,              /* program to load */
+              int argc, char **argv,    /* program arguments */
+              char **envp)              /* program environment */
 {
   /* load program text and data, set up environment, memory, and regs */
   ld_load_prog(fname, argc, argv, envp, &regs, mem, TRUE);
@@ -1489,31 +1489,31 @@ typedef unsigned int INST_SEQ_TYPE;
    to wake up the load/store when effective address computation has finished */
 struct RUU_station {
   /* inst info */
-  md_inst_t IR;			/* instruction bits */
-  enum md_opcode op;			/* decoded instruction opcode */
-  md_addr_t PC, next_PC, pred_PC;	/* inst PC, next PC, predicted PC */
-  int in_LSQ;				/* non-zero if op is in LSQ */
-  int ea_comp;				/* non-zero if op is an addr comp */
-  int recover_inst;			/* start of mis-speculation? */
-  int stack_recover_idx;		/* non-speculative TOS for RSB pred */
-  struct bpred_update_t dir_update;	/* bpred direction update info */
-  int spec_mode;			/* non-zero if issued in spec_mode */
-  md_addr_t addr;			/* effective address for ld/st's */
-  INST_TAG_TYPE tag;			/* RUU slot tag, increment to
-					   squash operation */
-  INST_SEQ_TYPE seq;			/* instruction sequence, used to
-					   sort the ready list and tag inst */
-  unsigned int ptrace_seq;		/* pipetrace sequence number */
+  md_inst_t IR;                 /* instruction bits */
+  enum md_opcode op;                    /* decoded instruction opcode */
+  md_addr_t PC, next_PC, pred_PC;       /* inst PC, next PC, predicted PC */
+  int in_LSQ;                           /* non-zero if op is in LSQ */
+  int ea_comp;                          /* non-zero if op is an addr comp */
+  int recover_inst;                     /* start of mis-speculation? */
+  int stack_recover_idx;                /* non-speculative TOS for RSB pred */
+  struct bpred_update_t dir_update;     /* bpred direction update info */
+  int spec_mode;                        /* non-zero if issued in spec_mode */
+  md_addr_t addr;                       /* effective address for ld/st's */
+  INST_TAG_TYPE tag;                    /* RUU slot tag, increment to
+                                           squash operation */
+  INST_SEQ_TYPE seq;                    /* instruction sequence, used to
+                                           sort the ready list and tag inst */
+  unsigned int ptrace_seq;              /* pipetrace sequence number */
   int slip;
   /* instruction status */
-  int queued;				/* operands ready and queued */
-  int issued;				/* operation is/was executing */
-  int completed;			/* operation has completed execution */
+  int queued;                           /* operands ready and queued */
+  int issued;                           /* operation is/was executing */
+  int completed;                        /* operation has completed execution */
   /* output operand dependency list, these lists are used to
      limit the number of associative searches into the RUU when
      instructions complete and need to wake up dependent insts */
-  int onames[MAX_ODEPS];		/* output logical names (NA=unused) */
-  struct RS_link *odep_list[MAX_ODEPS];	/* chains to consuming operations */
+  int onames[MAX_ODEPS];                /* output logical names (NA=unused) */
+  struct RS_link *odep_list[MAX_ODEPS]; /* chains to consuming operations */
 
   /* input dependent links, the output chains rooted above use these
      fields to mark input operands as ready, when all these fields have
@@ -1521,7 +1521,7 @@ struct RUU_station {
      operands, it may commence execution as soon as all of its memory
      operands are known to be read (see lsq_refresh() for details on
      enforcing memory dependencies) */
-  int idep_ready[MAX_IDEPS];		/* input operand ready? */
+  int idep_ready[MAX_IDEPS];            /* input operand ready? */
 };
 
 /* non-zero if all register operands are ready, update with MAX_IDEPS */
@@ -1530,9 +1530,9 @@ struct RUU_station {
 
 /* register update unit, combination of reservation stations and reorder
    buffer device, organized as a circular queue */
-static struct RUU_station *RUU;		/* register update unit */
-static int RUU_head, RUU_tail;		/* RUU head and tail pointers */
-static int RUU_num;			/* num entries currently in RUU */
+static struct RUU_station *RUU;         /* register update unit */
+static int RUU_head, RUU_tail;          /* RUU head and tail pointers */
+static int RUU_num;                     /* num entries currently in RUU */
 
 /* allocate and initialize register update unit (RUU) */
 static void
@@ -1550,43 +1550,43 @@ ruu_init(void)
 
 /* dump the contents of the RUU */
 static void
-ruu_dumpent(struct RUU_station *rs,		/* ptr to RUU station */
-	    int index,				/* entry index */
-	    FILE *stream,			/* output stream */
-	    int header)				/* print header? */
+ruu_dumpent(struct RUU_station *rs,             /* ptr to RUU station */
+            int index,                          /* entry index */
+            FILE *stream,                       /* output stream */
+            int header)                         /* print header? */
 {
   if (!stream)
     stream = stderr;
 
   if (header)
     fprintf(stream, "idx: %2d: opcode: %s, inst: `",
-	    index, MD_OP_NAME(rs->op));
+            index, MD_OP_NAME(rs->op));
   else
     fprintf(stream, "       opcode: %s, inst: `",
-	    MD_OP_NAME(rs->op));
+            MD_OP_NAME(rs->op));
   md_print_insn(rs->IR, rs->PC, stream);
   fprintf(stream, "'\n");
   myfprintf(stream, "         PC: 0x%08p, NPC: 0x%08p (pred_PC: 0x%08p)\n",
-	    rs->PC, rs->next_PC, rs->pred_PC);
+            rs->PC, rs->next_PC, rs->pred_PC);
   fprintf(stream, "         in_LSQ: %s, ea_comp: %s, recover_inst: %s\n",
-	  rs->in_LSQ ? "t" : "f",
-	  rs->ea_comp ? "t" : "f",
-	  rs->recover_inst ? "t" : "f");
+          rs->in_LSQ ? "t" : "f",
+          rs->ea_comp ? "t" : "f",
+          rs->recover_inst ? "t" : "f");
   myfprintf(stream, "         spec_mode: %s, addr: 0x%08p, tag: 0x%08x\n",
-	    rs->spec_mode ? "t" : "f", rs->addr, rs->tag);
+            rs->spec_mode ? "t" : "f", rs->addr, rs->tag);
   fprintf(stream, "         seq: 0x%08x, ptrace_seq: 0x%08x\n",
-	  rs->seq, rs->ptrace_seq);
+          rs->seq, rs->ptrace_seq);
   fprintf(stream, "         queued: %s, issued: %s, completed: %s\n",
-	  rs->queued ? "t" : "f",
-	  rs->issued ? "t" : "f",
-	  rs->completed ? "t" : "f");
+          rs->queued ? "t" : "f",
+          rs->issued ? "t" : "f",
+          rs->completed ? "t" : "f");
   fprintf(stream, "         operands ready: %s\n",
-	  OPERANDS_READY(rs) ? "t" : "f");
+          OPERANDS_READY(rs) ? "t" : "f");
 }
 
 /* dump the contents of the RUU */
 static void
-ruu_dump(FILE *stream)				/* output stream */
+ruu_dump(FILE *stream)                          /* output stream */
 {
   int num, head;
   struct RUU_station *rs;
@@ -1668,7 +1668,7 @@ lsq_init(void)
 
 /* dump the contents of the RUU */
 static void
-lsq_dump(FILE *stream)				/* output stream */
+lsq_dump(FILE *stream)                          /* output stream */
 {
   int num, head;
   struct RUU_station *rs;
@@ -1705,13 +1705,13 @@ lsq_dump(FILE *stream)				/* output stream */
    updating the lists that point to it, which significantly improves the
    performance of (all to frequent) squash events */
 struct RS_link {
-  struct RS_link *next;			/* next entry in list */
-  struct RUU_station *rs;		/* referenced RUU resv station */
-  INST_TAG_TYPE tag;			/* inst instance sequence number */
+  struct RS_link *next;                 /* next entry in list */
+  struct RUU_station *rs;               /* referenced RUU resv station */
+  INST_TAG_TYPE tag;                    /* inst instance sequence number */
   union {
-    tick_t when;			/* time stamp of entry (for eventq) */
-    INST_SEQ_TYPE seq;			/* inst sequence */
-    int opnum;				/* input/output operand number */
+    tick_t when;                        /* time stamp of entry (for eventq) */
+    INST_SEQ_TYPE seq;                  /* inst sequence */
+    int opnum;                          /* input/output operand number */
   } x;
 };
 
@@ -1719,11 +1719,11 @@ struct RS_link {
 static struct RS_link *rslink_free_list;
 
 /* NULL value for an RS link */
-#define RSLINK_NULL_DATA		{ NULL, NULL, 0 }
+#define RSLINK_NULL_DATA                { NULL, NULL, 0 }
 static struct RS_link RSLINK_NULL = RSLINK_NULL_DATA;
 
 /* create and initialize an RS link */
-#define RSLINK_INIT(RSL, RS)						\
+#define RSLINK_INIT(RSL, RS)                                            \
   ((RSL).next = NULL, (RSL).rs = (RS), (RSL).tag = (RS)->tag)
 
 /* non-zero if RS link is NULL */
@@ -1736,39 +1736,39 @@ static struct RS_link RSLINK_NULL = RSLINK_NULL_DATA;
 #define RSLINK_RS(LINK)                 ((LINK)->rs)
 
 /* get a new RS link record */
-#define RSLINK_NEW(DST, RS)						\
-  { struct RS_link *n_link;						\
-    if (!rslink_free_list)						\
-      panic("out of rs links");						\
-    n_link = rslink_free_list;						\
-    rslink_free_list = rslink_free_list->next;				\
-    n_link->next = NULL;						\
-    n_link->rs = (RS); n_link->tag = n_link->rs->tag;			\
-    (DST) = n_link;							\
+#define RSLINK_NEW(DST, RS)                                             \
+  { struct RS_link *n_link;                                             \
+    if (!rslink_free_list)                                              \
+      panic("out of rs links");                                         \
+    n_link = rslink_free_list;                                          \
+    rslink_free_list = rslink_free_list->next;                          \
+    n_link->next = NULL;                                                \
+    n_link->rs = (RS); n_link->tag = n_link->rs->tag;                   \
+    (DST) = n_link;                                                     \
   }
 
 /* free an RS link record */
-#define RSLINK_FREE(LINK)						\
-  {  struct RS_link *f_link = (LINK);					\
-     f_link->rs = NULL; f_link->tag = 0;				\
-     f_link->next = rslink_free_list;					\
-     rslink_free_list = f_link;						\
+#define RSLINK_FREE(LINK)                                               \
+  {  struct RS_link *f_link = (LINK);                                   \
+     f_link->rs = NULL; f_link->tag = 0;                                \
+     f_link->next = rslink_free_list;                                   \
+     rslink_free_list = f_link;                                         \
   }
 
 /* FIXME: could this be faster!!! */
 /* free an RS link list */
-#define RSLINK_FREE_LIST(LINK)						\
-  {  struct RS_link *fl_link, *fl_link_next;				\
-     for (fl_link=(LINK); fl_link; fl_link=fl_link_next)		\
-       {								\
-	 fl_link_next = fl_link->next;					\
-	 RSLINK_FREE(fl_link);						\
-       }								\
+#define RSLINK_FREE_LIST(LINK)                                          \
+  {  struct RS_link *fl_link, *fl_link_next;                            \
+     for (fl_link=(LINK); fl_link; fl_link=fl_link_next)                \
+       {                                                                \
+         fl_link_next = fl_link->next;                                  \
+         RSLINK_FREE(fl_link);                                          \
+       }                                                                \
   }
 
 /* initialize the free RS_LINK pool */
 static void
-rslink_init(int nlinks)			/* total number of RS_LINK available */
+rslink_init(int nlinks)                 /* total number of RS_LINK available */
 {
   int i;
   struct RS_link *link;
@@ -1778,7 +1778,7 @@ rslink_init(int nlinks)			/* total number of RS_LINK available */
     {
       link = calloc(1, sizeof(struct RS_link));
       if (!link)
-	fatal("out of virtual memory");
+        fatal("out of virtual memory");
       link->next = rslink_free_list;
       rslink_free_list = link;
     }
@@ -1798,7 +1798,7 @@ ruu_release_fu(void)
     {
       /* resource is released when BUSY hits zero */
       if (fu_pool->resources[i].busy > 0)
-	fu_pool->resources[i].busy--;
+        fu_pool->resources[i].busy--;
     }
 }
 
@@ -1823,7 +1823,7 @@ eventq_init(void)
 
 /* dump the contents of the event queue */
 static void
-eventq_dump(FILE *stream)			/* output stream */
+eventq_dump(FILE *stream)                       /* output stream */
 {
   struct RS_link *ev;
 
@@ -1836,14 +1836,14 @@ eventq_dump(FILE *stream)			/* output stream */
     {
       /* is event still valid? */
       if (RSLINK_VALID(ev))
-	{
-	  struct RUU_station *rs = RSLINK_RS(ev);
+        {
+          struct RUU_station *rs = RSLINK_RS(ev);
 
-	  fprintf(stream, "idx: %2d: @ %.0f\n",
-		  (int)(rs - (rs->in_LSQ ? LSQ : RUU)), (double)ev->x.when);
-	  ruu_dumpent(rs, rs - (rs->in_LSQ ? LSQ : RUU),
-		      stream, /* !header */FALSE);
-	}
+          fprintf(stream, "idx: %2d: @ %.0f\n",
+                  (int)(rs - (rs->in_LSQ ? LSQ : RUU)), (double)ev->x.when);
+          ruu_dumpent(rs, rs - (rs->in_LSQ ? LSQ : RUU),
+                      stream, /* !header */FALSE);
+        }
     }
 }
 
@@ -1899,23 +1899,23 @@ eventq_next_event(void)
 
       /* event still valid? */
       if (RSLINK_VALID(ev))
-	{
-	  struct RUU_station *rs = RSLINK_RS(ev);
+        {
+          struct RUU_station *rs = RSLINK_RS(ev);
 
-	  /* reclaim event record */
-	  RSLINK_FREE(ev);
+          /* reclaim event record */
+          RSLINK_FREE(ev);
 
-	  /* event is valid, return resv station */
-	  return rs;
-	}
+          /* event is valid, return resv station */
+          return rs;
+        }
       else
-	{
-	  /* reclaim event record */
-	  RSLINK_FREE(ev);
+        {
+          /* reclaim event record */
+          RSLINK_FREE(ev);
 
-	  /* receiving inst was squashed, return next event */
-	  return eventq_next_event();
-	}
+          /* receiving inst was squashed, return next event */
+          return eventq_next_event();
+        }
     }
   else
     {
@@ -1949,7 +1949,7 @@ readyq_init(void)
 
 /* dump the contents of the ready queue */
 static void
-readyq_dump(FILE *stream)			/* output stream */
+readyq_dump(FILE *stream)                       /* output stream */
 {
   struct RS_link *link;
 
@@ -1962,12 +1962,12 @@ readyq_dump(FILE *stream)			/* output stream */
     {
       /* is entry still valid? */
       if (RSLINK_VALID(link))
-	{
-	  struct RUU_station *rs = RSLINK_RS(link);
+        {
+          struct RUU_station *rs = RSLINK_RS(link);
 
-	  ruu_dumpent(rs, rs - (rs->in_LSQ ? LSQ : RUU),
-		      stream, /* header */TRUE);
-	}
+          ruu_dumpent(rs, rs - (rs->in_LSQ ? LSQ : RUU),
+                      stream, /* header */TRUE);
+        }
     }
 }
 
@@ -1985,7 +1985,7 @@ readyq_dump(FILE *stream)			/* output stream */
   instructions (such loads and multiplies) get priority since they are very
   likely on the program's critical path */
 static void
-readyq_enqueue(struct RUU_station *rs)		/* RS to enqueue */
+readyq_enqueue(struct RUU_station *rs)          /* RS to enqueue */
 {
   struct RS_link *prev, *node, *new_node;
 
@@ -2009,8 +2009,8 @@ readyq_enqueue(struct RUU_station *rs)		/* RS to enqueue */
     {
       /* otherwise insert in program order (earliest seq first) */
       for (prev=NULL, node=ready_queue;
-	   node && node->x.seq < rs->seq;
-	   prev=node, node=node->next);
+           node && node->x.seq < rs->seq;
+           prev=node, node=node->next);
     }
 
   if (prev)
@@ -2044,7 +2044,7 @@ struct CV_link {
 static struct CV_link CVLINK_NULL = { NULL, 0 };
 
 /* get a new create vector link */
-#define CVLINK_INIT(CV, RS,ONUM)	((CV).rs = (RS), (CV).odep_num = (ONUM))
+#define CVLINK_INIT(CV, RS,ONUM)        ((CV).rs = (RS), (CV).odep_num = (ONUM))
 
 /* size of the create vector (one entry per architected register) */
 #define CV_BMAP_SZ              (BITMAP_SIZE(MD_TOTAL_REGS))
@@ -2063,19 +2063,19 @@ static tick_t spec_create_vector_rt[MD_TOTAL_REGS];
 
 /* read a create vector entry */
 #define CREATE_VECTOR(N)        (BITMAP_SET_P(use_spec_cv, CV_BMAP_SZ, (N))\
-				 ? spec_create_vector[N]                \
-				 : create_vector[N])
+                                 ? spec_create_vector[N]                \
+                                 : create_vector[N])
 
 /* read a create vector timestamp entry */
 #define CREATE_VECTOR_RT(N)     (BITMAP_SET_P(use_spec_cv, CV_BMAP_SZ, (N))\
-				 ? spec_create_vector_rt[N]             \
-				 : create_vector_rt[N])
+                                 ? spec_create_vector_rt[N]             \
+                                 : create_vector_rt[N])
 
 /* set a create vector entry */
 #define SET_CREATE_VECTOR(N, L) (spec_mode                              \
-				 ? (BITMAP_SET(use_spec_cv, CV_BMAP_SZ, (N)),\
-				    spec_create_vector[N] = (L))        \
-				 : (create_vector[N] = (L)))
+                                 ? (BITMAP_SET(use_spec_cv, CV_BMAP_SZ, (N)),\
+                                    spec_create_vector[N] = (L))        \
+                                 : (create_vector[N] = (L)))
 
 /* initialize the create vector */
 static void
@@ -2099,7 +2099,7 @@ cv_init(void)
 
 /* dump the contents of the create vector */
 static void
-cv_dump(FILE *stream)				/* output stream */
+cv_dump(FILE *stream)                           /* output stream */
 {
   int i;
   struct CV_link ent;
@@ -2113,11 +2113,11 @@ cv_dump(FILE *stream)				/* output stream */
     {
       ent = CREATE_VECTOR(i);
       if (!ent.rs)
-	fprintf(stream, "[cv%02d]: from architected reg file\n", i);
+        fprintf(stream, "[cv%02d]: from architected reg file\n", i);
       else
-	fprintf(stream, "[cv%02d]: from %s, idx: %d\n",
-		i, (ent.rs->in_LSQ ? "LSQ" : "RUU"),
-		(int)(ent.rs - (ent.rs->in_LSQ ? LSQ : RUU)));
+        fprintf(stream, "[cv%02d]: from %s, idx: %d\n",
+                i, (ent.rs->in_LSQ ? "LSQ" : "RUU"),
+                (int)(ent.rs - (ent.rs->in_LSQ ? LSQ : RUU)));
     }
 }
 
@@ -2141,95 +2141,95 @@ ruu_commit(void)
       struct RUU_station *rs = &(RUU[RUU_head]);
 
       if (!rs->completed)
-	{
-	  /* at least RUU entry must be complete */
-	  break;
-	}
+        {
+          /* at least RUU entry must be complete */
+          break;
+        }
 
       /* default commit events */
       events = 0;
 
       /* load/stores must retire load/store queue entry as well */
       if (RUU[RUU_head].ea_comp)
-	{
-	  /* load/store, retire head of LSQ as well */
-	  if (LSQ_num <= 0 || !LSQ[LSQ_head].in_LSQ)
-	    panic("RUU out of sync with LSQ");
+        {
+          /* load/store, retire head of LSQ as well */
+          if (LSQ_num <= 0 || !LSQ[LSQ_head].in_LSQ)
+            panic("RUU out of sync with LSQ");
 
-	  /* load/store operation must be complete */
-	  if (!LSQ[LSQ_head].completed)
-	    {
-	      /* load/store operation is not yet complete */
-	      break;
-	    }
+          /* load/store operation must be complete */
+          if (!LSQ[LSQ_head].completed)
+            {
+              /* load/store operation is not yet complete */
+              break;
+            }
 
-	  if ((MD_OP_FLAGS(LSQ[LSQ_head].op) & (F_MEM|F_STORE))
-	      == (F_MEM|F_STORE))
-	    {
-	      struct res_template *fu;
+          if ((MD_OP_FLAGS(LSQ[LSQ_head].op) & (F_MEM|F_STORE))
+              == (F_MEM|F_STORE))
+            {
+              struct res_template *fu;
 
 
-	      /* stores must retire their store value to the cache at commit,
-		 try to get a store port (functional unit allocation) */
-	      fu = res_get(fu_pool, MD_OP_FUCLASS(LSQ[LSQ_head].op));
-	      if (fu)
-		{
-		  /* reserve the functional unit */
-		  if (fu->master->busy)
-		    panic("functional unit already in use");
+              /* stores must retire their store value to the cache at commit,
+                 try to get a store port (functional unit allocation) */
+              fu = res_get(fu_pool, MD_OP_FUCLASS(LSQ[LSQ_head].op));
+              if (fu)
+                {
+                  /* reserve the functional unit */
+                  if (fu->master->busy)
+                    panic("functional unit already in use");
 
-		  /* schedule functional unit release event */
-		  fu->master->busy = fu->issuelat;
+                  /* schedule functional unit release event */
+                  fu->master->busy = fu->issuelat;
 
-		  /* go to the data cache */
-		  if (cache_dl1)
-		    {
-		      /* commit store value to D-cache */
-		      lat =
-			cache_access(cache_dl1, Write, (LSQ[LSQ_head].addr&~3),
-				     NULL, 4, sim_cycle, NULL, NULL);
-		      if (lat > cache_dl1_lat)
-			events |= PEV_CACHEMISS;
-		    }
+                  /* go to the data cache */
+                  if (cache_dl1)
+                    {
+                      /* commit store value to D-cache */
+                      lat =
+                        cache_access(cache_dl1, Write, (LSQ[LSQ_head].addr&~3),
+                                     NULL, 4, sim_cycle, NULL, NULL);
+                      if (lat > cache_dl1_lat)
+                        events |= PEV_CACHEMISS;
+                    }
 
-		  /* all loads and stores must to access D-TLB */
-		  if (dtlb)
-		    {
-		      /* access the D-TLB */
-		      lat =
-			cache_access(dtlb, Read, (LSQ[LSQ_head].addr & ~3),
-				     NULL, 4, sim_cycle, NULL, NULL);
-		      if (lat > 1)
-			events |= PEV_TLBMISS;
-		    }
-		}
-	      else
-		{
-		  /* no store ports left, cannot continue to commit insts */
-		  break;
-		}
-	    }
+                  /* all loads and stores must to access D-TLB */
+                  if (dtlb)
+                    {
+                      /* access the D-TLB */
+                      lat =
+                        cache_access(dtlb, Read, (LSQ[LSQ_head].addr & ~3),
+                                     NULL, 4, sim_cycle, NULL, NULL);
+                      if (lat > 1)
+                        events |= PEV_TLBMISS;
+                    }
+                }
+              else
+                {
+                  /* no store ports left, cannot continue to commit insts */
+                  break;
+                }
+            }
 
-	  /* invalidate load/store operation instance */
-	  LSQ[LSQ_head].tag++;
+          /* invalidate load/store operation instance */
+          LSQ[LSQ_head].tag++;
           sim_slip += (sim_cycle - LSQ[LSQ_head].slip);
    
-	  /* indicate to pipeline trace that this instruction retired */
-	  ptrace_newstage(LSQ[LSQ_head].ptrace_seq, PST_COMMIT, events);
-	  ptrace_endinst(LSQ[LSQ_head].ptrace_seq);
+          /* indicate to pipeline trace that this instruction retired */
+          ptrace_newstage(LSQ[LSQ_head].ptrace_seq, PST_COMMIT, events);
+          ptrace_endinst(LSQ[LSQ_head].ptrace_seq);
 
-	  /* commit head of LSQ as well */
-	  LSQ_head = (LSQ_head + 1) % LSQ_size;
-	  LSQ_num--;
-	}
+          /* commit head of LSQ as well */
+          LSQ_head = (LSQ_head + 1) % LSQ_size;
+          LSQ_num--;
+        }
 
       if (pred
-	  && bpred_spec_update == spec_CT
-	  && (MD_OP_FLAGS(rs->op) & F_CTRL))
-	{
-	  bpred_update(pred,
-		       /* branch address */rs->PC,
-		       /* actual target address */rs->next_PC,
+          && bpred_spec_update == spec_CT
+          && (MD_OP_FLAGS(rs->op) & F_CTRL))
+        {
+          bpred_update(pred,
+                       /* branch address */rs->PC,
+                       /* actual target address */rs->next_PC,
                        /* taken? */rs->next_PC != (rs->PC +
                                                    sizeof(md_inst_t)),
                        /* pred taken? */rs->pred_PC != (rs->PC +
@@ -2237,22 +2237,22 @@ ruu_commit(void)
                        /* correct pred? */rs->pred_PC == rs->next_PC,
                        /* opcode */rs->op,
                        /* dir predictor update pointer */&rs->dir_update);
-	}
+        }
 
       /* invalidate RUU operation instance */
       RUU[RUU_head].tag++;
       sim_slip += (sim_cycle - RUU[RUU_head].slip);
       /* print retirement trace if in verbose mode */
       if (verbose)
-	{
-	  sim_ret_insn++;
-	  myfprintf(stderr, "%10n @ 0x%08p: ", sim_ret_insn, RUU[RUU_head].PC);
- 	  md_print_insn(RUU[RUU_head].IR, RUU[RUU_head].PC, stderr);
-	  if (MD_OP_FLAGS(RUU[RUU_head].op) & F_MEM)
-	    myfprintf(stderr, "  mem: 0x%08p", RUU[RUU_head].addr);
-	  fprintf(stderr, "\n");
-	  /* fflush(stderr); */
-	}
+        {
+          sim_ret_insn++;
+          myfprintf(stderr, "%10n @ 0x%08p: ", sim_ret_insn, RUU[RUU_head].PC);
+          md_print_insn(RUU[RUU_head].IR, RUU[RUU_head].PC, stderr);
+          if (MD_OP_FLAGS(RUU[RUU_head].op) & F_MEM)
+            myfprintf(stderr, "  mem: 0x%08p", RUU[RUU_head].addr);
+          fprintf(stderr, "\n");
+          /* fflush(stderr); */
+        }
 
       /* indicate to pipeline trace that this instruction retired */
       ptrace_newstage(RUU[RUU_head].ptrace_seq, PST_COMMIT, events);
@@ -2266,9 +2266,9 @@ ruu_commit(void)
       committed++;
 
       for (i=0; i<MAX_ODEPS; i++)
-	{
-	  if (rs->odep_list[i])
-	    panic ("retired instruction has odeps\n");
+        {
+          if (rs->odep_list[i])
+            panic ("retired instruction has odeps\n");
         }
     }
 }
@@ -2281,7 +2281,7 @@ ruu_commit(void)
 /* recover processor microarchitecture state back to point of the
    mis-predicted branch at RUU[BRANCH_INDEX] */
 static void
-ruu_recover(int branch_index)			/* index of mis-pred branch */
+ruu_recover(int branch_index)                   /* index of mis-pred branch */
 {
   int i, RUU_index = RUU_tail, LSQ_index = LSQ_tail;
   int RUU_prev_tail = RUU_tail, LSQ_prev_tail = LSQ_tail;
@@ -2299,46 +2299,46 @@ ruu_recover(int branch_index)			/* index of mis-pred branch */
     {
       /* the RUU should not drain since the mispredicted branch will remain */
       if (!RUU_num)
-	panic("empty RUU");
+        panic("empty RUU");
 
       /* should meet up with the tail first */
       if (RUU_index == RUU_head)
-	panic("RUU head and tail broken");
+        panic("RUU head and tail broken");
 
       /* is this operation an effective addr calc for a load or store? */
       if (RUU[RUU_index].ea_comp)
-	{
-	  /* should be at least one load or store in the LSQ */
-	  if (!LSQ_num)
-	    panic("RUU and LSQ out of sync");
+        {
+          /* should be at least one load or store in the LSQ */
+          if (!LSQ_num)
+            panic("RUU and LSQ out of sync");
 
-	  /* recover any resources consumed by the load or store operation */
-	  for (i=0; i<MAX_ODEPS; i++)
-	    {
-	      RSLINK_FREE_LIST(LSQ[LSQ_index].odep_list[i]);
-	      /* blow away the consuming op list */
-	      LSQ[LSQ_index].odep_list[i] = NULL;
-	    }
+          /* recover any resources consumed by the load or store operation */
+          for (i=0; i<MAX_ODEPS; i++)
+            {
+              RSLINK_FREE_LIST(LSQ[LSQ_index].odep_list[i]);
+              /* blow away the consuming op list */
+              LSQ[LSQ_index].odep_list[i] = NULL;
+            }
       
-	  /* squash this LSQ entry */
-	  LSQ[LSQ_index].tag++;
+          /* squash this LSQ entry */
+          LSQ[LSQ_index].tag++;
 
-	  /* indicate in pipetrace that this instruction was squashed */
-	  ptrace_endinst(LSQ[LSQ_index].ptrace_seq);
+          /* indicate in pipetrace that this instruction was squashed */
+          ptrace_endinst(LSQ[LSQ_index].ptrace_seq);
 
-	  /* go to next earlier LSQ slot */
-	  LSQ_prev_tail = LSQ_index;
-	  LSQ_index = (LSQ_index + (LSQ_size-1)) % LSQ_size;
-	  LSQ_num--;
-	}
+          /* go to next earlier LSQ slot */
+          LSQ_prev_tail = LSQ_index;
+          LSQ_index = (LSQ_index + (LSQ_size-1)) % LSQ_size;
+          LSQ_num--;
+        }
 
       /* recover any resources used by this RUU operation */
       for (i=0; i<MAX_ODEPS; i++)
-	{
-	  RSLINK_FREE_LIST(RUU[RUU_index].odep_list[i]);
-	  /* blow away the consuming op list */
-	  RUU[RUU_index].odep_list[i] = NULL;
-	}
+        {
+          RSLINK_FREE_LIST(RUU[RUU_index].odep_list[i]);
+          /* blow away the consuming op list */
+          RUU[RUU_index].odep_list[i] = NULL;
+        }
       
       /* squash this RUU entry */
       RUU[RUU_index].tag++;
@@ -2388,129 +2388,129 @@ ruu_writeback(void)
     {
       /* RS has completed execution and (possibly) produced a result */
       if (!OPERANDS_READY(rs) || rs->queued || !rs->issued || rs->completed)
-	panic("inst completed and !ready, !issued, or completed");
+        panic("inst completed and !ready, !issued, or completed");
 
       /* operation has completed */
       rs->completed = TRUE;
 
       /* does this operation reveal a mis-predicted branch? */
       if (rs->recover_inst)
-	{
-	  if (rs->in_LSQ)
-	    panic("mis-predicted load or store?!?!?");
+        {
+          if (rs->in_LSQ)
+            panic("mis-predicted load or store?!?!?");
 
-	  /* recover processor state and reinit fetch to correct path */
-	  ruu_recover(rs - RUU);
-	  tracer_recover();
-	  bpred_recover(pred, rs->PC, rs->stack_recover_idx);
+          /* recover processor state and reinit fetch to correct path */
+          ruu_recover(rs - RUU);
+          tracer_recover();
+          bpred_recover(pred, rs->PC, rs->stack_recover_idx);
 
-	  /* stall fetch until I-fetch and I-decode recover */
-	  ruu_fetch_issue_delay = ruu_branch_penalty;
+          /* stall fetch until I-fetch and I-decode recover */
+          ruu_fetch_issue_delay = ruu_branch_penalty;
 
-	  /* continue writeback of the branch/control instruction */
-	}
+          /* continue writeback of the branch/control instruction */
+        }
 
       /* if we speculatively update branch-predictor, do it here */
       if (pred
-	  && bpred_spec_update == spec_WB
-	  && !rs->in_LSQ
-	  && (MD_OP_FLAGS(rs->op) & F_CTRL))
-	{
-	  bpred_update(pred,
-		       /* branch address */rs->PC,
-		       /* actual target address */rs->next_PC,
-		       /* taken? */rs->next_PC != (rs->PC +
-						   sizeof(md_inst_t)),
-		       /* pred taken? */rs->pred_PC != (rs->PC +
-							sizeof(md_inst_t)),
-		       /* correct pred? */rs->pred_PC == rs->next_PC,
-		       /* opcode */rs->op,
-		       /* dir predictor update pointer */&rs->dir_update);
-	}
+          && bpred_spec_update == spec_WB
+          && !rs->in_LSQ
+          && (MD_OP_FLAGS(rs->op) & F_CTRL))
+        {
+          bpred_update(pred,
+                       /* branch address */rs->PC,
+                       /* actual target address */rs->next_PC,
+                       /* taken? */rs->next_PC != (rs->PC +
+                                                   sizeof(md_inst_t)),
+                       /* pred taken? */rs->pred_PC != (rs->PC +
+                                                        sizeof(md_inst_t)),
+                       /* correct pred? */rs->pred_PC == rs->next_PC,
+                       /* opcode */rs->op,
+                       /* dir predictor update pointer */&rs->dir_update);
+        }
 
       /* entered writeback stage, indicate in pipe trace */
       ptrace_newstage(rs->ptrace_seq, PST_WRITEBACK,
-		      rs->recover_inst ? PEV_MPDETECT : 0);
+                      rs->recover_inst ? PEV_MPDETECT : 0);
 
       /* broadcast results to consuming operations, this is more efficiently
          accomplished by walking the output dependency chains of the
-	 completed instruction */
+         completed instruction */
       for (i=0; i<MAX_ODEPS; i++)
-	{
-	  if (rs->onames[i] != NA)
-	    {
-	      struct CV_link link;
-	      struct RS_link *olink, *olink_next;
+        {
+          if (rs->onames[i] != NA)
+            {
+              struct CV_link link;
+              struct RS_link *olink, *olink_next;
 
-	      if (rs->spec_mode)
-		{
-		  /* update the speculative create vector, future operations
-		     get value from later creator or architected reg file */
-		  link = spec_create_vector[rs->onames[i]];
-		  if (/* !NULL */link.rs
-		      && /* refs RS */(link.rs == rs && link.odep_num == i))
-		    {
-		      /* the result can now be read from a physical register,
-			 indicate this as so */
-		      spec_create_vector[rs->onames[i]] = CVLINK_NULL;
-		      spec_create_vector_rt[rs->onames[i]] = sim_cycle;
-		    }
-		  /* else, creator invalidated or there is another creator */
-		}
-	      else
-		{
-		  /* update the non-speculative create vector, future
-		     operations get value from later creator or architected
-		     reg file */
-		  link = create_vector[rs->onames[i]];
-		  if (/* !NULL */link.rs
-		      && /* refs RS */(link.rs == rs && link.odep_num == i))
-		    {
-		      /* the result can now be read from a physical register,
-			 indicate this as so */
-		      create_vector[rs->onames[i]] = CVLINK_NULL;
-		      create_vector_rt[rs->onames[i]] = sim_cycle;
-		    }
-		  /* else, creator invalidated or there is another creator */
-		}
+              if (rs->spec_mode)
+                {
+                  /* update the speculative create vector, future operations
+                     get value from later creator or architected reg file */
+                  link = spec_create_vector[rs->onames[i]];
+                  if (/* !NULL */link.rs
+                      && /* refs RS */(link.rs == rs && link.odep_num == i))
+                    {
+                      /* the result can now be read from a physical register,
+                         indicate this as so */
+                      spec_create_vector[rs->onames[i]] = CVLINK_NULL;
+                      spec_create_vector_rt[rs->onames[i]] = sim_cycle;
+                    }
+                  /* else, creator invalidated or there is another creator */
+                }
+              else
+                {
+                  /* update the non-speculative create vector, future
+                     operations get value from later creator or architected
+                     reg file */
+                  link = create_vector[rs->onames[i]];
+                  if (/* !NULL */link.rs
+                      && /* refs RS */(link.rs == rs && link.odep_num == i))
+                    {
+                      /* the result can now be read from a physical register,
+                         indicate this as so */
+                      create_vector[rs->onames[i]] = CVLINK_NULL;
+                      create_vector_rt[rs->onames[i]] = sim_cycle;
+                    }
+                  /* else, creator invalidated or there is another creator */
+                }
 
-	      /* walk output list, queue up ready operations */
-	      for (olink=rs->odep_list[i]; olink; olink=olink_next)
-		{
-		  if (RSLINK_VALID(olink))
-		    {
-		      if (olink->rs->idep_ready[olink->x.opnum])
-			panic("output dependence already satisfied");
+              /* walk output list, queue up ready operations */
+              for (olink=rs->odep_list[i]; olink; olink=olink_next)
+                {
+                  if (RSLINK_VALID(olink))
+                    {
+                      if (olink->rs->idep_ready[olink->x.opnum])
+                        panic("output dependence already satisfied");
 
-		      /* input is now ready */
-		      olink->rs->idep_ready[olink->x.opnum] = TRUE;
+                      /* input is now ready */
+                      olink->rs->idep_ready[olink->x.opnum] = TRUE;
 
-		      /* are all the register operands of target ready? */
-		      if (OPERANDS_READY(olink->rs))
-			{
-			  /* yes! enqueue instruction as ready, NOTE: stores
-			     complete at dispatch, so no need to enqueue
-			     them */
-			  if (!olink->rs->in_LSQ
-			      || ((MD_OP_FLAGS(olink->rs->op)&(F_MEM|F_STORE))
-				  == (F_MEM|F_STORE)))
-			    readyq_enqueue(olink->rs);
-			  /* else, ld op, issued when no mem conflict */
-			}
-		    }
+                      /* are all the register operands of target ready? */
+                      if (OPERANDS_READY(olink->rs))
+                        {
+                          /* yes! enqueue instruction as ready, NOTE: stores
+                             complete at dispatch, so no need to enqueue
+                             them */
+                          if (!olink->rs->in_LSQ
+                              || ((MD_OP_FLAGS(olink->rs->op)&(F_MEM|F_STORE))
+                                  == (F_MEM|F_STORE)))
+                            readyq_enqueue(olink->rs);
+                          /* else, ld op, issued when no mem conflict */
+                        }
+                    }
 
-		  /* grab link to next element prior to free */
-		  olink_next = olink->next;
+                  /* grab link to next element prior to free */
+                  olink_next = olink->next;
 
-		  /* free dependence link element */
-		  RSLINK_FREE(olink);
-		}
-	      /* blow away the consuming op list */
-	      rs->odep_list[i] = NULL;
+                  /* free dependence link element */
+                  RSLINK_FREE(olink);
+                }
+              /* blow away the consuming op list */
+              rs->odep_list[i] = NULL;
 
-	    } /* if not NA output */
+            } /* if not NA output */
 
-	} /* for all outputs */
+        } /* for all outputs */
 
    } /* for all writeback events */
 
@@ -2525,7 +2525,7 @@ ruu_writeback(void)
    been satisfied, this is accomplished by walking the LSQ for loads, looking
    for blocking memory dependency condition (e.g., earlier store with an
    unknown address) */
-#define MAX_STD_UNKNOWNS		64
+#define MAX_STD_UNKNOWNS                64
 static void
 lsq_refresh(void)
 {
@@ -2540,58 +2540,58 @@ lsq_refresh(void)
        i++, index=(index + 1) % LSQ_size)
     {
       /* terminate search for ready loads after first unresolved store,
-	 as no later load could be resolved in its presence */
+         as no later load could be resolved in its presence */
       if (/* store? */
-	  (MD_OP_FLAGS(LSQ[index].op) & (F_MEM|F_STORE)) == (F_MEM|F_STORE))
-	{
-	  if (!STORE_ADDR_READY(&LSQ[index]))
-	    {
-	      /* FIXME: a later STD + STD known could hide the STA unknown */
-	      /* sta unknown, blocks all later loads, stop search */
-	      break;
-	    }
-	  else if (!OPERANDS_READY(&LSQ[index]))
-	    {
-	      /* sta known, but std unknown, may block a later store, record
-		 this address for later referral, we use an array here because
-		 for most simulations the number of entries to search will be
-		 very small */
-	      if (n_std_unknowns == MAX_STD_UNKNOWNS)
-		fatal("STD unknown array overflow, increase MAX_STD_UNKNOWNS");
-	      std_unknowns[n_std_unknowns++] = LSQ[index].addr;
-	    }
-	  else /* STORE_ADDR_READY() && OPERANDS_READY() */
-	    {
-	      /* a later STD known hides an earlier STD unknown */
-	      for (j=0; j<n_std_unknowns; j++)
-		{
-		  if (std_unknowns[j] == /* STA/STD known */LSQ[index].addr)
-		    std_unknowns[j] = /* bogus addr */0;
-		}
-	    }
-	}
+          (MD_OP_FLAGS(LSQ[index].op) & (F_MEM|F_STORE)) == (F_MEM|F_STORE))
+        {
+          if (!STORE_ADDR_READY(&LSQ[index]))
+            {
+              /* FIXME: a later STD + STD known could hide the STA unknown */
+              /* sta unknown, blocks all later loads, stop search */
+              break;
+            }
+          else if (!OPERANDS_READY(&LSQ[index]))
+            {
+              /* sta known, but std unknown, may block a later store, record
+                 this address for later referral, we use an array here because
+                 for most simulations the number of entries to search will be
+                 very small */
+              if (n_std_unknowns == MAX_STD_UNKNOWNS)
+                fatal("STD unknown array overflow, increase MAX_STD_UNKNOWNS");
+              std_unknowns[n_std_unknowns++] = LSQ[index].addr;
+            }
+          else /* STORE_ADDR_READY() && OPERANDS_READY() */
+            {
+              /* a later STD known hides an earlier STD unknown */
+              for (j=0; j<n_std_unknowns; j++)
+                {
+                  if (std_unknowns[j] == /* STA/STD known */LSQ[index].addr)
+                    std_unknowns[j] = /* bogus addr */0;
+                }
+            }
+        }
 
       if (/* load? */
-	  ((MD_OP_FLAGS(LSQ[index].op) & (F_MEM|F_LOAD)) == (F_MEM|F_LOAD))
-	  && /* queued? */!LSQ[index].queued
-	  && /* waiting? */!LSQ[index].issued
-	  && /* completed? */!LSQ[index].completed
-	  && /* regs ready? */OPERANDS_READY(&LSQ[index]))
-	{
-	  /* no STA unknown conflict (because we got to this check), check for
-	     a STD unknown conflict */
-	  for (j=0; j<n_std_unknowns; j++)
-	    {
-	      /* found a relevant STD unknown? */
-	      if (std_unknowns[j] == LSQ[index].addr)
-		break;
-	    }
-	  if (j == n_std_unknowns)
-	    {
-	      /* no STA or STD unknown conflicts, put load on ready queue */
-	      readyq_enqueue(&LSQ[index]);
-	    }
-	}
+          ((MD_OP_FLAGS(LSQ[index].op) & (F_MEM|F_LOAD)) == (F_MEM|F_LOAD))
+          && /* queued? */!LSQ[index].queued
+          && /* waiting? */!LSQ[index].issued
+          && /* completed? */!LSQ[index].completed
+          && /* regs ready? */OPERANDS_READY(&LSQ[index]))
+        {
+          /* no STA unknown conflict (because we got to this check), check for
+             a STD unknown conflict */
+          for (j=0; j<n_std_unknowns; j++)
+            {
+              /* found a relevant STD unknown? */
+              if (std_unknowns[j] == LSQ[index].addr)
+                break;
+            }
+          if (j == n_std_unknowns)
+            {
+              /* no STA or STD unknown conflicts, put load on ready queue */
+              readyq_enqueue(&LSQ[index]);
+            }
+        }
     }
 }
 
@@ -2635,178 +2635,178 @@ ruu_issue(void)
 
       /* still valid? */
       if (RSLINK_VALID(node))
-	{
-	  struct RUU_station *rs = RSLINK_RS(node);
+        {
+          struct RUU_station *rs = RSLINK_RS(node);
 
-	  /* issue operation, both reg and mem deps have been satisfied */
-	  if (!OPERANDS_READY(rs) || !rs->queued
-	      || rs->issued || rs->completed)
-	    panic("issued inst !ready, issued, or completed");
+          /* issue operation, both reg and mem deps have been satisfied */
+          if (!OPERANDS_READY(rs) || !rs->queued
+              || rs->issued || rs->completed)
+            panic("issued inst !ready, issued, or completed");
 
-	  /* node is now un-queued */
-	  rs->queued = FALSE;
+          /* node is now un-queued */
+          rs->queued = FALSE;
 
-	  if (rs->in_LSQ
-	      && ((MD_OP_FLAGS(rs->op) & (F_MEM|F_STORE)) == (F_MEM|F_STORE)))
-	    {
-	      /* stores complete in effectively zero time, result is
-		 written into the load/store queue, the actual store into
-		 the memory system occurs when the instruction is retired
-		 (see ruu_commit()) */
-	      rs->issued = TRUE;
-	      rs->completed = TRUE;
-	      if (rs->onames[0] || rs->onames[1])
-		panic("store creates result");
+          if (rs->in_LSQ
+              && ((MD_OP_FLAGS(rs->op) & (F_MEM|F_STORE)) == (F_MEM|F_STORE)))
+            {
+              /* stores complete in effectively zero time, result is
+                 written into the load/store queue, the actual store into
+                 the memory system occurs when the instruction is retired
+                 (see ruu_commit()) */
+              rs->issued = TRUE;
+              rs->completed = TRUE;
+              if (rs->onames[0] || rs->onames[1])
+                panic("store creates result");
 
-	      if (rs->recover_inst)
-		panic("mis-predicted store");
+              if (rs->recover_inst)
+                panic("mis-predicted store");
 
-	      /* entered execute stage, indicate in pipe trace */
-	      ptrace_newstage(rs->ptrace_seq, PST_WRITEBACK, 0);
+              /* entered execute stage, indicate in pipe trace */
+              ptrace_newstage(rs->ptrace_seq, PST_WRITEBACK, 0);
 
-	      /* one more inst issued */
-	      n_issued++;
-	    }
-	  else
-	    {
-	      /* issue the instruction to a functional unit */
-	      if (MD_OP_FUCLASS(rs->op) != NA)
-		{
-		  fu = res_get(fu_pool, MD_OP_FUCLASS(rs->op));
-		  if (fu)
-		    {
-		      /* got one! issue inst to functional unit */
-		      rs->issued = TRUE;
-		      /* reserve the functional unit */
-		      if (fu->master->busy)
-			panic("functional unit already in use");
+              /* one more inst issued */
+              n_issued++;
+            }
+          else
+            {
+              /* issue the instruction to a functional unit */
+              if (MD_OP_FUCLASS(rs->op) != NA)
+                {
+                  fu = res_get(fu_pool, MD_OP_FUCLASS(rs->op));
+                  if (fu)
+                    {
+                      /* got one! issue inst to functional unit */
+                      rs->issued = TRUE;
+                      /* reserve the functional unit */
+                      if (fu->master->busy)
+                        panic("functional unit already in use");
 
-		      /* schedule functional unit release event */
-		      fu->master->busy = fu->issuelat;
+                      /* schedule functional unit release event */
+                      fu->master->busy = fu->issuelat;
 
-		      /* schedule a result writeback event */
-		      if (rs->in_LSQ
-			  && ((MD_OP_FLAGS(rs->op) & (F_MEM|F_LOAD))
-			      == (F_MEM|F_LOAD)))
-			{
-			  int events = 0;
+                      /* schedule a result writeback event */
+                      if (rs->in_LSQ
+                          && ((MD_OP_FLAGS(rs->op) & (F_MEM|F_LOAD))
+                              == (F_MEM|F_LOAD)))
+                        {
+                          int events = 0;
 
-			  /* for loads, determine cache access latency:
-			     first scan LSQ to see if a store forward is
-			     possible, if not, access the data cache */
-			  load_lat = 0;
-			  i = (rs - LSQ);
-			  if (i != LSQ_head)
-			    {
-			      for (;;)
-				{
-				  /* go to next earlier LSQ entry */
-				  i = (i + (LSQ_size-1)) % LSQ_size;
+                          /* for loads, determine cache access latency:
+                             first scan LSQ to see if a store forward is
+                             possible, if not, access the data cache */
+                          load_lat = 0;
+                          i = (rs - LSQ);
+                          if (i != LSQ_head)
+                            {
+                              for (;;)
+                                {
+                                  /* go to next earlier LSQ entry */
+                                  i = (i + (LSQ_size-1)) % LSQ_size;
 
-				  /* FIXME: not dealing with partials! */
-				  if ((MD_OP_FLAGS(LSQ[i].op) & F_STORE)
-				      && (LSQ[i].addr == rs->addr))
-				    {
-				      /* hit in the LSQ */
-				      load_lat = 1;
-				      break;
-				    }
+                                  /* FIXME: not dealing with partials! */
+                                  if ((MD_OP_FLAGS(LSQ[i].op) & F_STORE)
+                                      && (LSQ[i].addr == rs->addr))
+                                    {
+                                      /* hit in the LSQ */
+                                      load_lat = 1;
+                                      break;
+                                    }
 
-				  /* scan finished? */
-				  if (i == LSQ_head)
-				    break;
-				}
-			    }
+                                  /* scan finished? */
+                                  if (i == LSQ_head)
+                                    break;
+                                }
+                            }
 
-			  /* was the value store forwared from the LSQ? */
-			  if (!load_lat)
-			    {
-			      int valid_addr = MD_VALID_ADDR(rs->addr);
+                          /* was the value store forwared from the LSQ? */
+                          if (!load_lat)
+                            {
+                              int valid_addr = MD_VALID_ADDR(rs->addr);
 
-			      if (!spec_mode && !valid_addr)
-				sim_invalid_addrs++;
+                              if (!spec_mode && !valid_addr)
+                                sim_invalid_addrs++;
 
-			      /* no! go to the data cache if addr is valid */
-			      if (cache_dl1 && valid_addr)
-				{
-				  /* access the cache if non-faulting */
-				  load_lat =
-				    cache_access(cache_dl1, Read,
-						 (rs->addr & ~3), NULL, 4,
-						 sim_cycle, NULL, NULL);
-				  if (load_lat > cache_dl1_lat)
-				    events |= PEV_CACHEMISS;
-				}
-			      else
-				{
-				  /* no caches defined, just use op latency */
-				  load_lat = fu->oplat;
-				}
-			    }
+                              /* no! go to the data cache if addr is valid */
+                              if (cache_dl1 && valid_addr)
+                                {
+                                  /* access the cache if non-faulting */
+                                  load_lat =
+                                    cache_access(cache_dl1, Read,
+                                                 (rs->addr & ~3), NULL, 4,
+                                                 sim_cycle, NULL, NULL);
+                                  if (load_lat > cache_dl1_lat)
+                                    events |= PEV_CACHEMISS;
+                                }
+                              else
+                                {
+                                  /* no caches defined, just use op latency */
+                                  load_lat = fu->oplat;
+                                }
+                            }
 
-			  /* all loads and stores must to access D-TLB */
-			  if (dtlb && MD_VALID_ADDR(rs->addr))
-			    {
-			      /* access the D-DLB, NOTE: this code will
-				 initiate speculative TLB misses */
-			      tlb_lat =
-				cache_access(dtlb, Read, (rs->addr & ~3),
-					     NULL, 4, sim_cycle, NULL, NULL);
-			      if (tlb_lat > 1)
-				events |= PEV_TLBMISS;
+                          /* all loads and stores must to access D-TLB */
+                          if (dtlb && MD_VALID_ADDR(rs->addr))
+                            {
+                              /* access the D-DLB, NOTE: this code will
+                                 initiate speculative TLB misses */
+                              tlb_lat =
+                                cache_access(dtlb, Read, (rs->addr & ~3),
+                                             NULL, 4, sim_cycle, NULL, NULL);
+                              if (tlb_lat > 1)
+                                events |= PEV_TLBMISS;
 
-			      /* D-cache/D-TLB accesses occur in parallel */
-			      load_lat = MAX(tlb_lat, load_lat);
-			    }
+                              /* D-cache/D-TLB accesses occur in parallel */
+                              load_lat = MAX(tlb_lat, load_lat);
+                            }
 
-			  /* use computed cache access latency */
-			  eventq_queue_event(rs, sim_cycle + load_lat);
+                          /* use computed cache access latency */
+                          eventq_queue_event(rs, sim_cycle + load_lat);
 
-			  /* entered execute stage, indicate in pipe trace */
-			  ptrace_newstage(rs->ptrace_seq, PST_EXECUTE,
-					  ((rs->ea_comp ? PEV_AGEN : 0)
-					   | events));
-			}
-		      else /* !load && !store */
-			{
-			  /* use deterministic functional unit latency */
-			  eventq_queue_event(rs, sim_cycle + fu->oplat);
+                          /* entered execute stage, indicate in pipe trace */
+                          ptrace_newstage(rs->ptrace_seq, PST_EXECUTE,
+                                          ((rs->ea_comp ? PEV_AGEN : 0)
+                                           | events));
+                        }
+                      else /* !load && !store */
+                        {
+                          /* use deterministic functional unit latency */
+                          eventq_queue_event(rs, sim_cycle + fu->oplat);
 
-			  /* entered execute stage, indicate in pipe trace */
-			  ptrace_newstage(rs->ptrace_seq, PST_EXECUTE, 
-					  rs->ea_comp ? PEV_AGEN : 0);
-			}
+                          /* entered execute stage, indicate in pipe trace */
+                          ptrace_newstage(rs->ptrace_seq, PST_EXECUTE, 
+                                          rs->ea_comp ? PEV_AGEN : 0);
+                        }
 
-		      /* one more inst issued */
-		      n_issued++;
-		    }
-		  else /* no functional unit */
-		    {
-		      /* insufficient functional unit resources, put operation
-			 back onto the ready list, we'll try to issue it
-			 again next cycle */
-		      readyq_enqueue(rs);
-		    }
-		}
-	      else /* does not require a functional unit! */
-		{
-		  /* FIXME: need better solution for these */
-		  /* the instruction does not need a functional unit */
-		  rs->issued = TRUE;
+                      /* one more inst issued */
+                      n_issued++;
+                    }
+                  else /* no functional unit */
+                    {
+                      /* insufficient functional unit resources, put operation
+                         back onto the ready list, we'll try to issue it
+                         again next cycle */
+                      readyq_enqueue(rs);
+                    }
+                }
+              else /* does not require a functional unit! */
+                {
+                  /* FIXME: need better solution for these */
+                  /* the instruction does not need a functional unit */
+                  rs->issued = TRUE;
 
-		  /* schedule a result event */
-		  eventq_queue_event(rs, sim_cycle + 1);
+                  /* schedule a result event */
+                  eventq_queue_event(rs, sim_cycle + 1);
 
-		  /* entered execute stage, indicate in pipe trace */
-		  ptrace_newstage(rs->ptrace_seq, PST_EXECUTE,
-				  rs->ea_comp ? PEV_AGEN : 0);
+                  /* entered execute stage, indicate in pipe trace */
+                  ptrace_newstage(rs->ptrace_seq, PST_EXECUTE,
+                                  rs->ea_comp ? PEV_AGEN : 0);
 
-		  /* one more inst issued */
-		  n_issued++;
-		}
-	    } /* !store */
+                  /* one more inst issued */
+                  n_issued++;
+                }
+            } /* !store */
 
-	}
+        }
       /* else, RUU entry was squashed */
 
       /* reclaim ready list entry, NOTE: this is done whether or not the
@@ -2825,13 +2825,13 @@ ruu_issue(void)
       /* still valid? */
       if (RSLINK_VALID(node))
         {
-	  struct RUU_station *rs = RSLINK_RS(node);
+          struct RUU_station *rs = RSLINK_RS(node);
 
           /* node is now un-queued */
           rs->queued = FALSE;
 
-	  /* not issued, put operation back onto the ready list, we'll try to
-	     issue it again next cycle */
+          /* not issued, put operation back onto the ready list, we'll try to
+             issue it again next cycle */
           readyq_enqueue(rs);
         }
       /* else, RUU entry was squashed */
@@ -2867,7 +2867,7 @@ static md_ctrl_t spec_regs_C;
 
 /* dump speculative register state */
 static void
-rspec_dump(FILE *stream)			/* output stream */
+rspec_dump(FILE *stream)                        /* output stream */
 {
   int i;
 
@@ -2882,44 +2882,44 @@ rspec_dump(FILE *stream)			/* output stream */
   for (i=0; i < MD_NUM_IREGS; i++)
     {
       if (BITMAP_SET_P(use_spec_R, R_BMAP_SZ, i))
-	{
-	  md_print_ireg(spec_regs_R, i, stream);
-	  fprintf(stream, "\n");
-	}
+        {
+          md_print_ireg(spec_regs_R, i, stream);
+          fprintf(stream, "\n");
+        }
     }
 
   /* dump speculative FP regs */
   for (i=0; i < MD_NUM_FREGS; i++)
     {
       if (BITMAP_SET_P(use_spec_F, F_BMAP_SZ, i))
-	{
-	  md_print_fpreg(spec_regs_F, i, stream);
-	  fprintf(stream, "\n");
-	}
+        {
+          md_print_fpreg(spec_regs_F, i, stream);
+          fprintf(stream, "\n");
+        }
     }
 
   /* dump speculative CTRL regs */
   for (i=0; i < MD_NUM_CREGS; i++)
     {
       if (BITMAP_SET_P(use_spec_C, C_BMAP_SZ, i))
-	{
-	  md_print_creg(spec_regs_C, i, stream);
-	  fprintf(stream, "\n");
-	}
+        {
+          md_print_creg(spec_regs_C, i, stream);
+          fprintf(stream, "\n");
+        }
     }
 }
 
 
 /* speculative memory hash table size, NOTE: this must be a power-of-two */
-#define STORE_HASH_SIZE		32
+#define STORE_HASH_SIZE         32
 
 /* speculative memory hash table definition, accesses go through this hash
    table when accessing memory in speculative mode, the hash table flush the
    table when recovering from mispredicted branches */
 struct spec_mem_ent {
-  struct spec_mem_ent *next;		/* ptr to next hash table bucket */
-  md_addr_t addr;			/* virtual address of spec state */
-  unsigned int data[2];			/* spec buffer, up to 8 bytes */
+  struct spec_mem_ent *next;            /* ptr to next hash table bucket */
+  md_addr_t addr;                       /* virtual address of spec state */
+  unsigned int data[2];                 /* spec buffer, up to 8 bytes */
 };
 
 /* speculative memory hash table */
@@ -2939,15 +2939,15 @@ static md_addr_t fetch_pred_PC;
 
 /* IFETCH -> DISPATCH instruction queue definition */
 struct fetch_rec {
-  md_inst_t IR;				/* inst register */
-  md_addr_t regs_PC, pred_PC;		/* current PC, predicted next PC */
-  struct bpred_update_t dir_update;	/* bpred direction update info */
-  int stack_recover_idx;		/* branch predictor RSB index */
-  unsigned int ptrace_seq;		/* print trace sequence id */
+  md_inst_t IR;                         /* inst register */
+  md_addr_t regs_PC, pred_PC;           /* current PC, predicted next PC */
+  struct bpred_update_t dir_update;     /* bpred direction update info */
+  int stack_recover_idx;                /* branch predictor RSB index */
+  unsigned int ptrace_seq;              /* print trace sequence id */
 };
-static struct fetch_rec *fetch_data;	/* IFETCH -> DISPATCH inst queue */
-static int fetch_num;			/* num entries in IF -> DIS queue */
-static int fetch_tail, fetch_head;	/* head and tail pointers of queue */
+static struct fetch_rec *fetch_data;    /* IFETCH -> DISPATCH inst queue */
+static int fetch_num;                   /* num entries in IF -> DIS queue */
+static int fetch_tail, fetch_head;      /* head and tail pointers of queue */
 
 /* recover instruction trace generator state to precise state state immediately
    before the first mis-predicted branch; this is accomplished by resetting
@@ -2977,11 +2977,11 @@ tracer_recover(void)
     {
       /* release all hash table buckets */
       for (ent=store_htable[i]; ent; ent=ent_next)
-	{
-	  ent_next = ent->next;
-	  ent->next = bucket_free_list;
-	  bucket_free_list = ent;
-	}
+        {
+          ent_next = ent->next;
+          ent->next = bucket_free_list;
+          bucket_free_list = ent;
+        }
       store_htable[i] = NULL;
     }
 
@@ -2989,14 +2989,14 @@ tracer_recover(void)
   if (ptrace_active)
     {
       while (fetch_num != 0)
-	{
-	  /* squash the next instruction from the IFETCH -> DISPATCH queue */
-	  ptrace_endinst(fetch_data[fetch_head].ptrace_seq);
+        {
+          /* squash the next instruction from the IFETCH -> DISPATCH queue */
+          ptrace_endinst(fetch_data[fetch_head].ptrace_seq);
 
-	  /* consume instruction from IFETCH -> DISPATCH queue */
-	  fetch_head = (fetch_head+1) & (ruu_ifq_size - 1);
-	  fetch_num--;
-	}
+          /* consume instruction from IFETCH -> DISPATCH queue */
+          fetch_head = (fetch_head+1) & (ruu_ifq_size - 1);
+          fetch_num--;
+        }
     }
 
   /* reset IFETCH state */
@@ -3026,7 +3026,7 @@ tracer_init(void)
 
 
 /* speculative memory hash table address hash function */
-#define HASH_ADDR(ADDR)							\
+#define HASH_ADDR(ADDR)                                                 \
   ((((ADDR) >> 24)^((ADDR) >> 16)^((ADDR) >> 8)^(ADDR)) & (STORE_HASH_SIZE-1))
 
 /* this functional provides a layer of mis-speculated state over the
@@ -3039,11 +3039,11 @@ tracer_init(void)
    generator transitions back to non-speculative trace generation mode,
    tracer_recover() clears this table, returns any access fault */
 static enum md_fault_type
-spec_mem_access(struct mem_t *mem,		/* memory space to access */
-		enum mem_cmd cmd,		/* Read or Write access cmd */
-		md_addr_t addr,			/* virtual address of access */
-		void *p,			/* input/output buffer */
-		int nbytes)			/* number of bytes to access */
+spec_mem_access(struct mem_t *mem,              /* memory space to access */
+                enum mem_cmd cmd,               /* Read or Write access cmd */
+                md_addr_t addr,                 /* virtual address of access */
+                void *p,                        /* input/output buffer */
+                int nbytes)                     /* number of bytes to access */
 {
   int i, index;
   struct spec_mem_ent *ent, *prev;
@@ -3056,19 +3056,19 @@ spec_mem_access(struct mem_t *mem,		/* memory space to access */
     {
       /* no can do, return zero result */
       for (i=0; i < nbytes; i++)
-	((char *)p)[i] = 0;
+        ((char *)p)[i] = 0;
 
       return md_fault_none;
     }
 
   /* check permissions */
   if (!((addr >= ld_text_base && addr < (ld_text_base+ld_text_size)
-	 && cmd == Read)
-	|| MD_VALID_ADDR(addr)))
+         && cmd == Read)
+        || MD_VALID_ADDR(addr)))
     {
       /* no can do, return zero result */
       for (i=0; i < nbytes; i++)
-	((char *)p)[i] = 0;
+        ((char *)p)[i] = 0;
 
       return md_fault_none;
     }
@@ -3078,17 +3078,17 @@ spec_mem_access(struct mem_t *mem,		/* memory space to access */
   for (prev=NULL,ent=store_htable[index]; ent; prev=ent,ent=ent->next)
     {
       if (ent->addr == addr)
-	{
-	  /* reorder chains to speed access into hash table */
-	  if (prev != NULL)
-	    {
-	      /* not at head of list, relink the hash table entry at front */
-	      prev->next = ent->next;
+        {
+          /* reorder chains to speed access into hash table */
+          if (prev != NULL)
+            {
+              /* not at head of list, relink the hash table entry at front */
+              prev->next = ent->next;
               ent->next = store_htable[index];
               store_htable[index] = ent;
-	    }
-	  break;
-	}
+            }
+          break;
+        }
     }
 
   /* no, if it is a write, allocate a hash table entry to hold the data */
@@ -3096,23 +3096,23 @@ spec_mem_access(struct mem_t *mem,		/* memory space to access */
     {
       /* try to get an entry from the free list, if available */
       if (!bucket_free_list)
-	{
-	  /* otherwise, call calloc() to get the needed storage */
-	  bucket_free_list = calloc(1, sizeof(struct spec_mem_ent));
-	  if (!bucket_free_list)
-	    fatal("out of virtual memory");
-	}
+        {
+          /* otherwise, call calloc() to get the needed storage */
+          bucket_free_list = calloc(1, sizeof(struct spec_mem_ent));
+          if (!bucket_free_list)
+            fatal("out of virtual memory");
+        }
       ent = bucket_free_list;
       bucket_free_list = bucket_free_list->next;
 
       if (!bugcompat_mode)
-	{
-	  /* insert into hash table */
-	  ent->next = store_htable[index];
-	  store_htable[index] = ent;
-	  ent->addr = addr;
-	  ent->data[0] = 0; ent->data[1] = 0;
-	}
+        {
+          /* insert into hash table */
+          ent->next = store_htable[index];
+          store_htable[index] = ent;
+          ent->addr = addr;
+          ent->data[0] = 0; ent->data[1] = 0;
+        }
     }
 
   /* handle the read or write to speculative or non-speculative storage */
@@ -3120,91 +3120,91 @@ spec_mem_access(struct mem_t *mem,		/* memory space to access */
     {
     case 1:
       if (cmd == Read)
-	{
-	  if (ent)
-	    {
-	      /* read from mis-speculated state buffer */
-	      *((byte_t *)p) = *((byte_t *)(&ent->data[0]));
-	    }
-	  else
-	    {
-	      /* read from non-speculative memory state, don't allocate
-	         memory pages with speculative loads */
-	      *((byte_t *)p) = MEM_READ_BYTE(mem, addr);
-	    }
-	}
+        {
+          if (ent)
+            {
+              /* read from mis-speculated state buffer */
+              *((byte_t *)p) = *((byte_t *)(&ent->data[0]));
+            }
+          else
+            {
+              /* read from non-speculative memory state, don't allocate
+                 memory pages with speculative loads */
+              *((byte_t *)p) = MEM_READ_BYTE(mem, addr);
+            }
+        }
       else
-	{
-	  /* always write into mis-speculated state buffer */
-	  *((byte_t *)(&ent->data[0])) = *((byte_t *)p);
-	}
+        {
+          /* always write into mis-speculated state buffer */
+          *((byte_t *)(&ent->data[0])) = *((byte_t *)p);
+        }
       break;
     case 2:
       if (cmd == Read)
-	{
-	  if (ent)
-	    {
-	      /* read from mis-speculated state buffer */
-	      *((half_t *)p) = *((half_t *)(&ent->data[0]));
-	    }
-	  else
-	    {
-	      /* read from non-speculative memory state, don't allocate
-	         memory pages with speculative loads */
-	      *((half_t *)p) = MEM_READ_HALF(mem, addr);
-	    }
-	}
+        {
+          if (ent)
+            {
+              /* read from mis-speculated state buffer */
+              *((half_t *)p) = *((half_t *)(&ent->data[0]));
+            }
+          else
+            {
+              /* read from non-speculative memory state, don't allocate
+                 memory pages with speculative loads */
+              *((half_t *)p) = MEM_READ_HALF(mem, addr);
+            }
+        }
       else
-	{
-	  /* always write into mis-speculated state buffer */
-	  *((half_t *)&ent->data[0]) = *((half_t *)p);
-	}
+        {
+          /* always write into mis-speculated state buffer */
+          *((half_t *)&ent->data[0]) = *((half_t *)p);
+        }
       break;
     case 4:
       if (cmd == Read)
-	{
-	  if (ent)
-	    {
-	      /* read from mis-speculated state buffer */
-	      *((word_t *)p) = *((word_t *)&ent->data[0]);
-	    }
-	  else
-	    {
-	      /* read from non-speculative memory state, don't allocate
-	         memory pages with speculative loads */
-	      *((word_t *)p) = MEM_READ_WORD(mem, addr);
-	    }
-	}
+        {
+          if (ent)
+            {
+              /* read from mis-speculated state buffer */
+              *((word_t *)p) = *((word_t *)&ent->data[0]);
+            }
+          else
+            {
+              /* read from non-speculative memory state, don't allocate
+                 memory pages with speculative loads */
+              *((word_t *)p) = MEM_READ_WORD(mem, addr);
+            }
+        }
       else
-	{
-	  /* always write into mis-speculated state buffer */
-	  *((word_t *)&ent->data[0]) = *((word_t *)p);
-	}
+        {
+          /* always write into mis-speculated state buffer */
+          *((word_t *)&ent->data[0]) = *((word_t *)p);
+        }
       break;
     case 8:
       if (cmd == Read)
-	{
-	  if (ent)
-	    {
-	      /* read from mis-speculated state buffer */
-	      *((word_t *)p) = *((word_t *)&ent->data[0]);
-	      *(((word_t *)p)+1) = *((word_t *)&ent->data[1]);
-	    }
-	  else
-	    {
-	      /* read from non-speculative memory state, don't allocate
-	         memory pages with speculative loads */
-	      *((word_t *)p) = MEM_READ_WORD(mem, addr);
-	      *(((word_t *)p)+1) =
-		MEM_READ_WORD(mem, addr + sizeof(word_t));
-	    }
-	}
+        {
+          if (ent)
+            {
+              /* read from mis-speculated state buffer */
+              *((word_t *)p) = *((word_t *)&ent->data[0]);
+              *(((word_t *)p)+1) = *((word_t *)&ent->data[1]);
+            }
+          else
+            {
+              /* read from non-speculative memory state, don't allocate
+                 memory pages with speculative loads */
+              *((word_t *)p) = MEM_READ_WORD(mem, addr);
+              *(((word_t *)p)+1) =
+                MEM_READ_WORD(mem, addr + sizeof(word_t));
+            }
+        }
       else
-	{
-	  /* always write into mis-speculated state buffer */
-	  *((word_t *)&ent->data[0]) = *((word_t *)p);
-	  *((word_t *)&ent->data[1]) = *(((word_t *)p)+1);
-	}
+        {
+          /* always write into mis-speculated state buffer */
+          *((word_t *)&ent->data[0]) = *((word_t *)p);
+          *((word_t *)&ent->data[1]) = *(((word_t *)p)+1);
+        }
       break;
     default:
       panic("access size not supported in mis-speculative mode");
@@ -3215,7 +3215,7 @@ spec_mem_access(struct mem_t *mem,		/* memory space to access */
 
 /* dump speculative memory state */
 static void
-mspec_dump(FILE *stream)			/* output stream */
+mspec_dump(FILE *stream)                        /* output stream */
 {
   int i;
   struct spec_mem_ent *ent;
@@ -3231,22 +3231,22 @@ mspec_dump(FILE *stream)			/* output stream */
     {
       /* dump contents of all hash table buckets */
       for (ent=store_htable[i]; ent; ent=ent->next)
-	{
-	  myfprintf(stream, "[0x%08p]: %12.0f/0x%08x:%08x\n",
-		    ent->addr, (double)(*((double *)ent->data)),
-		    *((unsigned int *)&ent->data[0]),
-		    *(((unsigned int *)&ent->data[0]) + 1));
-	}
+        {
+          myfprintf(stream, "[0x%08p]: %12.0f/0x%08x:%08x\n",
+                    ent->addr, (double)(*((double *)ent->data)),
+                    *((unsigned int *)&ent->data[0]),
+                    *(((unsigned int *)&ent->data[0]) + 1));
+        }
     }
 }
 
 /* default memory state accessor, used by DLite */
-static char *					/* err str, NULL for no err */
-simoo_mem_obj(struct mem_t *mem,		/* memory space to access */
-	      int is_write,			/* access type */
-	      md_addr_t addr,			/* address to access */
-	      char *p,				/* input/output buffer */
-	      int nbytes)			/* size of access */
+static char *                                   /* err str, NULL for no err */
+simoo_mem_obj(struct mem_t *mem,                /* memory space to access */
+              int is_write,                     /* access type */
+              md_addr_t addr,                   /* address to access */
+              char *p,                          /* input/output buffer */
+              int nbytes)                       /* size of access */
 {
   enum mem_cmd cmd;
 
@@ -3281,9 +3281,9 @@ simoo_mem_obj(struct mem_t *mem,		/* memory space to access */
 /* link RS onto the output chain number of whichever operation will next
    create the architected register value IDEP_NAME */
 static INLINE void
-ruu_link_idep(struct RUU_station *rs,		/* rs station to link */
-	      int idep_num,			/* input dependence number */
-	      int idep_name)			/* input register name */
+ruu_link_idep(struct RUU_station *rs,           /* rs station to link */
+              int idep_num,                     /* input dependence number */
+              int idep_name)                    /* input register name */
 {
   struct CV_link head;
   struct RS_link *link;
@@ -3321,9 +3321,9 @@ ruu_link_idep(struct RUU_station *rs,		/* rs station to link */
 
 /* make RS the creator of architected register ODEP_NAME */
 static INLINE void
-ruu_install_odep(struct RUU_station *rs,	/* creating RUU station */
-		 int odep_num,			/* output operand number */
-		 int odep_name)			/* output register name */
+ruu_install_odep(struct RUU_station *rs,        /* creating RUU station */
+                 int odep_num,                  /* output operand number */
+                 int odep_name)                 /* output register name */
 {
   struct CV_link cv;
 
@@ -3352,37 +3352,37 @@ ruu_install_odep(struct RUU_station *rs,	/* creating RUU station */
  * configure the instruction decode engine
  */
 
-#define DNA			(0)
+#define DNA                     (0)
 
 #if defined(TARGET_PISA)
 
 /* general register dependence decoders */
-#define DGPR(N)			(N)
-#define DGPR_D(N)		((N) &~1)
+#define DGPR(N)                 (N)
+#define DGPR_D(N)               ((N) &~1)
 
 /* floating point register dependence decoders */
-#define DFPR_L(N)		(((N)+32)&~1)
-#define DFPR_F(N)		(((N)+32)&~1)
-#define DFPR_D(N)		(((N)+32)&~1)
+#define DFPR_L(N)               (((N)+32)&~1)
+#define DFPR_F(N)               (((N)+32)&~1)
+#define DFPR_D(N)               (((N)+32)&~1)
 
 /* miscellaneous register dependence decoders */
-#define DHI			(0+32+32)
-#define DLO			(1+32+32)
-#define DFCC			(2+32+32)
-#define DTMP			(3+32+32)
+#define DHI                     (0+32+32)
+#define DLO                     (1+32+32)
+#define DFCC                    (2+32+32)
+#define DTMP                    (3+32+32)
 
 #elif defined(TARGET_ALPHA)
 
 /* general register dependence decoders, $r31 maps to DNA (0) */
-#define DGPR(N)			(31 - (N)) /* was: (((N) == 31) ? DNA : (N)) */
+#define DGPR(N)                 (31 - (N)) /* was: (((N) == 31) ? DNA : (N)) */
 
 /* floating point register dependence decoders */
-#define DFPR(N)			(((N) == 31) ? DNA : ((N)+32))
+#define DFPR(N)                 (((N) == 31) ? DNA : ((N)+32))
 
 /* miscellaneous register dependence decoders */
-#define DFPCR			(0+32+32)
-#define DUNIQ			(1+32+32)
-#define DTMP			(2+32+32)
+#define DFPCR                   (0+32+32)
+#define DUNIQ                   (1+32+32)
+#define DTMP                    (2+32+32)
 
 #else
 #error No ISA target defined...
@@ -3398,7 +3398,7 @@ ruu_install_odep(struct RUU_station *rs,	/* creating RUU station */
 
 /* target program counter */
 #undef  SET_TPC
-#define SET_TPC(EXPR)		(target_PC = (EXPR))
+#define SET_TPC(EXPR)           (target_PC = (EXPR))
 
 /* current program counter */
 #define CPC                     (regs.regs_PC)
@@ -3408,13 +3408,13 @@ ruu_install_odep(struct RUU_station *rs,	/* creating RUU station */
    provided for fast recovery during wrong path execute (see tracer_recover()
    for details on this process */
 #define GPR(N)                  (BITMAP_SET_P(use_spec_R, R_BMAP_SZ, (N))\
-				 ? spec_regs_R[N]                       \
-				 : regs.regs_R[N])
-#define SET_GPR(N,EXPR)         (spec_mode				\
-				 ? ((spec_regs_R[N] = (EXPR)),		\
-				    BITMAP_SET(use_spec_R, R_BMAP_SZ, (N)),\
-				    spec_regs_R[N])			\
-				 : (regs.regs_R[N] = (EXPR)))
+                                 ? spec_regs_R[N]                       \
+                                 : regs.regs_R[N])
+#define SET_GPR(N,EXPR)         (spec_mode                              \
+                                 ? ((spec_regs_R[N] = (EXPR)),          \
+                                    BITMAP_SET(use_spec_R, R_BMAP_SZ, (N)),\
+                                    spec_regs_R[N])                     \
+                                 : (regs.regs_R[N] = (EXPR)))
 
 #if defined(TARGET_PISA)
 
@@ -3422,107 +3422,107 @@ ruu_install_odep(struct RUU_station *rs,	/* creating RUU station */
    provided for fast recovery during wrong path execute (see tracer_recover()
    for details on this process */
 #define FPR_L(N)                (BITMAP_SET_P(use_spec_F, F_BMAP_SZ, ((N)&~1))\
-				 ? spec_regs_F.l[(N)]                   \
-				 : regs.regs_F.l[(N)])
-#define SET_FPR_L(N,EXPR)       (spec_mode				\
-				 ? ((spec_regs_F.l[(N)] = (EXPR)),	\
-				    BITMAP_SET(use_spec_F,F_BMAP_SZ,((N)&~1)),\
-				    spec_regs_F.l[(N)])			\
-				 : (regs.regs_F.l[(N)] = (EXPR)))
+                                 ? spec_regs_F.l[(N)]                   \
+                                 : regs.regs_F.l[(N)])
+#define SET_FPR_L(N,EXPR)       (spec_mode                              \
+                                 ? ((spec_regs_F.l[(N)] = (EXPR)),      \
+                                    BITMAP_SET(use_spec_F,F_BMAP_SZ,((N)&~1)),\
+                                    spec_regs_F.l[(N)])                 \
+                                 : (regs.regs_F.l[(N)] = (EXPR)))
 #define FPR_F(N)                (BITMAP_SET_P(use_spec_F, F_BMAP_SZ, ((N)&~1))\
-				 ? spec_regs_F.f[(N)]                   \
-				 : regs.regs_F.f[(N)])
-#define SET_FPR_F(N,EXPR)       (spec_mode				\
-				 ? ((spec_regs_F.f[(N)] = (EXPR)),	\
-				    BITMAP_SET(use_spec_F,F_BMAP_SZ,((N)&~1)),\
-				    spec_regs_F.f[(N)])			\
-				 : (regs.regs_F.f[(N)] = (EXPR)))
+                                 ? spec_regs_F.f[(N)]                   \
+                                 : regs.regs_F.f[(N)])
+#define SET_FPR_F(N,EXPR)       (spec_mode                              \
+                                 ? ((spec_regs_F.f[(N)] = (EXPR)),      \
+                                    BITMAP_SET(use_spec_F,F_BMAP_SZ,((N)&~1)),\
+                                    spec_regs_F.f[(N)])                 \
+                                 : (regs.regs_F.f[(N)] = (EXPR)))
 #define FPR_D(N)                (BITMAP_SET_P(use_spec_F, F_BMAP_SZ, ((N)&~1))\
-				 ? spec_regs_F.d[(N) >> 1]              \
-				 : regs.regs_F.d[(N) >> 1])
-#define SET_FPR_D(N,EXPR)       (spec_mode				\
-				 ? ((spec_regs_F.d[(N) >> 1] = (EXPR)),	\
-				    BITMAP_SET(use_spec_F,F_BMAP_SZ,((N)&~1)),\
-				    spec_regs_F.d[(N) >> 1])		\
-				 : (regs.regs_F.d[(N) >> 1] = (EXPR)))
+                                 ? spec_regs_F.d[(N) >> 1]              \
+                                 : regs.regs_F.d[(N) >> 1])
+#define SET_FPR_D(N,EXPR)       (spec_mode                              \
+                                 ? ((spec_regs_F.d[(N) >> 1] = (EXPR)), \
+                                    BITMAP_SET(use_spec_F,F_BMAP_SZ,((N)&~1)),\
+                                    spec_regs_F.d[(N) >> 1])            \
+                                 : (regs.regs_F.d[(N) >> 1] = (EXPR)))
 
 /* miscellanous register accessors, NOTE: speculative copy on write storage
    provided for fast recovery during wrong path execute (see tracer_recover()
    for details on this process */
-#define HI			(BITMAP_SET_P(use_spec_C, C_BMAP_SZ, /*hi*/0)\
-				 ? spec_regs_C.hi			\
-				 : regs.regs_C.hi)
-#define SET_HI(EXPR)		(spec_mode				\
-				 ? ((spec_regs_C.hi = (EXPR)),		\
-				    BITMAP_SET(use_spec_C, C_BMAP_SZ,/*hi*/0),\
-				    spec_regs_C.hi)			\
-				 : (regs.regs_C.hi = (EXPR)))
-#define LO			(BITMAP_SET_P(use_spec_C, C_BMAP_SZ, /*lo*/1)\
-				 ? spec_regs_C.lo			\
-				 : regs.regs_C.lo)
-#define SET_LO(EXPR)		(spec_mode				\
-				 ? ((spec_regs_C.lo = (EXPR)),		\
-				    BITMAP_SET(use_spec_C, C_BMAP_SZ,/*lo*/1),\
-				    spec_regs_C.lo)			\
-				 : (regs.regs_C.lo = (EXPR)))
-#define FCC			(BITMAP_SET_P(use_spec_C, C_BMAP_SZ,/*fcc*/2)\
-				 ? spec_regs_C.fcc			\
-				 : regs.regs_C.fcc)
-#define SET_FCC(EXPR)		(spec_mode				\
-				 ? ((spec_regs_C.fcc = (EXPR)),		\
-				    BITMAP_SET(use_spec_C,C_BMAP_SZ,/*fcc*/2),\
-				    spec_regs_C.fcc)			\
-				 : (regs.regs_C.fcc = (EXPR)))
+#define HI                      (BITMAP_SET_P(use_spec_C, C_BMAP_SZ, /*hi*/0)\
+                                 ? spec_regs_C.hi                       \
+                                 : regs.regs_C.hi)
+#define SET_HI(EXPR)            (spec_mode                              \
+                                 ? ((spec_regs_C.hi = (EXPR)),          \
+                                    BITMAP_SET(use_spec_C, C_BMAP_SZ,/*hi*/0),\
+                                    spec_regs_C.hi)                     \
+                                 : (regs.regs_C.hi = (EXPR)))
+#define LO                      (BITMAP_SET_P(use_spec_C, C_BMAP_SZ, /*lo*/1)\
+                                 ? spec_regs_C.lo                       \
+                                 : regs.regs_C.lo)
+#define SET_LO(EXPR)            (spec_mode                              \
+                                 ? ((spec_regs_C.lo = (EXPR)),          \
+                                    BITMAP_SET(use_spec_C, C_BMAP_SZ,/*lo*/1),\
+                                    spec_regs_C.lo)                     \
+                                 : (regs.regs_C.lo = (EXPR)))
+#define FCC                     (BITMAP_SET_P(use_spec_C, C_BMAP_SZ,/*fcc*/2)\
+                                 ? spec_regs_C.fcc                      \
+                                 : regs.regs_C.fcc)
+#define SET_FCC(EXPR)           (spec_mode                              \
+                                 ? ((spec_regs_C.fcc = (EXPR)),         \
+                                    BITMAP_SET(use_spec_C,C_BMAP_SZ,/*fcc*/2),\
+                                    spec_regs_C.fcc)                    \
+                                 : (regs.regs_C.fcc = (EXPR)))
 
 #elif defined(TARGET_ALPHA)
 
 /* floating point register accessors, NOTE: speculative copy on write storage
    provided for fast recovery during wrong path execute (see tracer_recover()
    for details on this process */
-#define FPR_Q(N)		(BITMAP_SET_P(use_spec_F, F_BMAP_SZ, (N))\
-				 ? spec_regs_F.q[(N)]                   \
-				 : regs.regs_F.q[(N)])
-#define SET_FPR_Q(N,EXPR)	(spec_mode				\
-				 ? ((spec_regs_F.q[(N)] = (EXPR)),	\
-				    BITMAP_SET(use_spec_F,F_BMAP_SZ, (N)),\
-				    spec_regs_F.q[(N)])			\
-				 : (regs.regs_F.q[(N)] = (EXPR)))
-#define FPR(N)			(BITMAP_SET_P(use_spec_F, F_BMAP_SZ, (N))\
-				 ? spec_regs_F.d[(N)]			\
-				 : regs.regs_F.d[(N)])
-#define SET_FPR(N,EXPR)		(spec_mode				\
-				 ? ((spec_regs_F.d[(N)] = (EXPR)),	\
-				    BITMAP_SET(use_spec_F,F_BMAP_SZ, (N)),\
-				    spec_regs_F.d[(N)])			\
-				 : (regs.regs_F.d[(N)] = (EXPR)))
+#define FPR_Q(N)                (BITMAP_SET_P(use_spec_F, F_BMAP_SZ, (N))\
+                                 ? spec_regs_F.q[(N)]                   \
+                                 : regs.regs_F.q[(N)])
+#define SET_FPR_Q(N,EXPR)       (spec_mode                              \
+                                 ? ((spec_regs_F.q[(N)] = (EXPR)),      \
+                                    BITMAP_SET(use_spec_F,F_BMAP_SZ, (N)),\
+                                    spec_regs_F.q[(N)])                 \
+                                 : (regs.regs_F.q[(N)] = (EXPR)))
+#define FPR(N)                  (BITMAP_SET_P(use_spec_F, F_BMAP_SZ, (N))\
+                                 ? spec_regs_F.d[(N)]                   \
+                                 : regs.regs_F.d[(N)])
+#define SET_FPR(N,EXPR)         (spec_mode                              \
+                                 ? ((spec_regs_F.d[(N)] = (EXPR)),      \
+                                    BITMAP_SET(use_spec_F,F_BMAP_SZ, (N)),\
+                                    spec_regs_F.d[(N)])                 \
+                                 : (regs.regs_F.d[(N)] = (EXPR)))
 
 /* miscellanous register accessors, NOTE: speculative copy on write storage
    provided for fast recovery during wrong path execute (see tracer_recover()
    for details on this process */
-#define FPCR			(BITMAP_SET_P(use_spec_C, C_BMAP_SZ,/*fpcr*/0)\
-				 ? spec_regs_C.fpcr			\
-				 : regs.regs_C.fpcr)
-#define SET_FPCR(EXPR)		(spec_mode				\
-				 ? ((spec_regs_C.fpcr = (EXPR)),	\
-				   BITMAP_SET(use_spec_C,C_BMAP_SZ,/*fpcr*/0),\
-				    spec_regs_C.fpcr)			\
-				 : (regs.regs_C.fpcr = (EXPR)))
-#define UNIQ			(BITMAP_SET_P(use_spec_C, C_BMAP_SZ,/*uniq*/1)\
-				 ? spec_regs_C.uniq			\
-				 : regs.regs_C.uniq)
-#define SET_UNIQ(EXPR)		(spec_mode				\
-				 ? ((spec_regs_C.uniq = (EXPR)),	\
-				   BITMAP_SET(use_spec_C,C_BMAP_SZ,/*uniq*/1),\
-				    spec_regs_C.uniq)			\
-				 : (regs.regs_C.uniq = (EXPR)))
-#define FCC			(BITMAP_SET_P(use_spec_C, C_BMAP_SZ,/*fcc*/2)\
-				 ? spec_regs_C.fcc			\
-				 : regs.regs_C.fcc)
-#define SET_FCC(EXPR)		(spec_mode				\
-				 ? ((spec_regs_C.fcc = (EXPR)),		\
-				    BITMAP_SET(use_spec_C,C_BMAP_SZ,/*fcc*/1),\
-				    spec_regs_C.fcc)			\
-				 : (regs.regs_C.fcc = (EXPR)))
+#define FPCR                    (BITMAP_SET_P(use_spec_C, C_BMAP_SZ,/*fpcr*/0)\
+                                 ? spec_regs_C.fpcr                     \
+                                 : regs.regs_C.fpcr)
+#define SET_FPCR(EXPR)          (spec_mode                              \
+                                 ? ((spec_regs_C.fpcr = (EXPR)),        \
+                                   BITMAP_SET(use_spec_C,C_BMAP_SZ,/*fpcr*/0),\
+                                    spec_regs_C.fpcr)                   \
+                                 : (regs.regs_C.fpcr = (EXPR)))
+#define UNIQ                    (BITMAP_SET_P(use_spec_C, C_BMAP_SZ,/*uniq*/1)\
+                                 ? spec_regs_C.uniq                     \
+                                 : regs.regs_C.uniq)
+#define SET_UNIQ(EXPR)          (spec_mode                              \
+                                 ? ((spec_regs_C.uniq = (EXPR)),        \
+                                   BITMAP_SET(use_spec_C,C_BMAP_SZ,/*uniq*/1),\
+                                    spec_regs_C.uniq)                   \
+                                 : (regs.regs_C.uniq = (EXPR)))
+#define FCC                     (BITMAP_SET_P(use_spec_C, C_BMAP_SZ,/*fcc*/2)\
+                                 ? spec_regs_C.fcc                      \
+                                 : regs.regs_C.fcc)
+#define SET_FCC(EXPR)           (spec_mode                              \
+                                 ? ((spec_regs_C.fcc = (EXPR)),         \
+                                    BITMAP_SET(use_spec_C,C_BMAP_SZ,/*fcc*/1),\
+                                    spec_regs_C.fcc)                    \
+                                 : (regs.regs_C.fcc = (EXPR)))
 
 #else
 #error No ISA target defined...
@@ -3531,85 +3531,85 @@ ruu_install_odep(struct RUU_station *rs,	/* creating RUU station */
 /* precise architected memory state accessor macros, NOTE: speculative copy on
    write storage provided for fast recovery during wrong path execute (see
    tracer_recover() for details on this process */
-#define __READ_SPECMEM(SRC, SRC_V, FAULT)				\
-  (addr = (SRC),							\
-   (spec_mode								\
+#define __READ_SPECMEM(SRC, SRC_V, FAULT)                               \
+  (addr = (SRC),                                                        \
+   (spec_mode                                                           \
     ? ((FAULT) = spec_mem_access(mem, Read, addr, &SRC_V, sizeof(SRC_V)))\
-    : ((FAULT) = mem_access(mem, Read, addr, &SRC_V, sizeof(SRC_V)))),	\
+    : ((FAULT) = mem_access(mem, Read, addr, &SRC_V, sizeof(SRC_V)))),  \
    SRC_V)
 
-#define READ_BYTE(SRC, FAULT)						\
+#define READ_BYTE(SRC, FAULT)                                           \
   __READ_SPECMEM((SRC), temp_byte, (FAULT))
-#define READ_HALF(SRC, FAULT)						\
+#define READ_HALF(SRC, FAULT)                                           \
   MD_SWAPH(__READ_SPECMEM((SRC), temp_half, (FAULT)))
-#define READ_WORD(SRC, FAULT)						\
+#define READ_WORD(SRC, FAULT)                                           \
   MD_SWAPW(__READ_SPECMEM((SRC), temp_word, (FAULT)))
 #ifdef HOST_HAS_QWORD
-#define READ_QWORD(SRC, FAULT)						\
+#define READ_QWORD(SRC, FAULT)                                          \
   MD_SWAPQ(__READ_SPECMEM((SRC), temp_qword, (FAULT)))
 #endif /* HOST_HAS_QWORD */
 
 
-#define __WRITE_SPECMEM(SRC, DST, DST_V, FAULT)				\
-  (DST_V = (SRC), addr = (DST),						\
-   (spec_mode								\
+#define __WRITE_SPECMEM(SRC, DST, DST_V, FAULT)                         \
+  (DST_V = (SRC), addr = (DST),                                         \
+   (spec_mode                                                           \
     ? ((FAULT) = spec_mem_access(mem, Write, addr, &DST_V, sizeof(DST_V)))\
     : ((FAULT) = mem_access(mem, Write, addr, &DST_V, sizeof(DST_V)))))
 
-#define WRITE_BYTE(SRC, DST, FAULT)					\
+#define WRITE_BYTE(SRC, DST, FAULT)                                     \
   __WRITE_SPECMEM((SRC), (DST), temp_byte, (FAULT))
-#define WRITE_HALF(SRC, DST, FAULT)					\
+#define WRITE_HALF(SRC, DST, FAULT)                                     \
   __WRITE_SPECMEM(MD_SWAPH(SRC), (DST), temp_half, (FAULT))
-#define WRITE_WORD(SRC, DST, FAULT)					\
+#define WRITE_WORD(SRC, DST, FAULT)                                     \
   __WRITE_SPECMEM(MD_SWAPW(SRC), (DST), temp_word, (FAULT))
 #ifdef HOST_HAS_QWORD
-#define WRITE_QWORD(SRC, DST, FAULT)					\
+#define WRITE_QWORD(SRC, DST, FAULT)                                    \
   __WRITE_SPECMEM(MD_SWAPQ(SRC), (DST), temp_qword, (FAULT))
 #endif /* HOST_HAS_QWORD */
 
 /* system call handler macro */
-#define SYSCALL(INST)							\
-  (/* only execute system calls in non-speculative mode */		\
-   (spec_mode ? panic("speculative syscall") : (void) 0),		\
+#define SYSCALL(INST)                                                   \
+  (/* only execute system calls in non-speculative mode */              \
+   (spec_mode ? panic("speculative syscall") : (void) 0),               \
    sys_syscall(&regs, mem_access, mem, INST, TRUE))
 
 /* default register state accessor, used by DLite */
-static char *					/* err str, NULL for no err */
-simoo_reg_obj(struct regs_t *xregs,		/* registers to access */
-	      int is_write,			/* access type */
-	      enum md_reg_type rt,		/* reg bank to probe */
-	      int reg,				/* register number */
-	      struct eval_value_t *val)		/* input, output */
+static char *                                   /* err str, NULL for no err */
+simoo_reg_obj(struct regs_t *xregs,             /* registers to access */
+              int is_write,                     /* access type */
+              enum md_reg_type rt,              /* reg bank to probe */
+              int reg,                          /* register number */
+              struct eval_value_t *val)         /* input, output */
 {
   switch (rt)
     {
     case rt_gpr:
       if (reg < 0 || reg >= MD_NUM_IREGS)
-	return "register number out of range";
+        return "register number out of range";
 
       if (!is_write)
-	{
-	  val->type = et_uint;
-	  val->value.as_uint = GPR(reg);
-	}
+        {
+          val->type = et_uint;
+          val->value.as_uint = GPR(reg);
+        }
       else
-	SET_GPR(reg, eval_as_uint(*val));
+        SET_GPR(reg, eval_as_uint(*val));
       break;
 
     case rt_lpr:
       if (reg < 0 || reg >= MD_NUM_FREGS)
-	return "register number out of range";
+        return "register number out of range";
 
       /* FIXME: this is not portable... */
       abort();
 #if 0
       if (!is_write)
-	{
-	  val->type = et_uint;
-	  val->value.as_uint = FPR_L(reg);
-	}
+        {
+          val->type = et_uint;
+          val->value.as_uint = FPR_L(reg);
+        }
       else
-	SET_FPR_L(reg, eval_as_uint(*val));
+        SET_FPR_L(reg, eval_as_uint(*val));
 #endif
       break;
 
@@ -3618,9 +3618,9 @@ simoo_reg_obj(struct regs_t *xregs,		/* registers to access */
       abort();
 #if 0
       if (!is_write)
-	val->value.as_float = FPR_F(reg);
+        val->value.as_float = FPR_F(reg);
       else
-	SET_FPR_F(reg, val->value.as_float);
+        SET_FPR_F(reg, val->value.as_float);
 #endif
       break;
 
@@ -3630,12 +3630,12 @@ simoo_reg_obj(struct regs_t *xregs,		/* registers to access */
 #if 0
       /* 1/2 as many regs in this mode */
       if (reg < 0 || reg >= MD_NUM_REGS/2)
-	return "register number out of range";
+        return "register number out of range";
 
       if (at == at_read)
-	val->as_double = FPR_D(reg * 2);
+        val->as_double = FPR_D(reg * 2);
       else
-	SET_FPR_D(reg * 2, val->as_double);
+        SET_FPR_D(reg * 2, val->as_double);
 #endif
       break;
 
@@ -3644,42 +3644,42 @@ simoo_reg_obj(struct regs_t *xregs,		/* registers to access */
       abort();
     case rt_hi:
       if (at == at_read)
-	val->as_word = HI;
+        val->as_word = HI;
       else
-	SET_HI(val->as_word);
+        SET_HI(val->as_word);
       break;
     case rt_lo:
       if (at == at_read)
-	val->as_word = LO;
+        val->as_word = LO;
       else
-	SET_LO(val->as_word);
+        SET_LO(val->as_word);
       break;
     case rt_FCC:
       if (at == at_read)
-	val->as_condition = FCC;
+        val->as_condition = FCC;
       else
-	SET_FCC(val->as_condition);
+        SET_FCC(val->as_condition);
       break;
 #endif
 
     case rt_PC:
       if (!is_write)
-	{
-	  val->type = et_addr;
-	  val->value.as_addr = regs.regs_PC;
-	}
+        {
+          val->type = et_addr;
+          val->value.as_addr = regs.regs_PC;
+        }
       else
-	regs.regs_PC = eval_as_addr(*val);
+        regs.regs_PC = eval_as_addr(*val);
       break;
 
     case rt_NPC:
       if (!is_write)
-	{
-	  val->type = et_addr;
-	  val->value.as_addr = regs.regs_NPC;
-	}
+        {
+          val->type = et_addr;
+          val->value.as_addr = regs.regs_NPC;
+        }
       else
-	regs.regs_NPC = eval_as_addr(*val);
+        regs.regs_NPC = eval_as_addr(*val);
       break;
 
     default:
@@ -3701,48 +3701,48 @@ static void
 ruu_dispatch(void)
 {
   int i;
-  int n_dispatched;			/* total insts dispatched */
-  md_inst_t inst;			/* actual instruction bits */
-  enum md_opcode op;			/* decoded opcode enum */
-  int out1, out2, in1, in2, in3;	/* output/input register names */
-  md_addr_t target_PC;			/* actual next/target PC address */
-  md_addr_t addr;			/* effective address, if load/store */
-  struct RUU_station *rs;		/* RUU station being allocated */
-  struct RUU_station *lsq;		/* LSQ station for ld/st's */
+  int n_dispatched;                     /* total insts dispatched */
+  md_inst_t inst;                       /* actual instruction bits */
+  enum md_opcode op;                    /* decoded opcode enum */
+  int out1, out2, in1, in2, in3;        /* output/input register names */
+  md_addr_t target_PC;                  /* actual next/target PC address */
+  md_addr_t addr;                       /* effective address, if load/store */
+  struct RUU_station *rs;               /* RUU station being allocated */
+  struct RUU_station *lsq;              /* LSQ station for ld/st's */
   struct bpred_update_t *dir_update_ptr;/* branch predictor dir update ptr */
-  int stack_recover_idx;		/* bpred retstack recovery index */
-  unsigned int pseq;			/* pipetrace sequence number */
-  int is_write;				/* store? */
-  int made_check;			/* used to ensure DLite entry */
-  int br_taken, br_pred_taken;		/* if br, taken?  predicted taken? */
+  int stack_recover_idx;                /* bpred retstack recovery index */
+  unsigned int pseq;                    /* pipetrace sequence number */
+  int is_write;                         /* store? */
+  int made_check;                       /* used to ensure DLite entry */
+  int br_taken, br_pred_taken;          /* if br, taken?  predicted taken? */
   int fetch_redirected = FALSE;
-  byte_t temp_byte = 0;			/* temp variable for spec mem access */
-  half_t temp_half = 0;			/* " ditto " */
-  word_t temp_word = 0;			/* " ditto " */
+  byte_t temp_byte = 0;                 /* temp variable for spec mem access */
+  half_t temp_half = 0;                 /* " ditto " */
+  word_t temp_word = 0;                 /* " ditto " */
 #ifdef HOST_HAS_QWORD
-  qword_t temp_qword = 0;		/* " ditto " */
+  qword_t temp_qword = 0;               /* " ditto " */
 #endif /* HOST_HAS_QWORD */
   enum md_fault_type fault;
 
   made_check = FALSE;
   n_dispatched = 0;
   while (/* instruction decode B/W left? */
-	 n_dispatched < (ruu_decode_width * fetch_speed)
-	 /* RUU and LSQ not full? */
-	 && RUU_num < RUU_size && LSQ_num < LSQ_size
-	 /* insts still available from fetch unit? */
-	 && fetch_num != 0
-	 /* on an acceptable trace path */
-	 && (ruu_include_spec || !spec_mode))
+         n_dispatched < (ruu_decode_width * fetch_speed)
+         /* RUU and LSQ not full? */
+         && RUU_num < RUU_size && LSQ_num < LSQ_size
+         /* insts still available from fetch unit? */
+         && fetch_num != 0
+         /* on an acceptable trace path */
+         && (ruu_include_spec || !spec_mode))
     {
       /* if issuing in-order, block until last op issues if inorder issue */
       if (ruu_inorder_issue
-	  && (last_op.rs && RSLINK_VALID(&last_op)
-	      && !OPERANDS_READY(last_op.rs)))
-	{
-	  /* stall until last operation is ready to issue */
-	  break;
-	}
+          && (last_op.rs && RSLINK_VALID(&last_op)
+              && !OPERANDS_READY(last_op.rs)))
+        {
+          /* stall until last operation is ready to issue */
+          break;
+        }
 
       /* get the next instruction from the IFETCH -> DISPATCH queue */
       inst = fetch_data[fetch_head].IR;
@@ -3760,15 +3760,15 @@ ruu_dispatch(void)
 
       /* drain RUU for TRAPs and system calls */
       if (MD_OP_FLAGS(op) & F_TRAP)
-	{
-	  if (RUU_num != 0)
-	    break;
+        {
+          if (RUU_num != 0)
+            break;
 
-	  /* else, syscall is only instruction in the machine, at this
-	     point we should not be in (mis-)speculative mode */
-	  if (spec_mode)
-	    panic("drained and speculative");
-	}
+          /* else, syscall is only instruction in the machine, at this
+             point we should not be in (mis-)speculative mode */
+          if (spec_mode)
+            panic("drained and speculative");
+        }
 
       /* maintain $r0 semantics (in spec and non-spec space) */
       regs.regs_R[MD_REG_ZERO] = 0; spec_regs_R[MD_REG_ZERO] = 0;
@@ -3777,10 +3777,10 @@ ruu_dispatch(void)
 #endif /* TARGET_ALPHA */
 
       if (!spec_mode)
-	{
-	  /* one more non-speculative instruction executed */
-	  sim_num_insn++;
-	}
+        {
+          /* one more non-speculative instruction executed */
+          sim_num_insn++;
+        }
 
       /* default effective address (none) and access */
       addr = 0; is_write = FALSE;
@@ -3790,46 +3790,46 @@ ruu_dispatch(void)
 
       /* more decoding and execution */
       switch (op)
-	{
-#define DEFINST(OP,MSK,NAME,OPFORM,RES,CLASS,O1,O2,I1,I2,I3)		\
-	case OP:							\
-	  /* compute output/input dependencies to out1-2 and in1-3 */	\
-	  out1 = O1; out2 = O2;						\
-	  in1 = I1; in2 = I2; in3 = I3;					\
-	  /* execute the instruction */					\
-	  SYMCAT(OP,_IMPL);						\
-	  break;
-#define DEFLINK(OP,MSK,NAME,MASK,SHIFT)					\
-	case OP:							\
-	  /* could speculatively decode a bogus inst, convert to NOP */	\
-	  op = MD_NOP_OP;						\
-	  /* compute output/input dependencies to out1-2 and in1-3 */	\
-	  out1 = NA; out2 = NA;						\
-	  in1 = NA; in2 = NA; in3 = NA;					\
-	  /* no EXPR */							\
-	  break;
-#define CONNECT(OP)	/* nada... */
-	  /* the following macro wraps the instruction fault declaration macro
-	     with a test to see if the trace generator is in non-speculative
-	     mode, if so the instruction fault is declared, otherwise, the
-	     error is shunted because instruction faults need to be masked on
-	     the mis-speculated instruction paths */
-#define DECLARE_FAULT(FAULT)						\
-	  {								\
-	    if (!spec_mode)						\
-	      fault = (FAULT);						\
-	    /* else, spec fault, ignore it, always terminate exec... */	\
-	    break;							\
-	  }
+        {
+#define DEFINST(OP,MSK,NAME,OPFORM,RES,CLASS,O1,O2,I1,I2,I3)            \
+        case OP:                                                        \
+          /* compute output/input dependencies to out1-2 and in1-3 */   \
+          out1 = O1; out2 = O2;                                         \
+          in1 = I1; in2 = I2; in3 = I3;                                 \
+          /* execute the instruction */                                 \
+          SYMCAT(OP,_IMPL);                                             \
+          break;
+#define DEFLINK(OP,MSK,NAME,MASK,SHIFT)                                 \
+        case OP:                                                        \
+          /* could speculatively decode a bogus inst, convert to NOP */ \
+          op = MD_NOP_OP;                                               \
+          /* compute output/input dependencies to out1-2 and in1-3 */   \
+          out1 = NA; out2 = NA;                                         \
+          in1 = NA; in2 = NA; in3 = NA;                                 \
+          /* no EXPR */                                                 \
+          break;
+#define CONNECT(OP)     /* nada... */
+          /* the following macro wraps the instruction fault declaration macro
+             with a test to see if the trace generator is in non-speculative
+             mode, if so the instruction fault is declared, otherwise, the
+             error is shunted because instruction faults need to be masked on
+             the mis-speculated instruction paths */
+#define DECLARE_FAULT(FAULT)                                            \
+          {                                                             \
+            if (!spec_mode)                                             \
+              fault = (FAULT);                                          \
+            /* else, spec fault, ignore it, always terminate exec... */ \
+            break;                                                      \
+          }
 #include "machine.def"
-	default:
-	  /* can speculatively decode a bogus inst, convert to a NOP */
-	  op = MD_NOP_OP;
-	  /* compute output/input dependencies to out1-2 and in1-3 */	\
-	  out1 = NA; out2 = NA;
-	  in1 = NA; in2 = NA; in3 = NA;
-	  /* no EXPR */
-	}
+        default:
+          /* can speculatively decode a bogus inst, convert to a NOP */
+          op = MD_NOP_OP;
+          /* compute output/input dependencies to out1-2 and in1-3 */   \
+          out1 = NA; out2 = NA;
+          in1 = NA; in2 = NA; in3 = NA;
+          /* no EXPR */
+        }
       /* operation sets next PC */
 
       /* print retirement trace if in verbose mode */
@@ -3844,34 +3844,34 @@ ruu_dispatch(void)
         }
 
       if (fault != md_fault_none)
-	fatal("non-speculative fault (%d) detected @ 0x%08p",
-	      fault, regs.regs_PC);
+        fatal("non-speculative fault (%d) detected @ 0x%08p",
+              fault, regs.regs_PC);
 
       /* update memory access stats */
       if (MD_OP_FLAGS(op) & F_MEM)
-	{
-	  sim_total_refs++;
-	  if (!spec_mode)
-	    sim_num_refs++;
+        {
+          sim_total_refs++;
+          if (!spec_mode)
+            sim_num_refs++;
 
-	  if (MD_OP_FLAGS(op) & F_STORE)
-	    is_write = TRUE;
-	  else
-	    {
-	      sim_total_loads++;
-	      if (!spec_mode)
-		sim_num_loads++;
-	    }
-	}
+          if (MD_OP_FLAGS(op) & F_STORE)
+            is_write = TRUE;
+          else
+            {
+              sim_total_loads++;
+              if (!spec_mode)
+                sim_num_loads++;
+            }
+        }
 
       br_taken = (regs.regs_NPC != (regs.regs_PC + sizeof(md_inst_t)));
       br_pred_taken = (pred_PC != (regs.regs_PC + sizeof(md_inst_t)));
 
       if ((pred_PC != regs.regs_NPC && pred_perfect)
-	  || ((MD_OP_FLAGS(op) & (F_CTRL|F_DIRJMP)) == (F_CTRL|F_DIRJMP)
-	      && target_PC != pred_PC && br_pred_taken))
-	{
-	  /* Either 1) we're simulating perfect prediction and are in a
+          || ((MD_OP_FLAGS(op) & (F_CTRL|F_DIRJMP)) == (F_CTRL|F_DIRJMP)
+              && target_PC != pred_PC && br_pred_taken))
+        {
+          /* Either 1) we're simulating perfect prediction and are in a
              mis-predict state and need to patch up, or 2) We're not simulating
              perfect prediction, we've predicted the branch taken, but our
              predicted target doesn't match the computed target (i.e.,
@@ -3879,238 +3879,238 @@ ruu_dispatch(void)
              This is just like calling fetch_squash() except we pre-anticipate
              the updates to the fetch values at the end of this function.  If
              case #2, also charge a mispredict penalty for redirecting fetch */
-	  fetch_pred_PC = fetch_regs_PC = regs.regs_NPC;
-	  /* was: if (pred_perfect) */
-	  if (pred_perfect)
-	    pred_PC = regs.regs_NPC;
+          fetch_pred_PC = fetch_regs_PC = regs.regs_NPC;
+          /* was: if (pred_perfect) */
+          if (pred_perfect)
+            pred_PC = regs.regs_NPC;
 
-	  fetch_head = (ruu_ifq_size-1);
-	  fetch_num = 1;
-	  fetch_tail = 0;
+          fetch_head = (ruu_ifq_size-1);
+          fetch_num = 1;
+          fetch_tail = 0;
 
-	  if (!pred_perfect)
-	    ruu_fetch_issue_delay = ruu_branch_penalty;
+          if (!pred_perfect)
+            ruu_fetch_issue_delay = ruu_branch_penalty;
 
-	  fetch_redirected = TRUE;
-	}
+          fetch_redirected = TRUE;
+        }
 
       /* is this a NOP */
       if (op != MD_NOP_OP)
-	{
-	  /* for load/stores:
-	       idep #0     - store operand (value that is store'ed)
-	       idep #1, #2 - eff addr computation inputs (addr of access)
+        {
+          /* for load/stores:
+               idep #0     - store operand (value that is store'ed)
+               idep #1, #2 - eff addr computation inputs (addr of access)
 
-	     resulting RUU/LSQ operation pair:
-	       RUU (effective address computation operation):
-		 idep #0, #1 - eff addr computation inputs (addr of access)
-	       LSQ (memory access operation):
-		 idep #0     - operand input (value that is store'd)
-		 idep #1     - eff addr computation result (from RUU op)
+             resulting RUU/LSQ operation pair:
+               RUU (effective address computation operation):
+                 idep #0, #1 - eff addr computation inputs (addr of access)
+               LSQ (memory access operation):
+                 idep #0     - operand input (value that is store'd)
+                 idep #1     - eff addr computation result (from RUU op)
 
-	     effective address computation is transfered via the reserved
-	     name DTMP
-	   */
+             effective address computation is transfered via the reserved
+             name DTMP
+           */
 
-	  /* fill in RUU reservation station */
-	  rs = &RUU[RUU_tail];
+          /* fill in RUU reservation station */
+          rs = &RUU[RUU_tail];
           rs->slip = sim_cycle - 1;
-	  rs->IR = inst;
-	  rs->op = op;
-	  rs->PC = regs.regs_PC;
-	  rs->next_PC = regs.regs_NPC; rs->pred_PC = pred_PC;
-	  rs->in_LSQ = FALSE;
-	  rs->ea_comp = FALSE;
-	  rs->recover_inst = FALSE;
+          rs->IR = inst;
+          rs->op = op;
+          rs->PC = regs.regs_PC;
+          rs->next_PC = regs.regs_NPC; rs->pred_PC = pred_PC;
+          rs->in_LSQ = FALSE;
+          rs->ea_comp = FALSE;
+          rs->recover_inst = FALSE;
           rs->dir_update = *dir_update_ptr;
-	  rs->stack_recover_idx = stack_recover_idx;
-	  rs->spec_mode = spec_mode;
-	  rs->addr = 0;
-	  /* rs->tag is already set */
-	  rs->seq = ++inst_seq;
-	  rs->queued = rs->issued = rs->completed = FALSE;
-	  rs->ptrace_seq = pseq;
+          rs->stack_recover_idx = stack_recover_idx;
+          rs->spec_mode = spec_mode;
+          rs->addr = 0;
+          /* rs->tag is already set */
+          rs->seq = ++inst_seq;
+          rs->queued = rs->issued = rs->completed = FALSE;
+          rs->ptrace_seq = pseq;
 
-	  /* split ld/st's into two operations: eff addr comp + mem access */
-	  if (MD_OP_FLAGS(op) & F_MEM)
-	    {
-	      /* convert RUU operation from ld/st to an add (eff addr comp) */
-	      rs->op = MD_AGEN_OP;
-	      rs->ea_comp = TRUE;
+          /* split ld/st's into two operations: eff addr comp + mem access */
+          if (MD_OP_FLAGS(op) & F_MEM)
+            {
+              /* convert RUU operation from ld/st to an add (eff addr comp) */
+              rs->op = MD_AGEN_OP;
+              rs->ea_comp = TRUE;
 
-	      /* fill in LSQ reservation station */
-	      lsq = &LSQ[LSQ_tail];
+              /* fill in LSQ reservation station */
+              lsq = &LSQ[LSQ_tail];
               lsq->slip = sim_cycle - 1;
-	      lsq->IR = inst;
-	      lsq->op = op;
-	      lsq->PC = regs.regs_PC;
-	      lsq->next_PC = regs.regs_NPC; lsq->pred_PC = pred_PC;
-	      lsq->in_LSQ = TRUE;
-	      lsq->ea_comp = FALSE;
-	      lsq->recover_inst = FALSE;
-	      lsq->dir_update.pdir1 = lsq->dir_update.pdir2 = NULL;
-	      lsq->dir_update.pmeta = NULL;
-	      lsq->stack_recover_idx = 0;
-	      lsq->spec_mode = spec_mode;
-	      lsq->addr = addr;
-	      /* lsq->tag is already set */
-	      lsq->seq = ++inst_seq;
-	      lsq->queued = lsq->issued = lsq->completed = FALSE;
-	      lsq->ptrace_seq = ptrace_seq++;
+              lsq->IR = inst;
+              lsq->op = op;
+              lsq->PC = regs.regs_PC;
+              lsq->next_PC = regs.regs_NPC; lsq->pred_PC = pred_PC;
+              lsq->in_LSQ = TRUE;
+              lsq->ea_comp = FALSE;
+              lsq->recover_inst = FALSE;
+              lsq->dir_update.pdir1 = lsq->dir_update.pdir2 = NULL;
+              lsq->dir_update.pmeta = NULL;
+              lsq->stack_recover_idx = 0;
+              lsq->spec_mode = spec_mode;
+              lsq->addr = addr;
+              /* lsq->tag is already set */
+              lsq->seq = ++inst_seq;
+              lsq->queued = lsq->issued = lsq->completed = FALSE;
+              lsq->ptrace_seq = ptrace_seq++;
 
-	      /* pipetrace this uop */
-	      ptrace_newuop(lsq->ptrace_seq, "internal ld/st", lsq->PC, 0);
-	      ptrace_newstage(lsq->ptrace_seq, PST_DISPATCH, 0);
+              /* pipetrace this uop */
+              ptrace_newuop(lsq->ptrace_seq, "internal ld/st", lsq->PC, 0);
+              ptrace_newstage(lsq->ptrace_seq, PST_DISPATCH, 0);
 
-	      /* link eff addr computation onto operand's output chains */
-	      ruu_link_idep(rs, /* idep_ready[] index */0, NA);
-	      ruu_link_idep(rs, /* idep_ready[] index */1, in2);
-	      ruu_link_idep(rs, /* idep_ready[] index */2, in3);
+              /* link eff addr computation onto operand's output chains */
+              ruu_link_idep(rs, /* idep_ready[] index */0, NA);
+              ruu_link_idep(rs, /* idep_ready[] index */1, in2);
+              ruu_link_idep(rs, /* idep_ready[] index */2, in3);
 
-	      /* install output after inputs to prevent self reference */
-	      ruu_install_odep(rs, /* odep_list[] index */0, DTMP);
-	      ruu_install_odep(rs, /* odep_list[] index */1, NA);
+              /* install output after inputs to prevent self reference */
+              ruu_install_odep(rs, /* odep_list[] index */0, DTMP);
+              ruu_install_odep(rs, /* odep_list[] index */1, NA);
 
-	      /* link memory access onto output chain of eff addr operation */
-	      ruu_link_idep(lsq,
-			    /* idep_ready[] index */STORE_OP_INDEX/* 0 */,
-			    in1);
-	      ruu_link_idep(lsq,
-			    /* idep_ready[] index */STORE_ADDR_INDEX/* 1 */,
-			    DTMP);
-	      ruu_link_idep(lsq, /* idep_ready[] index */2, NA);
+              /* link memory access onto output chain of eff addr operation */
+              ruu_link_idep(lsq,
+                            /* idep_ready[] index */STORE_OP_INDEX/* 0 */,
+                            in1);
+              ruu_link_idep(lsq,
+                            /* idep_ready[] index */STORE_ADDR_INDEX/* 1 */,
+                            DTMP);
+              ruu_link_idep(lsq, /* idep_ready[] index */2, NA);
 
-	      /* install output after inputs to prevent self reference */
-	      ruu_install_odep(lsq, /* odep_list[] index */0, out1);
-	      ruu_install_odep(lsq, /* odep_list[] index */1, out2);
+              /* install output after inputs to prevent self reference */
+              ruu_install_odep(lsq, /* odep_list[] index */0, out1);
+              ruu_install_odep(lsq, /* odep_list[] index */1, out2);
 
-	      /* install operation in the RUU and LSQ */
-	      n_dispatched++;
-	      RUU_tail = (RUU_tail + 1) % RUU_size;
-	      RUU_num++;
-	      LSQ_tail = (LSQ_tail + 1) % LSQ_size;
-	      LSQ_num++;
+              /* install operation in the RUU and LSQ */
+              n_dispatched++;
+              RUU_tail = (RUU_tail + 1) % RUU_size;
+              RUU_num++;
+              LSQ_tail = (LSQ_tail + 1) % LSQ_size;
+              LSQ_num++;
 
-	      if (OPERANDS_READY(rs))
-		{
-		  /* eff addr computation ready, queue it on ready list */
-		  readyq_enqueue(rs);
-		}
-	      /* issue may continue when the load/store is issued */
-	      RSLINK_INIT(last_op, lsq);
+              if (OPERANDS_READY(rs))
+                {
+                  /* eff addr computation ready, queue it on ready list */
+                  readyq_enqueue(rs);
+                }
+              /* issue may continue when the load/store is issued */
+              RSLINK_INIT(last_op, lsq);
 
-	      /* issue stores only, loads are issued by lsq_refresh() */
-	      if (((MD_OP_FLAGS(op) & (F_MEM|F_STORE)) == (F_MEM|F_STORE))
-		  && OPERANDS_READY(lsq))
-		{
-		  /* panic("store immediately ready"); */
-		  /* put operation on ready list, ruu_issue() issue it later */
-		  readyq_enqueue(lsq);
-		}
-	    }
-	  else /* !(MD_OP_FLAGS(op) & F_MEM) */
-	    {
-	      /* link onto producing operation */
-	      ruu_link_idep(rs, /* idep_ready[] index */0, in1);
-	      ruu_link_idep(rs, /* idep_ready[] index */1, in2);
-	      ruu_link_idep(rs, /* idep_ready[] index */2, in3);
+              /* issue stores only, loads are issued by lsq_refresh() */
+              if (((MD_OP_FLAGS(op) & (F_MEM|F_STORE)) == (F_MEM|F_STORE))
+                  && OPERANDS_READY(lsq))
+                {
+                  /* panic("store immediately ready"); */
+                  /* put operation on ready list, ruu_issue() issue it later */
+                  readyq_enqueue(lsq);
+                }
+            }
+          else /* !(MD_OP_FLAGS(op) & F_MEM) */
+            {
+              /* link onto producing operation */
+              ruu_link_idep(rs, /* idep_ready[] index */0, in1);
+              ruu_link_idep(rs, /* idep_ready[] index */1, in2);
+              ruu_link_idep(rs, /* idep_ready[] index */2, in3);
 
-	      /* install output after inputs to prevent self reference */
-	      ruu_install_odep(rs, /* odep_list[] index */0, out1);
-	      ruu_install_odep(rs, /* odep_list[] index */1, out2);
+              /* install output after inputs to prevent self reference */
+              ruu_install_odep(rs, /* odep_list[] index */0, out1);
+              ruu_install_odep(rs, /* odep_list[] index */1, out2);
 
-	      /* install operation in the RUU */
-	      n_dispatched++;
-	      RUU_tail = (RUU_tail + 1) % RUU_size;
-	      RUU_num++;
+              /* install operation in the RUU */
+              n_dispatched++;
+              RUU_tail = (RUU_tail + 1) % RUU_size;
+              RUU_num++;
 
-	      /* issue op if all its reg operands are ready (no mem input) */
-	      if (OPERANDS_READY(rs))
-		{
-		  /* put operation on ready list, ruu_issue() issue it later */
-		  readyq_enqueue(rs);
-		  /* issue may continue */
-		  last_op = RSLINK_NULL;
-		}
-	      else
-		{
-		  /* could not issue this inst, stall issue until we can */
-		  RSLINK_INIT(last_op, rs);
-		}
-	    }
-	}
+              /* issue op if all its reg operands are ready (no mem input) */
+              if (OPERANDS_READY(rs))
+                {
+                  /* put operation on ready list, ruu_issue() issue it later */
+                  readyq_enqueue(rs);
+                  /* issue may continue */
+                  last_op = RSLINK_NULL;
+                }
+              else
+                {
+                  /* could not issue this inst, stall issue until we can */
+                  RSLINK_INIT(last_op, rs);
+                }
+            }
+        }
       else
-	{
-	  /* this is a NOP, no need to update RUU/LSQ state */
-	  rs = NULL;
-	}
+        {
+          /* this is a NOP, no need to update RUU/LSQ state */
+          rs = NULL;
+        }
 
       /* one more instruction executed, speculative or otherwise */
       sim_total_insn++;
       if (MD_OP_FLAGS(op) & F_CTRL)
-	sim_total_branches++;
+        sim_total_branches++;
 
       if (!spec_mode)
-	{
+        {
 #if 0 /* moved above for EIO trace file support */
-	  /* one more non-speculative instruction executed */
-	  sim_num_insn++;
+          /* one more non-speculative instruction executed */
+          sim_num_insn++;
 #endif
 
-	  /* if this is a branching instruction update BTB, i.e., only
-	     non-speculative state is committed into the BTB */
-	  if (MD_OP_FLAGS(op) & F_CTRL)
-	    {
-	      sim_num_branches++;
-	      if (pred && bpred_spec_update == spec_ID)
-		{
-		  bpred_update(pred,
-			       /* branch address */regs.regs_PC,
-			       /* actual target address */regs.regs_NPC,
-			       /* taken? */regs.regs_NPC != (regs.regs_PC +
-						       sizeof(md_inst_t)),
-			       /* pred taken? */pred_PC != (regs.regs_PC +
-							sizeof(md_inst_t)),
-			       /* correct pred? */pred_PC == regs.regs_NPC,
-			       /* opcode */op,
-			       /* predictor update ptr */&rs->dir_update);
-		}
-	    }
+          /* if this is a branching instruction update BTB, i.e., only
+             non-speculative state is committed into the BTB */
+          if (MD_OP_FLAGS(op) & F_CTRL)
+            {
+              sim_num_branches++;
+              if (pred && bpred_spec_update == spec_ID)
+                {
+                  bpred_update(pred,
+                               /* branch address */regs.regs_PC,
+                               /* actual target address */regs.regs_NPC,
+                               /* taken? */regs.regs_NPC != (regs.regs_PC +
+                                                       sizeof(md_inst_t)),
+                               /* pred taken? */pred_PC != (regs.regs_PC +
+                                                        sizeof(md_inst_t)),
+                               /* correct pred? */pred_PC == regs.regs_NPC,
+                               /* opcode */op,
+                               /* predictor update ptr */&rs->dir_update);
+                }
+            }
 
-	  /* is the trace generator trasitioning into mis-speculation mode? */
-	  if (pred_PC != regs.regs_NPC && !fetch_redirected)
-	    {
-	      /* entering mis-speculation mode, indicate this and save PC */
-	      spec_mode = TRUE;
-	      rs->recover_inst = TRUE;
-	      recover_PC = regs.regs_NPC;
-	    }
-	}
+          /* is the trace generator trasitioning into mis-speculation mode? */
+          if (pred_PC != regs.regs_NPC && !fetch_redirected)
+            {
+              /* entering mis-speculation mode, indicate this and save PC */
+              spec_mode = TRUE;
+              rs->recover_inst = TRUE;
+              recover_PC = regs.regs_NPC;
+            }
+        }
 
       /* entered decode/allocate stage, indicate in pipe trace */
       ptrace_newstage(pseq, PST_DISPATCH,
-		      (pred_PC != regs.regs_NPC) ? PEV_MPOCCURED : 0);
+                      (pred_PC != regs.regs_NPC) ? PEV_MPOCCURED : 0);
       if (op == MD_NOP_OP)
-	{
-	  /* end of the line */
-	  ptrace_endinst(pseq);
-	}
+        {
+          /* end of the line */
+          ptrace_endinst(pseq);
+        }
 
       /* update any stats tracked by PC */
       for (i=0; i<pcstat_nelt; i++)
-	{
-	  counter_t newval;
-	  int delta;
+        {
+          counter_t newval;
+          int delta;
 
-	  /* check if any tracked stats changed */
-	  newval = STATVAL(pcstat_stats[i]);
-	  delta = newval - pcstat_lastvals[i];
-	  if (delta != 0)
-	    {
-	      stat_add_samples(pcstat_sdists[i], regs.regs_PC, delta);
-	      pcstat_lastvals[i] = newval;
-	    }
-	}
+          /* check if any tracked stats changed */
+          newval = STATVAL(pcstat_stats[i]);
+          delta = newval - pcstat_lastvals[i];
+          if (delta != 0)
+            {
+              stat_add_samples(pcstat_sdists[i], regs.regs_PC, delta);
+              pcstat_lastvals[i] = newval;
+            }
+        }
 
       /* consume instruction from IFETCH -> DISPATCH queue */
       fetch_head = (fetch_head+1) & (ruu_ifq_size - 1);
@@ -4119,18 +4119,18 @@ ruu_dispatch(void)
       /* check for DLite debugger entry condition */
       made_check = TRUE;
       if (dlite_check_break(pred_PC,
-			    is_write ? ACCESS_WRITE : ACCESS_READ,
-			    addr, sim_num_insn, sim_cycle))
-	dlite_main(regs.regs_PC, pred_PC, sim_cycle, &regs, mem);
+                            is_write ? ACCESS_WRITE : ACCESS_READ,
+                            addr, sim_num_insn, sim_cycle))
+        dlite_main(regs.regs_PC, pred_PC, sim_cycle, &regs, mem);
     }
 
   /* need to enter DLite at least once per cycle */
   if (!made_check)
     {
       if (dlite_check_break(/* no next PC */0,
-			    is_write ? ACCESS_WRITE : ACCESS_READ,
-			    addr, sim_num_insn, sim_cycle))
-	dlite_main(regs.regs_PC, /* no next PC */0, sim_cycle, &regs, mem);
+                            is_write ? ACCESS_WRITE : ACCESS_READ,
+                            addr, sim_num_insn, sim_cycle))
+        dlite_main(regs.regs_PC, /* no next PC */0, sim_cycle, &regs, mem);
     }
 }
 
@@ -4157,7 +4157,7 @@ fetch_init(void)
 
 /* dump contents of fetch stage registers and fetch queue */
 void
-fetch_dump(FILE *stream)			/* output stream */
+fetch_dump(FILE *stream)                        /* output stream */
 {
   int num, head;
 
@@ -4168,15 +4168,15 @@ fetch_dump(FILE *stream)			/* output stream */
 
   fprintf(stream, "spec_mode: %s\n", spec_mode ? "t" : "f");
   myfprintf(stream, "pred_PC: 0x%08p, recover_PC: 0x%08p\n",
-	    pred_PC, recover_PC);
+            pred_PC, recover_PC);
   myfprintf(stream, "fetch_regs_PC: 0x%08p, fetch_pred_PC: 0x%08p\n",
-	    fetch_regs_PC, fetch_pred_PC);
+            fetch_regs_PC, fetch_pred_PC);
   fprintf(stream, "\n");
 
   fprintf(stream, "** fetch queue contents **\n");
   fprintf(stream, "fetch_num: %d\n", fetch_num);
   fprintf(stream, "fetch_head: %d, fetch_tail: %d\n",
-	  fetch_head, fetch_tail);
+          fetch_head, fetch_tail);
 
   num = fetch_num;
   head = fetch_head;
@@ -4186,7 +4186,7 @@ fetch_dump(FILE *stream)			/* output stream */
       md_print_insn(fetch_data[head].IR, fetch_data[head].regs_PC, stream);
       fprintf(stream, "'\n");
       myfprintf(stream, "         regs_PC: 0x%08p, pred_PC: 0x%08p\n",
-		fetch_data[head].regs_PC, fetch_data[head].pred_PC);
+                fetch_data[head].regs_PC, fetch_data[head].pred_PC);
       head = (head + 1) & (ruu_ifq_size - 1);
       num--;
     }
@@ -4219,101 +4219,101 @@ ruu_fetch(void)
 
       /* is this a bogus text address? (can happen on mis-spec path) */
       if (ld_text_base <= fetch_regs_PC
-	  && fetch_regs_PC < (ld_text_base+ld_text_size)
-	  && !(fetch_regs_PC & (sizeof(md_inst_t)-1)))
-	{
-	  /* read instruction from memory */
-	  MD_FETCH_INST(inst, mem, fetch_regs_PC);
+          && fetch_regs_PC < (ld_text_base+ld_text_size)
+          && !(fetch_regs_PC & (sizeof(md_inst_t)-1)))
+        {
+          /* read instruction from memory */
+          MD_FETCH_INST(inst, mem, fetch_regs_PC);
 
-	  /* address is within program text, read instruction from memory */
-	  lat = cache_il1_lat;
-	  if (cache_il1)
-	    {
-	      /* access the I-cache */
-	      lat =
-		cache_access(cache_il1, Read, IACOMPRESS(fetch_regs_PC),
-			     NULL, ISCOMPRESS(sizeof(md_inst_t)), sim_cycle,
-			     NULL, NULL);
-	      if (lat > cache_il1_lat)
-		last_inst_missed = TRUE;
-	    }
+          /* address is within program text, read instruction from memory */
+          lat = cache_il1_lat;
+          if (cache_il1)
+            {
+              /* access the I-cache */
+              lat =
+                cache_access(cache_il1, Read, IACOMPRESS(fetch_regs_PC),
+                             NULL, ISCOMPRESS(sizeof(md_inst_t)), sim_cycle,
+                             NULL, NULL);
+              if (lat > cache_il1_lat)
+                last_inst_missed = TRUE;
+            }
 
-	  if (itlb)
-	    {
-	      /* access the I-TLB, NOTE: this code will initiate
-		 speculative TLB misses */
-	      tlb_lat =
-		cache_access(itlb, Read, IACOMPRESS(fetch_regs_PC),
-			     NULL, ISCOMPRESS(sizeof(md_inst_t)), sim_cycle,
-			     NULL, NULL);
-	      if (tlb_lat > 1)
-		last_inst_tmissed = TRUE;
+          if (itlb)
+            {
+              /* access the I-TLB, NOTE: this code will initiate
+                 speculative TLB misses */
+              tlb_lat =
+                cache_access(itlb, Read, IACOMPRESS(fetch_regs_PC),
+                             NULL, ISCOMPRESS(sizeof(md_inst_t)), sim_cycle,
+                             NULL, NULL);
+              if (tlb_lat > 1)
+                last_inst_tmissed = TRUE;
 
-	      /* I-cache/I-TLB accesses occur in parallel */
-	      lat = MAX(tlb_lat, lat);
-	    }
+              /* I-cache/I-TLB accesses occur in parallel */
+              lat = MAX(tlb_lat, lat);
+            }
 
-	  /* I-cache/I-TLB miss? assumes I-cache hit >= I-TLB hit */
-	  if (lat != cache_il1_lat)
-	    {
-	      /* I-cache miss, block fetch until it is resolved */
-	      ruu_fetch_issue_delay += lat - 1;
-	      break;
-	    }
-	  /* else, I-cache/I-TLB hit */
-	}
+          /* I-cache/I-TLB miss? assumes I-cache hit >= I-TLB hit */
+          if (lat != cache_il1_lat)
+            {
+              /* I-cache miss, block fetch until it is resolved */
+              ruu_fetch_issue_delay += lat - 1;
+              break;
+            }
+          /* else, I-cache/I-TLB hit */
+        }
       else
-	{
-	  /* fetch PC is bogus, send a NOP down the pipeline */
-	  inst = MD_NOP_INST;
-	}
+        {
+          /* fetch PC is bogus, send a NOP down the pipeline */
+          inst = MD_NOP_INST;
+        }
 
       /* have a valid inst, here */
 
       /* possibly use the BTB target */
       if (pred)
-	{
-	  enum md_opcode op;
+        {
+          enum md_opcode op;
 
-	  /* pre-decode instruction, used for bpred stats recording */
-	  MD_SET_OPCODE(op, inst);
-	  
-	  /* get the next predicted fetch address; only use branch predictor
-	     result for branches (assumes pre-decode bits); NOTE: returned
-	     value may be 1 if bpred can only predict a direction */
-	  if (MD_OP_FLAGS(op) & F_CTRL)
-	    fetch_pred_PC =
-	      bpred_lookup(pred,
-			   /* branch address */fetch_regs_PC,
-			   /* target address *//* FIXME: not computed */0,
-			   /* opcode */op,
-			   /* call? */MD_IS_CALL(op),
-			   /* return? */MD_IS_RETURN(op),
-			   /* updt */&(fetch_data[fetch_tail].dir_update),
-			   /* RSB index */&stack_recover_idx);
-	  else
-	    fetch_pred_PC = 0;
+          /* pre-decode instruction, used for bpred stats recording */
+          MD_SET_OPCODE(op, inst);
+          
+          /* get the next predicted fetch address; only use branch predictor
+             result for branches (assumes pre-decode bits); NOTE: returned
+             value may be 1 if bpred can only predict a direction */
+          if (MD_OP_FLAGS(op) & F_CTRL)
+            fetch_pred_PC =
+              bpred_lookup(pred,
+                           /* branch address */fetch_regs_PC,
+                           /* target address *//* FIXME: not computed */0,
+                           /* opcode */op,
+                           /* call? */MD_IS_CALL(op),
+                           /* return? */MD_IS_RETURN(op),
+                           /* updt */&(fetch_data[fetch_tail].dir_update),
+                           /* RSB index */&stack_recover_idx);
+          else
+            fetch_pred_PC = 0;
 
-	  /* valid address returned from branch predictor? */
-	  if (!fetch_pred_PC)
-	    {
-	      /* no predicted taken target, attempt not taken target */
-	      fetch_pred_PC = fetch_regs_PC + sizeof(md_inst_t);
-	    }
-	  else
-	    {
-	      /* go with target, NOTE: discontinuous fetch, so terminate */
-	      branch_cnt++;
-	      if (branch_cnt >= fetch_speed)
-		done = TRUE;
-	    }
-	}
+          /* valid address returned from branch predictor? */
+          if (!fetch_pred_PC)
+            {
+              /* no predicted taken target, attempt not taken target */
+              fetch_pred_PC = fetch_regs_PC + sizeof(md_inst_t);
+            }
+          else
+            {
+              /* go with target, NOTE: discontinuous fetch, so terminate */
+              branch_cnt++;
+              if (branch_cnt >= fetch_speed)
+                done = TRUE;
+            }
+        }
       else
-	{
-	  /* no predictor, just default to predict not taken, and
-	     continue fetching instructions linearly */
-	  fetch_pred_PC = fetch_regs_PC + sizeof(md_inst_t);
-	}
+        {
+          /* no predictor, just default to predict not taken, and
+             continue fetching instructions linearly */
+          fetch_pred_PC = fetch_regs_PC + sizeof(md_inst_t);
+        }
 
       /* commit this instruction to the IFETCH -> DISPATCH queue */
       fetch_data[fetch_tail].IR = inst;
@@ -4324,12 +4324,12 @@ ruu_fetch(void)
 
       /* for pipe trace */
       ptrace_newinst(fetch_data[fetch_tail].ptrace_seq,
-		     inst, fetch_data[fetch_tail].regs_PC,
-		     0);
+                     inst, fetch_data[fetch_tail].regs_PC,
+                     0);
       ptrace_newstage(fetch_data[fetch_tail].ptrace_seq,
-		      PST_IFETCH,
-		      ((last_inst_missed ? PEV_CACHEMISS : 0)
-		       | (last_inst_tmissed ? PEV_TLBMISS : 0)));
+                      PST_IFETCH,
+                      ((last_inst_missed ? PEV_CACHEMISS : 0)
+                       | (last_inst_tmissed ? PEV_TLBMISS : 0)));
       last_inst_missed = FALSE;
       last_inst_tmissed = FALSE;
 
@@ -4340,11 +4340,11 @@ ruu_fetch(void)
 }
 
 /* default machine state accessor, used by DLite */
-static char *					/* err str, NULL for no err */
-simoo_mstate_obj(FILE *stream,			/* output stream */
-		 char *cmd,			/* optional command string */
-		 struct regs_t *regs,		/* registers to access */
-		 struct mem_t *mem)		/* memory space to access */
+static char *                                   /* err str, NULL for no err */
+simoo_mstate_obj(FILE *stream,                  /* output stream */
+                 char *cmd,                     /* optional command string */
+                 struct regs_t *regs,           /* registers to access */
+                 struct mem_t *mem)             /* memory space to access */
 {
   if (!cmd || !strcmp(cmd, "help"))
     fprintf(stream,
@@ -4362,7 +4362,7 @@ simoo_mstate_obj(FILE *stream,			/* output stream */
 "    mstate mspec  - dump contents of speculative memory\n"
 "    mstate fetch  - dump contents of fetch stage registers and fetch queue\n"
 "\n"
-	    );
+            );
   else if (!strcmp(cmd, "stats"))
     {
       /* just dump intermediate stats */
@@ -4436,87 +4436,87 @@ sim_main(void)
   /* check for DLite debugger entry condition */
   if (dlite_check_break(regs.regs_PC, /* no access */0, /* addr */0, 0, 0))
     dlite_main(regs.regs_PC, regs.regs_PC + sizeof(md_inst_t),
-	       sim_cycle, &regs, mem);
+               sim_cycle, &regs, mem);
 
   /* fast forward simulator loop, performs functional simulation for
      FASTFWD_COUNT insts, then turns on performance (timing) simulation */
   if (fastfwd_count > 0)
     {
       int icount;
-      md_inst_t inst;			/* actual instruction bits */
-      enum md_opcode op;		/* decoded opcode enum */
-      md_addr_t target_PC;		/* actual next/target PC address */
-      md_addr_t addr;			/* effective address, if load/store */
-      int is_write;			/* store? */
-      byte_t temp_byte = 0;		/* temp variable for spec mem access */
-      half_t temp_half = 0;		/* " ditto " */
-      word_t temp_word = 0;		/* " ditto " */
+      md_inst_t inst;                   /* actual instruction bits */
+      enum md_opcode op;                /* decoded opcode enum */
+      md_addr_t target_PC;              /* actual next/target PC address */
+      md_addr_t addr;                   /* effective address, if load/store */
+      int is_write;                     /* store? */
+      byte_t temp_byte = 0;             /* temp variable for spec mem access */
+      half_t temp_half = 0;             /* " ditto " */
+      word_t temp_word = 0;             /* " ditto " */
 #ifdef HOST_HAS_QWORD
-      qword_t temp_qword = 0;		/* " ditto " */
+      qword_t temp_qword = 0;           /* " ditto " */
 #endif /* HOST_HAS_QWORD */
       enum md_fault_type fault;
 
       fprintf(stderr, "sim: ** fast forwarding %d insts **\n", fastfwd_count);
 
       for (icount=0; icount < fastfwd_count; icount++)
-	{
-	  /* maintain $r0 semantics */
-	  regs.regs_R[MD_REG_ZERO] = 0;
+        {
+          /* maintain $r0 semantics */
+          regs.regs_R[MD_REG_ZERO] = 0;
 #ifdef TARGET_ALPHA
-	  regs.regs_F.d[MD_REG_ZERO] = 0.0;
+          regs.regs_F.d[MD_REG_ZERO] = 0.0;
 #endif /* TARGET_ALPHA */
 
-	  /* get the next instruction to execute */
-	  MD_FETCH_INST(inst, mem, regs.regs_PC);
+          /* get the next instruction to execute */
+          MD_FETCH_INST(inst, mem, regs.regs_PC);
 
-	  /* set default reference address */
-	  addr = 0; is_write = FALSE;
+          /* set default reference address */
+          addr = 0; is_write = FALSE;
 
-	  /* set default fault - none */
-	  fault = md_fault_none;
+          /* set default fault - none */
+          fault = md_fault_none;
 
-	  /* decode the instruction */
-	  MD_SET_OPCODE(op, inst);
+          /* decode the instruction */
+          MD_SET_OPCODE(op, inst);
 
-	  /* execute the instruction */
-	  switch (op)
-	    {
-#define DEFINST(OP,MSK,NAME,OPFORM,RES,FLAGS,O1,O2,I1,I2,I3)		\
-	    case OP:							\
-	      SYMCAT(OP,_IMPL);						\
-	      break;
-#define DEFLINK(OP,MSK,NAME,MASK,SHIFT)					\
-	    case OP:							\
-	      panic("attempted to execute a linking opcode");
+          /* execute the instruction */
+          switch (op)
+            {
+#define DEFINST(OP,MSK,NAME,OPFORM,RES,FLAGS,O1,O2,I1,I2,I3)            \
+            case OP:                                                    \
+              SYMCAT(OP,_IMPL);                                         \
+              break;
+#define DEFLINK(OP,MSK,NAME,MASK,SHIFT)                                 \
+            case OP:                                                    \
+              panic("attempted to execute a linking opcode");
 #define CONNECT(OP)
 #undef DECLARE_FAULT
-#define DECLARE_FAULT(FAULT)						\
-	      { fault = (FAULT); break; }
+#define DECLARE_FAULT(FAULT)                                            \
+              { fault = (FAULT); break; }
 #include "machine.def"
-	    default:
-	      panic("attempted to execute a bogus opcode");
-	    }
+            default:
+              panic("attempted to execute a bogus opcode");
+            }
 
-	  if (fault != md_fault_none)
-	    fatal("fault (%d) detected @ 0x%08p", fault, regs.regs_PC);
+          if (fault != md_fault_none)
+            fatal("fault (%d) detected @ 0x%08p", fault, regs.regs_PC);
 
-	  /* update memory access stats */
-	  if (MD_OP_FLAGS(op) & F_MEM)
-	    {
-	      if (MD_OP_FLAGS(op) & F_STORE)
-		is_write = TRUE;
-	    }
+          /* update memory access stats */
+          if (MD_OP_FLAGS(op) & F_MEM)
+            {
+              if (MD_OP_FLAGS(op) & F_STORE)
+                is_write = TRUE;
+            }
 
-	  /* check for DLite debugger entry condition */
-	  if (dlite_check_break(regs.regs_NPC,
-				is_write ? ACCESS_WRITE : ACCESS_READ,
-				addr, sim_num_insn, sim_num_insn))
-	    dlite_main(regs.regs_PC, regs.regs_NPC, sim_num_insn, &regs, mem);
+          /* check for DLite debugger entry condition */
+          if (dlite_check_break(regs.regs_NPC,
+                                is_write ? ACCESS_WRITE : ACCESS_READ,
+                                addr, sim_num_insn, sim_num_insn))
+            dlite_main(regs.regs_PC, regs.regs_NPC, sim_num_insn, &regs, mem);
 
-	  /* go to the next instruction */
-	  regs.regs_PC = regs.regs_NPC;
-	  regs.regs_NPC += sizeof(md_inst_t);
-	}
+          /* go to the next instruction */
+          regs.regs_PC = regs.regs_NPC;
+          regs.regs_NPC += sizeof(md_inst_t);
+        }
     }
 
   fprintf(stderr, "sim: ** starting performance simulation **\n");
@@ -4532,11 +4532,11 @@ sim_main(void)
     {
       /* RUU/LSQ sanity checks */
       if (RUU_num < LSQ_num)
-	panic("RUU_num < LSQ_num");
+        panic("RUU_num < LSQ_num");
       if (((RUU_head + RUU_num) % RUU_size) != RUU_tail)
-	panic("RUU_head/RUU_tail wedged");
+        panic("RUU_head/RUU_tail wedged");
       if (((LSQ_head + LSQ_num) % LSQ_size) != LSQ_tail)
-	panic("LSQ_head/LSQ_tail wedged");
+        panic("LSQ_head/LSQ_tail wedged");
 
       /* check if pipetracing is still active */
       ptrace_check_active(regs.regs_PC, sim_num_insn, sim_cycle);
@@ -4557,36 +4557,36 @@ sim_main(void)
       ruu_writeback();
 
       if (!bugcompat_mode)
-	{
-	  /* try to locate memory operations that are ready to execute */
-	  /* ==> inserts operations into ready queue --> mem deps resolved */
-	  lsq_refresh();
+        {
+          /* try to locate memory operations that are ready to execute */
+          /* ==> inserts operations into ready queue --> mem deps resolved */
+          lsq_refresh();
 
-	  /* issue operations ready to execute from a previous cycle */
-	  /* <== drains ready queue <-- ready operations commence execution */
-	  ruu_issue();
-	}
+          /* issue operations ready to execute from a previous cycle */
+          /* <== drains ready queue <-- ready operations commence execution */
+          ruu_issue();
+        }
 
       /* decode and dispatch new operations */
       /* ==> insert ops w/ no deps or all regs ready --> reg deps resolved */
       ruu_dispatch();
 
       if (bugcompat_mode)
-	{
-	  /* try to locate memory operations that are ready to execute */
-	  /* ==> inserts operations into ready queue --> mem deps resolved */
-	  lsq_refresh();
+        {
+          /* try to locate memory operations that are ready to execute */
+          /* ==> inserts operations into ready queue --> mem deps resolved */
+          lsq_refresh();
 
-	  /* issue operations ready to execute from a previous cycle */
-	  /* <== drains ready queue <-- ready operations commence execution */
-	  ruu_issue();
-	}
+          /* issue operations ready to execute from a previous cycle */
+          /* <== drains ready queue <-- ready operations commence execution */
+          ruu_issue();
+        }
 
       /* call instruction fetch unit if it is not blocked */
       if (!ruu_fetch_issue_delay)
-	ruu_fetch();
+        ruu_fetch();
       else
-	ruu_fetch_issue_delay--;
+        ruu_fetch_issue_delay--;
 
       /* update buffer occupancy stats */
       IFQ_count += fetch_num;
@@ -4601,6 +4601,6 @@ sim_main(void)
 
       /* finish early? */
       if (max_insts && sim_num_insn >= max_insts)
-	return;
+        return;
     }
 }

@@ -70,10 +70,10 @@
 #include "eio.h"
 
 #ifdef _MSC_VER
-#define write		_write
+#define write           _write
 #endif
 
-#define EIO_FILE_HEADER							\
+#define EIO_FILE_HEADER                                                 \
   "/* This is a SimpleScalar EIO file - DO NOT MOVE OR EDIT THIS LINE! */\n"
 /*
    EIO transaction format:
@@ -109,12 +109,12 @@ eio_create(char *fname)
   /* emit EIO file header */
   fprintf(fd, "%s\n", EIO_FILE_HEADER);
   fprintf(fd, "/* file_format: %d, file_version: %d, big_endian: %d */\n", 
-	  MD_EIO_FILE_FORMAT, EIO_FILE_VERSION, ld_target_big_endian);
+          MD_EIO_FILE_FORMAT, EIO_FILE_VERSION, ld_target_big_endian);
   exo = exo_new(ec_list,
-		exo_new(ec_integer, (exo_integer_t)MD_EIO_FILE_FORMAT),
-		exo_new(ec_integer, (exo_integer_t)EIO_FILE_VERSION),
-		exo_new(ec_integer, (exo_integer_t)target_big_endian),
-		NULL);
+                exo_new(ec_integer, (exo_integer_t)MD_EIO_FILE_FORMAT),
+                exo_new(ec_integer, (exo_integer_t)EIO_FILE_VERSION),
+                exo_new(ec_integer, (exo_integer_t)target_big_endian),
+                NULL);
   exo_print(exo, fd);
   exo_delete(exo);
   fprintf(fd, "\n\n");
@@ -206,9 +206,9 @@ eio_close(FILE *fd)
 /* check point current architected state to stream FD, returns
    EIO transaction count (an EIO file pointer) */
 counter_t
-eio_write_chkpt(struct regs_t *regs,		/* regs to dump */
-		struct mem_t *mem,		/* memory to dump */
-		FILE *fd)			/* stream to write to */
+eio_write_chkpt(struct regs_t *regs,            /* regs to dump */
+                struct mem_t *mem,              /* memory to dump */
+                FILE *fd)                       /* stream to write to */
 {
   int i;
   struct exo_term_t *exo;
@@ -249,37 +249,37 @@ eio_write_chkpt(struct regs_t *regs,		/* regs to dump */
 
   fprintf(fd, "/* writing `%d' memory pages... */\n", (int)mem->page_count);
   exo = exo_new(ec_list,
-		exo_new(ec_integer, (exo_integer_t)mem->page_count),
-		exo_new(ec_address, (exo_integer_t)ld_brk_point),
-		exo_new(ec_address, (exo_integer_t)ld_stack_min),
-		NULL);
+                exo_new(ec_integer, (exo_integer_t)mem->page_count),
+                exo_new(ec_address, (exo_integer_t)ld_brk_point),
+                exo_new(ec_address, (exo_integer_t)ld_stack_min),
+                NULL);
   exo_print(exo, fd);
   fprintf(fd, "\n\n");
   exo_delete(exo);
 
   fprintf(fd, "/* text segment specifiers (base & size) */\n");
   exo = exo_new(ec_list,
-		exo_new(ec_address, (exo_integer_t)ld_text_base),
-		exo_new(ec_integer, (exo_integer_t)ld_text_size),
-		NULL);
+                exo_new(ec_address, (exo_integer_t)ld_text_base),
+                exo_new(ec_integer, (exo_integer_t)ld_text_size),
+                NULL);
   exo_print(exo, fd);
   fprintf(fd, "\n\n");
   exo_delete(exo);
 
   fprintf(fd, "/* data segment specifiers (base & size) */\n");
   exo = exo_new(ec_list,
-		exo_new(ec_address, (exo_integer_t)ld_data_base),
-		exo_new(ec_integer, (exo_integer_t)ld_data_size),
-		NULL);
+                exo_new(ec_address, (exo_integer_t)ld_data_base),
+                exo_new(ec_integer, (exo_integer_t)ld_data_size),
+                NULL);
   exo_print(exo, fd);
   fprintf(fd, "\n\n");
   exo_delete(exo);
 
   fprintf(fd, "/* stack segment specifiers (base & size) */\n");
   exo = exo_new(ec_list,
-		exo_new(ec_address, (exo_integer_t)ld_stack_base),
-		exo_new(ec_integer, (exo_integer_t)ld_stack_size),
-		NULL);
+                exo_new(ec_address, (exo_integer_t)ld_stack_base),
+                exo_new(ec_integer, (exo_integer_t)ld_stack_size),
+                NULL);
   exo_print(exo, fd);
   fprintf(fd, "\n\n");
   exo_delete(exo);
@@ -289,9 +289,9 @@ eio_write_chkpt(struct regs_t *regs,		/* regs to dump */
     {
       /* dump this page... */
       exo = exo_new(ec_list,
-		    exo_new(ec_address, (exo_integer_t)MEM_PTE_ADDR(pte, i)),
-		    exo_new(ec_blob, MD_PAGE_SIZE, pte->page),
-		    NULL);
+                    exo_new(ec_address, (exo_integer_t)MEM_PTE_ADDR(pte, i)),
+                    exo_new(ec_blob, MD_PAGE_SIZE, pte->page),
+                    NULL);
       exo_print(exo, fd);
       fprintf(fd, "\n\n");
       exo_delete(exo);
@@ -305,9 +305,9 @@ eio_write_chkpt(struct regs_t *regs,		/* regs to dump */
 /* read check point of architected state from stream FD, returns
    EIO transaction count (an EIO file pointer) */
 counter_t
-eio_read_chkpt(struct regs_t *regs,		/* regs to dump */
-		struct mem_t *mem,		/* memory to dump */
-		FILE *fd)			/* stream to read */
+eio_read_chkpt(struct regs_t *regs,             /* regs to dump */
+                struct mem_t *mem,              /* memory to dump */
+                FILE *fd)                       /* stream to read */
 {
   int i, page_count;
   counter_t trans_icnt;
@@ -335,10 +335,10 @@ eio_read_chkpt(struct regs_t *regs,		/* regs to dump */
   for (i=0; i < MD_NUM_IREGS; i++)
     {
       if (!elt)
-	fatal("could not read EIO integer regs (too few)");
+        fatal("could not read EIO integer regs (too few)");
 
       if (elt->ec != ec_address)
-	fatal("could not read EIO integer regs (bad value)");
+        fatal("could not read EIO integer regs (bad value)");
 
       MD_EXO_TO_IREG(elt, regs, i);
       elt = elt->next;
@@ -356,10 +356,10 @@ eio_read_chkpt(struct regs_t *regs,		/* regs to dump */
   for (i=0; i < MD_NUM_FREGS; i++)
     {
       if (!elt)
-	fatal("could not read EIO FP regs (too few)");
+        fatal("could not read EIO FP regs (too few)");
 
       if (elt->ec != ec_address)
-	fatal("could not read EIO FP regs (bad value)");
+        fatal("could not read EIO FP regs (bad value)");
 
       MD_EXO_TO_FREG(elt, regs, i);
       elt = elt->next;
@@ -436,26 +436,26 @@ eio_read_chkpt(struct regs_t *regs,		/* regs to dump */
       /* read the page */
       exo = exo_read(fd);
       if (!exo
-	  || exo->ec != ec_list
-	  || !exo->as_list.head
-	  || exo->as_list.head->ec != ec_address
-	  || !exo->as_list.head->next
-	  || exo->as_list.head->next->ec != ec_blob
-	  || exo->as_list.head->next->next != NULL)
-	fatal("could not read EIO memory page");
+          || exo->ec != ec_list
+          || !exo->as_list.head
+          || exo->as_list.head->ec != ec_address
+          || !exo->as_list.head->next
+          || exo->as_list.head->next->ec != ec_blob
+          || exo->as_list.head->next->next != NULL)
+        fatal("could not read EIO memory page");
       page_addr = (md_addr_t)exo->as_list.head->as_address.val;
       blob = exo->as_list.head->next;
 
       /* write data to simulator memory */
       for (j=0; j < blob->as_blob.size; j++)
-	{
-	  byte_t val;
+        {
+          byte_t val;
 
-	  val = blob->as_blob.data[j];
-	  /* unchecked access... */
-	  MEM_WRITE_BYTE(mem, page_addr, val);
-	  page_addr++;
-	}
+          val = blob->as_blob.data[j];
+          /* unchecked access... */
+          MEM_WRITE_BYTE(mem, page_addr, val);
+          page_addr++;
+        }
       exo_delete(exo);
     }
 
@@ -485,15 +485,15 @@ static int seen_write;
 static mem_access_fn local_mem_fn;
 
 /* size of padding that can be filled on the end of a blob tail */
-#define BLOB_TAIL_SIZE		256
+#define BLOB_TAIL_SIZE          256
 
 /* tracing memory access function */
 static enum md_fault_type
-my_mem_fn(struct mem_t *mem,		/* memory space to access */
-	  enum mem_cmd cmd,		/* Read (from sim mem) or Write */
-	  md_addr_t addr,		/* target address to access */
-	  void *vp,			/* host memory address to access */
-	  int nbytes)			/* number of bytes to access */
+my_mem_fn(struct mem_t *mem,            /* memory space to access */
+          enum mem_cmd cmd,             /* Read (from sim mem) or Write */
+          md_addr_t addr,               /* target address to access */
+          void *vp,                     /* host memory address to access */
+          int nbytes)                   /* number of bytes to access */
 {
   int i;
   unsigned char *p = vp;
@@ -534,7 +534,7 @@ my_mem_fn(struct mem_t *mem,		/* memory space to access */
     {
       /* add to last blob */
       for (i=0; i < nbytes; i++)
-	mem_rec->blob->as_blob.data[mem_rec->size + i] = p[i];
+        mem_rec->blob->as_blob.data[mem_rec->size + i] = p[i];
       mem_rec->size += nbytes;
       mem_rec->blob->as_blob.size = mem_rec->size;
     }
@@ -542,15 +542,15 @@ my_mem_fn(struct mem_t *mem,		/* memory space to access */
     {
       /* add to a new blob */
       mem_list->as_list.head =
-	exo_chain(mem_list->as_list.head,
-		  (mem_rec->exo =
-		   exo_new(ec_list,
-			   exo_new(ec_address, (exo_integer_t)addr),
-			   (mem_rec->blob =
-			    exo_new(ec_blob, nbytes + BLOB_TAIL_SIZE, NULL)),
-			   NULL)));
+        exo_chain(mem_list->as_list.head,
+                  (mem_rec->exo =
+                   exo_new(ec_list,
+                           exo_new(ec_address, (exo_integer_t)addr),
+                           (mem_rec->blob =
+                            exo_new(ec_blob, nbytes + BLOB_TAIL_SIZE, NULL)),
+                           NULL)));
       for (i=0; i < nbytes; i++)
-	mem_rec->blob->as_blob.data[i] = p[i];
+        mem_rec->blob->as_blob.data[i] = p[i];
       mem_rec->addr = addr;
       mem_rec->size = nbytes;
       mem_rec->maxsize = nbytes + BLOB_TAIL_SIZE;
@@ -568,12 +568,12 @@ my_mem_fn(struct mem_t *mem,		/* memory space to access */
    and memory are assumed to be precise when this function is called,
    register and memory are updated with the results of the sustem call */
 void
-eio_write_trace(FILE *eio_fd,			/* EIO stream file desc */
-		counter_t icnt,			/* instruction count */
-		struct regs_t *regs,		/* registers to update */
-		mem_access_fn mem_fn,		/* generic memory accessor */
-		struct mem_t *mem,		/* memory to update */
-		md_inst_t inst)			/* system call inst */
+eio_write_trace(FILE *eio_fd,                   /* EIO stream file desc */
+                counter_t icnt,                 /* instruction count */
+                struct regs_t *regs,            /* registers to update */
+                mem_access_fn mem_fn,           /* generic memory accessor */
+                struct mem_t *mem,              /* memory to update */
+                md_inst_t inst)                 /* system call inst */
 {
   int i;
   struct exo_term_t *exo;
@@ -583,7 +583,7 @@ eio_write_trace(FILE *eio_fd,			/* EIO stream file desc */
   for (i=MD_FIRST_IN_REG; i <= MD_LAST_IN_REG; i++)
     {
       input_regs->as_list.head =
-	exo_chain(input_regs->as_list.head, MD_IREG_TO_EXO(regs, i));
+        exo_chain(input_regs->as_list.head, MD_IREG_TO_EXO(regs, i));
     }
 
   /* initialize memory inputs */
@@ -604,21 +604,21 @@ eio_write_trace(FILE *eio_fd,			/* EIO stream file desc */
   /* write syscall breakpoint and register outputs ($r2..$r7) */
   output_regs = exo_new(ec_list, NULL);
   output_regs->as_list.head =
-	exo_chain(output_regs->as_list.head,
-		  exo_new(ec_address, (exo_integer_t)ld_brk_point));
+        exo_chain(output_regs->as_list.head,
+                  exo_new(ec_address, (exo_integer_t)ld_brk_point));
   for (i=MD_FIRST_OUT_REG; i <= MD_LAST_OUT_REG; i++)
     {
       output_regs->as_list.head =
-	exo_chain(output_regs->as_list.head, MD_IREG_TO_EXO(regs, i));
+        exo_chain(output_regs->as_list.head, MD_IREG_TO_EXO(regs, i));
     }
 
   /* write the whole enchalada to output stream */
   exo = exo_new(ec_list,
-		/* icnt */exo_new(ec_integer, (exo_integer_t)icnt),
-		/* PC */exo_new(ec_address, (exo_integer_t)regs->regs_PC),
-		input_regs, input_mem,
-		output_regs, output_mem,
-		NULL);
+                /* icnt */exo_new(ec_integer, (exo_integer_t)icnt),
+                /* PC */exo_new(ec_address, (exo_integer_t)regs->regs_PC),
+                input_regs, input_mem,
+                output_regs, output_mem,
+                NULL);
   exo_print(exo, eio_fd);
   fprintf(eio_fd, "\n\n");
 
@@ -633,12 +633,12 @@ eio_write_trace(FILE *eio_fd,			/* EIO stream file desc */
    and memory are assumed to be precise when this function is called,
    register and memory are updated with the results of the sustem call */
 void
-eio_read_trace(FILE *eio_fd,			/* EIO stream file desc */
-	       counter_t icnt,			/* instruction count */
-	       struct regs_t *regs,		/* registers to update */
-	       mem_access_fn mem_fn,		/* generic memory accessor */
-	       struct mem_t *mem,		/* memory to update */
-	       md_inst_t inst)			/* system call inst */
+eio_read_trace(FILE *eio_fd,                    /* EIO stream file desc */
+               counter_t icnt,                  /* instruction count */
+               struct regs_t *regs,             /* registers to update */
+               mem_access_fn mem_fn,            /* generic memory accessor */
+               struct mem_t *mem,               /* memory to update */
+               md_inst_t inst)                  /* system call inst */
 {
   int i;
   struct exo_term_t *exo, *exo_icnt, *exo_pc;
@@ -693,10 +693,10 @@ eio_read_trace(FILE *eio_fd,			/* EIO stream file desc */
        i <= MD_LAST_IN_REG; i++, regrec=regrec->next)
     {
       if (!regrec || regrec->ec != ec_address)
-	fatal("EIO trace inconsistency: missing input reg");
+        fatal("EIO trace inconsistency: missing input reg");
 
       if (MD_EXO_CMP_IREG(regrec, regs, i))
-	fatal("EIO trace inconsistency: R[%d] input mismatch", i);
+        fatal("EIO trace inconsistency: R[%d] input mismatch", i);
 #ifdef VERBOSE
       fprintf(stderr, "** R[%d] checks out...\n", i);
 #endif /* VERBOSE */
@@ -712,44 +712,44 @@ eio_read_trace(FILE *eio_fd,			/* EIO stream file desc */
 
       /* check the mem transaction format */
       if (!memrec
-	  || memrec->ec != ec_list
-	  || !(addr = memrec->as_list.head)
-	  || addr->ec != ec_address
-	  || !(blob = addr->next)
-	  || blob->ec != ec_blob
-	  || blob->next != NULL)
-	fatal("EIO trace inconsistency: bad memory transaction");
+          || memrec->ec != ec_list
+          || !(addr = memrec->as_list.head)
+          || addr->ec != ec_address
+          || !(blob = addr->next)
+          || blob->ec != ec_blob
+          || blob->next != NULL)
+        fatal("EIO trace inconsistency: bad memory transaction");
 
       for (loc=addr->as_integer.val, i=0; i < blob->as_blob.size; loc++,i++)
-	{
-	  unsigned char val;
+        {
+          unsigned char val;
 
-	  /* was: val = MEM_READ_BYTE(loc); */
-	  (*mem_fn)(mem, Read, loc, &val, sizeof(unsigned char));
+          /* was: val = MEM_READ_BYTE(loc); */
+          (*mem_fn)(mem, Read, loc, &val, sizeof(unsigned char));
 
-	  if (val != blob->as_blob.data[i])
-	    fatal("EIO trace inconsistency: addr 0x%08p input mismatch", loc);
+          if (val != blob->as_blob.data[i])
+            fatal("EIO trace inconsistency: addr 0x%08p input mismatch", loc);
 
 #ifdef VERBOSE
-	  myfprintf(stderr, "** 0x%08p checks out...\n", loc);
+          myfprintf(stderr, "** 0x%08p checks out...\n", loc);
 #endif /* VERBOSE */
-	}
+        }
 
       /* simulate view'able I/O */
       if (MD_OUTPUT_SYSCALL(regs))
-	{
-	  if (sim_progfd)
-	    {
-	      /* redirect program output to file */
-	      fwrite(blob->as_blob.data, 1, blob->as_blob.size, sim_progfd);
-	    }
-	  else
-	    {
-	      /* write the output to stdout/stderr */
-	      write(MD_STREAM_FILENO(regs),
-		    blob->as_blob.data, blob->as_blob.size);
-	    }
-	}
+        {
+          if (sim_progfd)
+            {
+              /* redirect program output to file */
+              fwrite(blob->as_blob.data, 1, blob->as_blob.size, sim_progfd);
+            }
+          else
+            {
+              /* write the output to stdout/stderr */
+              write(MD_STREAM_FILENO(regs),
+                    blob->as_blob.data, blob->as_blob.size);
+            }
+        }
     }
 
   /*
@@ -767,7 +767,7 @@ eio_read_trace(FILE *eio_fd,			/* EIO stream file desc */
        i <= MD_LAST_OUT_REG; i++, regrec=regrec->next)
     {
       if (!regrec || regrec->ec != ec_address)
-	fatal("EIO trace inconsistency: missing output reg");
+        fatal("EIO trace inconsistency: missing output reg");
 
       MD_EXO_TO_IREG(regrec, regs, i);
 
@@ -786,24 +786,24 @@ eio_read_trace(FILE *eio_fd,			/* EIO stream file desc */
 
       /* check the mem transaction format */
       if (!memrec
-	  || memrec->ec != ec_list
-	  || !(addr = memrec->as_list.head)
-	  || addr->ec != ec_address
-	  || !(blob = addr->next)
-	  || blob->ec != ec_blob
-	  || blob->next != NULL)
-	fatal("EIO trace icnonsistency: bad memory transaction");
+          || memrec->ec != ec_list
+          || !(addr = memrec->as_list.head)
+          || addr->ec != ec_address
+          || !(blob = addr->next)
+          || blob->ec != ec_blob
+          || blob->next != NULL)
+        fatal("EIO trace icnonsistency: bad memory transaction");
 
       for (loc=addr->as_integer.val, i=0; i < blob->as_blob.size; loc++,i++)
-	{
-	  /* was: MEM_WRITE_BYTE(loc, blob->as_blob.data[i]); */
-	  (*mem_fn)(mem, Write,
-		    loc, &blob->as_blob.data[i], sizeof(unsigned char));
+        {
+          /* was: MEM_WRITE_BYTE(loc, blob->as_blob.data[i]); */
+          (*mem_fn)(mem, Write,
+                    loc, &blob->as_blob.data[i], sizeof(unsigned char));
 
 #ifdef VERBOSE
-	  fprintf(stderr, "** 0x%08p written...\n", loc);
+          fprintf(stderr, "** 0x%08p written...\n", loc);
 #endif /* VERBOSE */
-	}
+        }
     }
 
   /* release the EIO EXO node */
@@ -822,17 +822,17 @@ eio_fast_forward(FILE *eio_fd, counter_t icnt)
       exo = exo_read(eio_fd);
 
       if (!exo)
-	fatal("could not fast forward to EIO checkpoint");
+        fatal("could not fast forward to EIO checkpoint");
 
       /* one more transaction processed */
       eio_trans_icnt = icnt;
 
       /* pull apart the EIO transaction (EXO format) */
       if (!exo
-	  || exo->ec != ec_list
-	  || !(exo_icnt = exo->as_list.head)
-	  || exo_icnt->ec != ec_integer)
-	fatal("cannot read EIO transaction (during fast forward)");
+          || exo->ec != ec_list
+          || !(exo_icnt = exo->as_list.head)
+          || exo_icnt->ec != ec_integer)
+        fatal("cannot read EIO transaction (during fast forward)");
     }
   while ((counter_t)exo_icnt->as_integer.val != icnt);
 

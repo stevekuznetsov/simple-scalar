@@ -136,6 +136,6 @@ void sim_uninit(void);
 
 /* print all simulator stats */
 void
-sim_print_stats(FILE *fd);		/* output stream */
+sim_print_stats(FILE *fd);              /* output stream */
 
 #endif /* SIM_H */

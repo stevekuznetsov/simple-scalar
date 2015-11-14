@@ -109,7 +109,7 @@ sim_reg_options(struct opt_odb_t *odb)
 "instruction errors will manifest as simulator execution errors, possibly\n"
 "causing sim-fast to execute incorrectly or dump core.  Such is the\n"
 "price we pay for speed!!!!\n"
-		 );
+                 );
 }
 
 /* check simulator-specific option values */
@@ -126,16 +126,16 @@ sim_reg_stats(struct stat_sdb_t *sdb)
 {
 #ifndef NO_INSN_COUNT
   stat_reg_counter(sdb, "sim_num_insn",
-		   "total number of instructions executed",
-		   &sim_num_insn, sim_num_insn, NULL);
+                   "total number of instructions executed",
+                   &sim_num_insn, sim_num_insn, NULL);
 #endif /* !NO_INSN_COUNT */
   stat_reg_int(sdb, "sim_elapsed_time",
-	       "total simulation time in seconds",
-	       &sim_elapsed_time, 0, NULL);
+               "total simulation time in seconds",
+               &sim_elapsed_time, 0, NULL);
 #ifndef NO_INSN_COUNT
   stat_reg_formula(sdb, "sim_inst_rate",
-		   "simulation speed (in insts/sec)",
-		   "sim_num_insn / sim_elapsed_time", NULL);
+                   "simulation speed (in insts/sec)",
+                   "sim_num_insn / sim_elapsed_time", NULL);
 #endif /* !NO_INSN_COUNT */
   ld_reg_stats(sdb);
   mem_reg_stats(mem, sdb);
@@ -158,9 +158,9 @@ sim_init(void)
 
 /* load program into simulated state */
 void
-sim_load_prog(char *fname,		/* program to load */
-	      int argc, char **argv,	/* program arguments */
-	      char **envp)		/* program environment */
+sim_load_prog(char *fname,              /* program to load */
+              int argc, char **argv,    /* program arguments */
+              char **envp)              /* program environment */
 {
   /* load program text and data, set up environment, memory, and regs */
   ld_load_prog(fname, argc, argv, envp, &regs, mem, TRUE);
@@ -177,22 +177,22 @@ sim_load_prog(char *fname,		/* program to load */
 
     for (i=0; i < num_insn; i++)
       {
-	enum md_opcode op;
-	md_inst_t inst;
-	md_addr_t PC;
+        enum md_opcode op;
+        md_inst_t inst;
+        md_addr_t PC;
 
-	/* compute PC */
-	PC = ld_text_base + i * sizeof(md_inst_t);
+        /* compute PC */
+        PC = ld_text_base + i * sizeof(md_inst_t);
 
-	/* get instruction from memory */
-	MD_FETCH_INST(inst, mem, PC);
+        /* get instruction from memory */
+        MD_FETCH_INST(inst, mem, PC);
 
-	/* decode the instruction */
-	MD_SET_OPCODE(op, inst);
+        /* decode the instruction */
+        MD_SET_OPCODE(op, inst);
 
-	/* insert into decoded opcode space */
-	MEM_WRITE_WORD(dec, PC << 1, (word_t)op);
-	MEM_WRITE_WORD(dec, (PC << 1)+sizeof(word_t), inst);
+        /* insert into decoded opcode space */
+        MEM_WRITE_WORD(dec, PC << 1, (word_t)op);
+        MEM_WRITE_WORD(dec, (PC << 1)+sizeof(word_t), inst);
       }
     fprintf(stderr, "done\n");
   }
@@ -225,87 +225,87 @@ sim_uninit(void)
  */
 
 /* next program counter */
-#define SET_NPC(EXPR)		(regs.regs_NPC = (EXPR))
+#define SET_NPC(EXPR)           (regs.regs_NPC = (EXPR))
 
 /* current program counter */
-#define CPC			(regs.regs_PC)
+#define CPC                     (regs.regs_PC)
 
 /* general purpose registers */
-#define GPR(N)			(regs.regs_R[N])
-#define SET_GPR(N,EXPR)		(regs.regs_R[N] = (EXPR))
+#define GPR(N)                  (regs.regs_R[N])
+#define SET_GPR(N,EXPR)         (regs.regs_R[N] = (EXPR))
 
 #if defined(TARGET_PISA)
 
 /* floating point registers, L->word, F->single-prec, D->double-prec */
-#define FPR_L(N)		(regs.regs_F.l[(N)])
-#define SET_FPR_L(N,EXPR)	(regs.regs_F.l[(N)] = (EXPR))
-#define FPR_F(N)		(regs.regs_F.f[(N)])
-#define SET_FPR_F(N,EXPR)	(regs.regs_F.f[(N)] = (EXPR))
-#define FPR_D(N)		(regs.regs_F.d[(N) >> 1])
-#define SET_FPR_D(N,EXPR)	(regs.regs_F.d[(N) >> 1] = (EXPR))
+#define FPR_L(N)                (regs.regs_F.l[(N)])
+#define SET_FPR_L(N,EXPR)       (regs.regs_F.l[(N)] = (EXPR))
+#define FPR_F(N)                (regs.regs_F.f[(N)])
+#define SET_FPR_F(N,EXPR)       (regs.regs_F.f[(N)] = (EXPR))
+#define FPR_D(N)                (regs.regs_F.d[(N) >> 1])
+#define SET_FPR_D(N,EXPR)       (regs.regs_F.d[(N) >> 1] = (EXPR))
 
 /* miscellaneous register accessors */
-#define SET_HI(EXPR)		(regs.regs_C.hi = (EXPR))
-#define HI			(regs.regs_C.hi)
-#define SET_LO(EXPR)		(regs.regs_C.lo = (EXPR))
-#define LO			(regs.regs_C.lo)
-#define FCC			(regs.regs_C.fcc)
-#define SET_FCC(EXPR)		(regs.regs_C.fcc = (EXPR))
+#define SET_HI(EXPR)            (regs.regs_C.hi = (EXPR))
+#define HI                      (regs.regs_C.hi)
+#define SET_LO(EXPR)            (regs.regs_C.lo = (EXPR))
+#define LO                      (regs.regs_C.lo)
+#define FCC                     (regs.regs_C.fcc)
+#define SET_FCC(EXPR)           (regs.regs_C.fcc = (EXPR))
 
 #elif defined(TARGET_ALPHA)
 
 /* floating point registers, L->word, F->single-prec, D->double-prec */
-#define FPR_Q(N)		(regs.regs_F.q[N])
-#define SET_FPR_Q(N,EXPR)	(regs.regs_F.q[N] = (EXPR))
-#define FPR(N)			(regs.regs_F.d[N])
-#define SET_FPR(N,EXPR)		(regs.regs_F.d[N] = (EXPR))
+#define FPR_Q(N)                (regs.regs_F.q[N])
+#define SET_FPR_Q(N,EXPR)       (regs.regs_F.q[N] = (EXPR))
+#define FPR(N)                  (regs.regs_F.d[N])
+#define SET_FPR(N,EXPR)         (regs.regs_F.d[N] = (EXPR))
 
 /* miscellaneous register accessors */
-#define FPCR			(regs.regs_C.fpcr)
-#define SET_FPCR(EXPR)		(regs.regs_C.fpcr = (EXPR))
-#define UNIQ			(regs.regs_C.uniq)
-#define SET_UNIQ(EXPR)		(regs.regs_C.uniq = (EXPR))
+#define FPCR                    (regs.regs_C.fpcr)
+#define SET_FPCR(EXPR)          (regs.regs_C.fpcr = (EXPR))
+#define UNIQ                    (regs.regs_C.uniq)
+#define SET_UNIQ(EXPR)          (regs.regs_C.uniq = (EXPR))
 
 #else
 #error No ISA target defined...
 #endif
 
 /* precise architected memory state accessor macros */
-#define READ_BYTE(SRC, FAULT)						\
+#define READ_BYTE(SRC, FAULT)                                           \
   ((FAULT) = md_fault_none, MEM_READ_BYTE(mem, (SRC)))
-#define READ_HALF(SRC, FAULT)						\
+#define READ_HALF(SRC, FAULT)                                           \
   ((FAULT) = md_fault_none, MEM_READ_HALF(mem, (SRC)))
-#define READ_WORD(SRC, FAULT)						\
+#define READ_WORD(SRC, FAULT)                                           \
   ((FAULT) = md_fault_none, MEM_READ_WORD(mem, (SRC)))
 #ifdef HOST_HAS_QWORD
-#define READ_QWORD(SRC, FAULT)						\
+#define READ_QWORD(SRC, FAULT)                                          \
   ((FAULT) = md_fault_none, MEM_READ_QWORD(mem, (SRC)))
 #endif /* HOST_HAS_QWORD */
 
-#define WRITE_BYTE(SRC, DST, FAULT)					\
+#define WRITE_BYTE(SRC, DST, FAULT)                                     \
   ((FAULT) = md_fault_none, MEM_WRITE_BYTE(mem, (DST), (SRC)))
-#define WRITE_HALF(SRC, DST, FAULT)					\
+#define WRITE_HALF(SRC, DST, FAULT)                                     \
   ((FAULT) = md_fault_none, MEM_WRITE_HALF(mem, (DST), (SRC)))
-#define WRITE_WORD(SRC, DST, FAULT)					\
+#define WRITE_WORD(SRC, DST, FAULT)                                     \
   ((FAULT) = md_fault_none, MEM_WRITE_WORD(mem, (DST), (SRC)))
 #ifdef HOST_HAS_QWORD
-#define WRITE_QWORD(SRC, DST, FAULT)					\
+#define WRITE_QWORD(SRC, DST, FAULT)                                    \
   ((FAULT) = md_fault_none, MEM_WRITE_QWORD(mem, (DST), (SRC)))
 #endif /* HOST_HAS_QWORD */
 
 /* system call handler macro */
-#define SYSCALL(INST)	sys_syscall(&regs, mem_access, mem, INST, TRUE)
+#define SYSCALL(INST)   sys_syscall(&regs, mem_access, mem, INST, TRUE)
 
 #ifndef NO_INSN_COUNT
-#define INC_INSN_CTR()	sim_num_insn++
+#define INC_INSN_CTR()  sim_num_insn++
 #else /* !NO_INSN_COUNT */
-#define INC_INSN_CTR()	/* nada */
+#define INC_INSN_CTR()  /* nada */
 #endif /* NO_INSN_COUNT */
 
 #ifdef TARGET_ALPHA
-#define ZERO_FP_REG()	regs.regs_F.d[MD_REG_ZERO] = 0.0
+#define ZERO_FP_REG()   regs.regs_F.d[MD_REG_ZERO] = 0.0
 #else
-#define ZERO_FP_REG()	/* nada... */
+#define ZERO_FP_REG()   /* nada... */
 #endif
 
 /* start simulation, program loaded, processor precise state initialized */
@@ -324,9 +324,9 @@ sim_main(void)
   /* instruction jump table, this code is GNU GCC specific */
   static void *op_jump[/* max opcodes */] = {
     &&opcode_NA, /* NA */
-#define DEFINST(OP,MSK,NAME,OPFORM,RES,FLAGS,O1,O2,I1,I2,I3)		\
+#define DEFINST(OP,MSK,NAME,OPFORM,RES,FLAGS,O1,O2,I1,I2,I3)            \
     &&opcode_##OP,
-#define DEFLINK(OP,MSK,NAME,MASK,SHIFT)					\
+#define DEFLINK(OP,MSK,NAME,MASK,SHIFT)                                 \
     &&opcode_##OP,
 #define CONNECT(OP)
 #include "machine.def"
@@ -356,37 +356,37 @@ sim_main(void)
   MD_SET_OPCODE(op, inst);
   goto *op_jump[op];
 
-#define DEFINST(OP,MSK,NAME,OPFORM,RES,FLAGS,O1,O2,I1,I2,I3)		\
-  opcode_##OP:								\
-    /* maintain $r0 semantics */					\
-    regs.regs_R[MD_REG_ZERO] = 0;					\
-    ZERO_FP_REG();							\
-									\
-    /* keep an instruction count */					\
-    INC_INSN_CTR();							\
-									\
-    /* locate next instruction */					\
-    regs.regs_PC = regs.regs_NPC;					\
-									\
-    /* set up default next PC */					\
-    regs.regs_NPC += sizeof(md_inst_t);					\
-									\
-    /* execute the instruction */					\
-    SYMCAT(OP,_IMPL);							\
-									\
-    /* get the next instruction */					\
-    MD_FETCH_INST(inst, mem, regs.regs_NPC);				\
-									\
-    /* jump to instruction implementation */				\
-    MD_SET_OPCODE(op, inst);						\
+#define DEFINST(OP,MSK,NAME,OPFORM,RES,FLAGS,O1,O2,I1,I2,I3)            \
+  opcode_##OP:                                                          \
+    /* maintain $r0 semantics */                                        \
+    regs.regs_R[MD_REG_ZERO] = 0;                                       \
+    ZERO_FP_REG();                                                      \
+                                                                        \
+    /* keep an instruction count */                                     \
+    INC_INSN_CTR();                                                     \
+                                                                        \
+    /* locate next instruction */                                       \
+    regs.regs_PC = regs.regs_NPC;                                       \
+                                                                        \
+    /* set up default next PC */                                        \
+    regs.regs_NPC += sizeof(md_inst_t);                                 \
+                                                                        \
+    /* execute the instruction */                                       \
+    SYMCAT(OP,_IMPL);                                                   \
+                                                                        \
+    /* get the next instruction */                                      \
+    MD_FETCH_INST(inst, mem, regs.regs_NPC);                            \
+                                                                        \
+    /* jump to instruction implementation */                            \
+    MD_SET_OPCODE(op, inst);                                            \
     goto *op_jump[op];
 
-#define DEFLINK(OP,MSK,NAME,MASK,SHIFT)					\
-  opcode_##OP:								\
+#define DEFLINK(OP,MSK,NAME,MASK,SHIFT)                                 \
+  opcode_##OP:                                                          \
     panic("attempted to execute a linking opcode");
 #define CONNECT(OP)
-#define DECLARE_FAULT(FAULT)						\
-	  { /* uncaught... */break; }
+#define DECLARE_FAULT(FAULT)                                            \
+          { /* uncaught... */break; }
 #include "machine.def"
 
   opcode_NA:
@@ -417,7 +417,7 @@ sim_main(void)
       /* load predecoded instruction */
       op = (enum md_opcode)__UNCHK_MEM_READ(dec, regs.regs_PC << 1, word_t);
       inst =
-	__UNCHK_MEM_READ(dec, (regs.regs_PC << 1)+sizeof(word_t), md_inst_t);
+        __UNCHK_MEM_READ(dec, (regs.regs_PC << 1)+sizeof(word_t), md_inst_t);
 #else /* !TARGET_ALPHA */
       /* load instruction */
       MD_FETCH_INST(inst, mem, regs.regs_PC);
@@ -428,21 +428,21 @@ sim_main(void)
 
       /* execute the instruction */
       switch (op)
-	{
-#define DEFINST(OP,MSK,NAME,OPFORM,RES,FLAGS,O1,O2,I1,I2,I3)		\
-	case OP:							\
-	  SYMCAT(OP,_IMPL);						\
-	  break;
-#define DEFLINK(OP,MSK,NAME,MASK,SHIFT)					\
-	case OP:							\
-	  panic("attempted to execute a linking opcode");
+        {
+#define DEFINST(OP,MSK,NAME,OPFORM,RES,FLAGS,O1,O2,I1,I2,I3)            \
+        case OP:                                                        \
+          SYMCAT(OP,_IMPL);                                             \
+          break;
+#define DEFLINK(OP,MSK,NAME,MASK,SHIFT)                                 \
+        case OP:                                                        \
+          panic("attempted to execute a linking opcode");
 #define CONNECT(OP)
-#define DECLARE_FAULT(FAULT)						\
-	  { /* uncaught... */break; }
+#define DECLARE_FAULT(FAULT)                                            \
+          { /* uncaught... */break; }
 #include "machine.def"
-	default:
-	  panic("attempted to execute a bogus opcode");
-	}
+        default:
+          panic("attempted to execute a bogus opcode");
+        }
 
       /* execute next instruction */
       regs.regs_PC = regs.regs_NPC;

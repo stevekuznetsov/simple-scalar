@@ -543,6 +543,9 @@ bpred_dir_lookup(struct bpred_dir_t *pred_dir,  /* branch dir predictor inst */
   return (char *)p;
 }
 
+/* this is the "main" function for a branch predictor - it currently uses
+   the bpred_t struct, we need to abstract that away so we can add predictors
+   that do not conform to that structure */
 /* probe a predictor for a next fetch address, the predictor is probed
    with branch address BADDR, the branch target is BTARGET (used for
    static predictors), and OP is the instruction opcode (used to simulate
@@ -578,7 +581,7 @@ bpred_lookup(struct bpred_t *pred,      /* branch predictor instance */
   dir_update_ptr->pdir2 = NULL;
   dir_update_ptr->pmeta = NULL;
   /* Except for jumps, get a pointer to direction-prediction bits */
-  switch (pred->class) {
+  switch (pred->class) { /* the current impl aready has this switch-case... */
     case BPredComb:
       if ((MD_OP_FLAGS(op) & (F_CTRL|F_UNCOND)) != (F_CTRL|F_UNCOND))
         {

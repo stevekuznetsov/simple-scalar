@@ -111,6 +111,7 @@ static int ruu_branch_penalty;
 static int fetch_speed;
 
 /* branch predictor type {nottaken|taken|perfect|bimod|2lev} */
+/* branch predictor type held in a simple string, no enum needs updating */
 static char *pred_type;
 
 /* bimodal predictor config (<table_size>) */
@@ -894,6 +895,7 @@ sim_check_options(struct opt_odb_t *odb,        /* options database */
   if (fetch_speed < 1)
     fatal("front-end speed must be positive and non-zero");
 
+  /* look at the predictor type string and determine which we want */
   if (!mystricmp(pred_type, "perfect"))
     {
       /* perfect predictor */

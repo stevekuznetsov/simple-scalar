@@ -64,11 +64,11 @@
 
 /* event actions */
 enum eventq_action {
-  EventSetBit,			/* set a bit: int *, bit # */
-  EventClearBit,		/* clear a bit: int *, bit # */
-  EventSetFlag,			/* set a flag: int *, value */
-  EventAddOp,			/* add a value to a summand */
-  EventCallback,		/* call event handler: fn * */
+  EventSetBit,                  /* set a bit: int *, bit # */
+  EventClearBit,                /* clear a bit: int *, bit # */
+  EventSetFlag,                 /* set a flag: int *, value */
+  EventAddOp,                   /* add a value to a summand */
+  EventCallback,                /* call event handler: fn * */
 };
 
 /* ID zero (0) is unused */
@@ -76,27 +76,27 @@ typedef unsigned int EVENTQ_ID_TYPE;
 
 /* event descriptor */
 struct eventq_desc {
-  struct eventq_desc *next;	/* next event in the sorted list */
-  SS_TIME_TYPE when;		/* time to schedule write back event */
-  EVENTQ_ID_TYPE id;		/* unique event ID */
-  enum eventq_action action;	/* action on event occurrance */
+  struct eventq_desc *next;     /* next event in the sorted list */
+  SS_TIME_TYPE when;            /* time to schedule write back event */
+  EVENTQ_ID_TYPE id;            /* unique event ID */
+  enum eventq_action action;    /* action on event occurrance */
   union eventq_data {
     struct {
-      BITMAP_ENT_TYPE *bmap;	/* bitmap to access */
-      int sz;			/* bitmap size */
-      int bitnum;		/* bit to set */
+      BITMAP_ENT_TYPE *bmap;    /* bitmap to access */
+      int sz;                   /* bitmap size */
+      int bitnum;               /* bit to set */
     } bit;
     struct {
-      int *pflag;		/* flag to set */
+      int *pflag;               /* flag to set */
       int value;
     } flag;
     struct {
-      int *summand;		/* value to add to */
-      int addend;		/* amount to add */
+      int *summand;             /* value to add to */
+      int addend;               /* amount to add */
     } addop;
     struct {
-      void (*fn)(SS_TIME_TYPE time, int arg);	/* function to call */
-      int arg;			/* argument to pass */
+      void (*fn)(SS_TIME_TYPE time, int arg);   /* function to call */
+      int arg;                  /* argument to pass */
     } callback;
   } data;
 };
@@ -108,16 +108,16 @@ void eventq_init(int max_events);
 /* schedule an action that occurs at WHEN, action is visible at WHEN,
    and invisible before WHEN */
 EVENTQ_ID_TYPE eventq_queue_setbit(SS_TIME_TYPE when,
-				   BITMAP_ENT_TYPE *bmap, int sz, int bitnum);
+                                   BITMAP_ENT_TYPE *bmap, int sz, int bitnum);
 EVENTQ_ID_TYPE eventq_queue_clearbit(SS_TIME_TYPE when, BITMAP_ENT_TYPE *bmap,
-				     int sz, int bitnum);
+                                     int sz, int bitnum);
 EVENTQ_ID_TYPE eventq_queue_setflag(SS_TIME_TYPE when,
-				    int *pflag, int value);
+                                    int *pflag, int value);
 EVENTQ_ID_TYPE eventq_queue_addop(SS_TIME_TYPE when,
-				  int *summand, int addend);
+                                  int *summand, int addend);
 EVENTQ_ID_TYPE eventq_queue_callback(SS_TIME_TYPE when,
-				     void (*fn)(SS_TIME_TYPE time, int arg),
-				     int arg);
+                                     void (*fn)(SS_TIME_TYPE time, int arg),
+                                     int arg);
 
 /* execute an event immediately, returns non-zero if the event was
    located an deleted */

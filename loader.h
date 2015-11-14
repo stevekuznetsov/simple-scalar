@@ -135,16 +135,16 @@ extern int ld_target_big_endian;
 
 /* register simulator-specific statistics */
 void
-ld_reg_stats(struct stat_sdb_t *sdb);	/* stats data base */
+ld_reg_stats(struct stat_sdb_t *sdb);   /* stats data base */
 
 /* load program text and initialized data into simulated virtual memory
    space and initialize program segment range variables */
 void
-ld_load_prog(char *fname,		/* program to load */
-	     int argc, char **argv,	/* simulated program cmd line args */
-	     char **envp,		/* simulated program environment */
-	     struct regs_t *regs,	/* registers to initialize for load */
-	     struct mem_t *mem,		/* memory space to load prog into */
-	     int zero_bss_segs);	/* zero uninit data segment? */
+ld_load_prog(char *fname,               /* program to load */
+             int argc, char **argv,     /* simulated program cmd line args */
+             char **envp,               /* simulated program environment */
+             struct regs_t *regs,       /* registers to initialize for load */
+             struct mem_t *mem,         /* memory space to load prog into */
+             int zero_bss_segs);        /* zero uninit data segment? */
 
 #endif /* LOADER_H */

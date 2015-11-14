@@ -91,12 +91,12 @@ $stat_name = $ARGV[2];
 if (grep(/.gz$/, $sim_output) || grep(/.Z$/, $sim_output) )
   {
     open(SIM_OUTPUT, "$gzip_cmd $sim_output |")
-	|| die "Cannot open simulator output file: $sim_output\n";
+        || die "Cannot open simulator output file: $sim_output\n";
   }
 else
   {
     open(SIM_OUTPUT, $sim_output)
-	|| die "Cannot open simulator output file: $sim_output\n";
+        || die "Cannot open simulator output file: $sim_output\n";
   }
 $parse_mode = "FIND_START";
 while (<SIM_OUTPUT>)
@@ -105,26 +105,26 @@ while (<SIM_OUTPUT>)
     if ($parse_mode eq "FIND_START" && (/^$stat_name\.start_dist$/))
       {
         $parse_mode = "FIND_END";
-	next;
+        next;
       }
     if ($parse_mode eq "FIND_END" && (/^$stat_name\.end_dist$/))
       {
-	$parse_mode = "FOUND_STAT";
-	last;
+        $parse_mode = "FOUND_STAT";
+        last;
       }
     if ($parse_mode eq "FIND_END")
       {
-	# parse a real histo line
-	if (/^(0x[0-9a-fA-F]+)\s+(\d+)\s+([0-9.]+)$/)
-	  {
-	    $histo_exists{hex($1)} = 1;
-	    $histo_freq{hex($1)} = $2;
-	    $histo_frac{hex($1)} = $3;
-	  }
-	else
-	  {
-	    print "** WARNING ** could not parse line: `$_'\n";
-	  }
+        # parse a real histo line
+        if (/^(0x[0-9a-fA-F]+)\s+(\d+)\s+([0-9.]+)$/)
+          {
+            $histo_exists{hex($1)} = 1;
+            $histo_freq{hex($1)} = $2;
+            $histo_frac{hex($1)} = $3;
+          }
+        else
+          {
+            print "** WARNING ** could not parse line: `$_'\n";
+          }
       }
   }
 if ($parse_mode ne "FOUND_STAT")
@@ -140,12 +140,12 @@ close(SIM_OUTPUT);
 if (grep(/.gz$/, $dis_file) || grep(/.Z$/, $dis_file) )
   {
     open(DIS_FILE, "$gzip_cmd $dis_file |")
-	|| die "Cannot open disassembly file: $dis_file\n";
+        || die "Cannot open disassembly file: $dis_file\n";
   }
 else
   {
     open(DIS_FILE, $dis_file)
-	|| die "Cannot open disassembly file: $dis_file\n";
+        || die "Cannot open disassembly file: $dis_file\n";
   }
 
 # print text profile header
@@ -159,21 +159,21 @@ while (<DIS_FILE>)
   {
     if (/^([0-9a-fA-F]+)\s+(.*)$/)
       {
-	if ($histo_exists{hex($1)})
-	  {
-	    printf "%s:  (%11d, %6.2f): %s\n",
-	      $1, $histo_freq{hex($1)}, $histo_frac{hex($1)}, $2;
-	    $histo_probed{hex($1)} = 1;
-	  }
-	else
-	  {
-	    printf "%s:                       : %s\n", $1, $2;
-	  }
+        if ($histo_exists{hex($1)})
+          {
+            printf "%s:  (%11d, %6.2f): %s\n",
+              $1, $histo_freq{hex($1)}, $histo_frac{hex($1)}, $2;
+            $histo_probed{hex($1)} = 1;
+          }
+        else
+          {
+            printf "%s:                       : %s\n", $1, $2;
+          }
       }
     else
       {
-	# various other disassembly lines, just echo them out as is
-	print;
+        # various other disassembly lines, just echo them out as is
+        print;
       }
   }
 close(DIS_FILE);
@@ -187,15 +187,15 @@ foreach $addr (keys %histo_exists)
   {
     if (!$histo_probed{$addr})
       {
-	$cnt++;
-	if ($cnt > 5)
-	  {
-	    $unbnd++;
-	  }
-	else
-	  {
-	    printf "** WARNING ** address 0x%08x was not bound to disassembly output.\n", $addr;
-	  }
+        $cnt++;
+        if ($cnt > 5)
+          {
+            $unbnd++;
+          }
+        else
+          {
+            printf "** WARNING ** address 0x%08x was not bound to disassembly output.\n", $addr;
+          }
       }
   }
 if ($unbnd)

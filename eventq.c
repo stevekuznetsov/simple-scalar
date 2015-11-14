@@ -73,56 +73,56 @@ eventq_init(int max_events)
   eventq_free = NULL;
 }
 
-#define __QUEUE_EVENT(WHEN, ID, ACTION)					\
-  struct eventq_desc *prev, *ev, *new;					\
-  /* get a free event descriptor */					\
-  if (!eventq_free)							\
-    {									\
-      if (eventq_max_events && eventq_event_count >= eventq_max_events)	\
-	panic("too many events");					\
-      eventq_free = calloc(1, sizeof(struct eventq_desc));		\
-    }									\
-  new = eventq_free;							\
-  eventq_free = eventq_free->next;					\
-  /* plug in event data */						\
-  new->when = (WHEN); (ID) = new->id = next_ID++; ACTION;		\
-  /* locate insertion point */						\
-  for (prev=NULL,ev=eventq_pending;					\
-       ev && ev->when < when;						\
-       prev=ev, ev=ev->next);						\
-  /* insert new record */						\
-  if (prev)								\
-    {									\
-      /* insert middle or end */					\
-      new->next = prev->next;						\
-      prev->next = new;							\
-    }									\
-  else									\
-    {									\
-      /* insert beginning */						\
-      new->next = eventq_pending;					\
-      eventq_pending = new;						\
+#define __QUEUE_EVENT(WHEN, ID, ACTION)                                 \
+  struct eventq_desc *prev, *ev, *new;                                  \
+  /* get a free event descriptor */                                     \
+  if (!eventq_free)                                                     \
+    {                                                                   \
+      if (eventq_max_events && eventq_event_count >= eventq_max_events) \
+        panic("too many events");                                       \
+      eventq_free = calloc(1, sizeof(struct eventq_desc));              \
+    }                                                                   \
+  new = eventq_free;                                                    \
+  eventq_free = eventq_free->next;                                      \
+  /* plug in event data */                                              \
+  new->when = (WHEN); (ID) = new->id = next_ID++; ACTION;               \
+  /* locate insertion point */                                          \
+  for (prev=NULL,ev=eventq_pending;                                     \
+       ev && ev->when < when;                                           \
+       prev=ev, ev=ev->next);                                           \
+  /* insert new record */                                               \
+  if (prev)                                                             \
+    {                                                                   \
+      /* insert middle or end */                                        \
+      new->next = prev->next;                                           \
+      prev->next = new;                                                 \
+    }                                                                   \
+  else                                                                  \
+    {                                                                   \
+      /* insert beginning */                                            \
+      new->next = eventq_pending;                                       \
+      eventq_pending = new;                                             \
     }
 
 EVENTQ_ID_TYPE
 eventq_queue_setbit(SS_TIME_TYPE when,
-		    BITMAP_ENT_TYPE *bmap, int sz, int bitnum)
+                    BITMAP_ENT_TYPE *bmap, int sz, int bitnum)
 {
   EVENTQ_ID_TYPE id;
-  __QUEUE_EVENT(when, id,						\
-		new->action = EventSetBit; new->data.bit.bmap = bmap;	\
-		new->data.bit.sz = sz; new->data.bit.bitnum = bitnum);
+  __QUEUE_EVENT(when, id,                                               \
+                new->action = EventSetBit; new->data.bit.bmap = bmap;   \
+                new->data.bit.sz = sz; new->data.bit.bitnum = bitnum);
   return id;
 }
 
 EVENTQ_ID_TYPE
 eventq_queue_clearbit(SS_TIME_TYPE when,
-		      BITMAP_ENT_TYPE *bmap, int sz, int bitnum)
+                      BITMAP_ENT_TYPE *bmap, int sz, int bitnum)
 {
   EVENTQ_ID_TYPE id;
-  __QUEUE_EVENT(when, id,						\
-		new->action = EventClearBit; new->data.bit.bmap = bmap;	\
-		new->data.bit.sz = sz; new->data.bit.bitnum = bitnum);
+  __QUEUE_EVENT(when, id,                                               \
+                new->action = EventClearBit; new->data.bit.bmap = bmap; \
+                new->data.bit.sz = sz; new->data.bit.bitnum = bitnum);
   return id;
 }
 
@@ -130,9 +130,9 @@ EVENTQ_ID_TYPE
 eventq_queue_setflag(SS_TIME_TYPE when, int *pflag, int value)
 {
   EVENTQ_ID_TYPE id;
-  __QUEUE_EVENT(when, id,						\
-		new->action = EventSetFlag;				\
-		new->data.flag.pflag = pflag; new->data.flag.value = value);
+  __QUEUE_EVENT(when, id,                                               \
+                new->action = EventSetFlag;                             \
+                new->data.flag.pflag = pflag; new->data.flag.value = value);
   return id;
 }
 
@@ -140,44 +140,44 @@ EVENTQ_ID_TYPE
 eventq_queue_addop(SS_TIME_TYPE when, int *summand, int addend)
 {
   EVENTQ_ID_TYPE id;
-  __QUEUE_EVENT(when, id,						\
-		new->action = EventAddOp;				\
-		new->data.addop.summand = summand;			\
-		new->data.addop.addend = addend);
+  __QUEUE_EVENT(when, id,                                               \
+                new->action = EventAddOp;                               \
+                new->data.addop.summand = summand;                      \
+                new->data.addop.addend = addend);
   return id;
 }
 
 EVENTQ_ID_TYPE
 eventq_queue_callback(SS_TIME_TYPE when,
-		      void (*fn)(SS_TIME_TYPE time, int arg), int arg)
+                      void (*fn)(SS_TIME_TYPE time, int arg), int arg)
 {
   EVENTQ_ID_TYPE id;
-  __QUEUE_EVENT(when, id,						\
-		new->action = EventCallback; new->data.callback.fn = fn;\
-		new->data.callback.arg = arg);
+  __QUEUE_EVENT(when, id,                                               \
+                new->action = EventCallback; new->data.callback.fn = fn;\
+                new->data.callback.arg = arg);
   return id;
 }
 
-#define EXECUTE_ACTION(ev, now)						\
-  /* execute action */							\
-  switch (ev->action) {							\
-  case EventSetBit:							\
+#define EXECUTE_ACTION(ev, now)                                         \
+  /* execute action */                                                  \
+  switch (ev->action) {                                                 \
+  case EventSetBit:                                                     \
     BITMAP_SET(ev->data.bit.bmap, ev->data.bit.sz, ev->data.bit.bitnum);\
-    break;								\
-  case EventClearBit:							\
+    break;                                                              \
+  case EventClearBit:                                                   \
     BITMAP_CLEAR(ev->data.bit.bmap, ev->data.bit.sz, ev->data.bit.bitnum);\
-    break;								\
-  case EventSetFlag:							\
-    *ev->data.flag.pflag = ev->data.flag.value;				\
-    break;								\
-  case EventAddOp:							\
-    *ev->data.addop.summand += ev->data.addop.addend;			\
-    break;								\
-  case EventCallback:							\
-    (*ev->data.callback.fn)(now, ev->data.callback.arg);		\
-    break;								\
-  default:								\
-    panic("bogus event action");					\
+    break;                                                              \
+  case EventSetFlag:                                                    \
+    *ev->data.flag.pflag = ev->data.flag.value;                         \
+    break;                                                              \
+  case EventAddOp:                                                      \
+    *ev->data.addop.summand += ev->data.addop.addend;                   \
+    break;                                                              \
+  case EventCallback:                                                   \
+    (*ev->data.callback.fn)(now, ev->data.callback.arg);                \
+    break;                                                              \
+  default:                                                              \
+    panic("bogus event action");                                        \
   }
 
 /* execute an event immediately, returns non-zero if the event was
@@ -190,28 +190,28 @@ eventq_execute(EVENTQ_ID_TYPE id)
   for (prev=NULL,ev=eventq_pending; ev; prev=ev,ev=ev->next)
     {
       if (ev->id == id)
-	{
-	  if (prev)
-	    {
-	      /* middle of end of list */
-	      prev->next = ev->next;
-	    }
-	  else /* !prev */
-	    {
-	      /* beginning of list */
-	      eventq_pending = ev->next;
-	    }
+        {
+          if (prev)
+            {
+              /* middle of end of list */
+              prev->next = ev->next;
+            }
+          else /* !prev */
+            {
+              /* beginning of list */
+              eventq_pending = ev->next;
+            }
 
-	  /* handle action, now is munged */
-	  EXECUTE_ACTION(ev, 0);
+          /* handle action, now is munged */
+          EXECUTE_ACTION(ev, 0);
 
-	  /* put event on free list */
-	  ev->next = eventq_free;
-	  eventq_free = ev;
+          /* put event on free list */
+          ev->next = eventq_free;
+          eventq_free = ev;
 
-	  /* return success */
-	  return TRUE;
-	}
+          /* return success */
+          return TRUE;
+        }
     }
   /* not found */
   return FALSE;
@@ -227,25 +227,25 @@ eventq_remove(EVENTQ_ID_TYPE id)
   for (prev=NULL,ev=eventq_pending; ev; prev=ev,ev=ev->next)
     {
       if (ev->id == id)
-	{
-	  if (prev)
-	    {
-	      /* middle of end of list */
-	      prev->next = ev->next;
-	    }
-	  else /* !prev */
-	    {
-	      /* beginning of list */
-	      eventq_pending = ev->next;
-	    }
+        {
+          if (prev)
+            {
+              /* middle of end of list */
+              prev->next = ev->next;
+            }
+          else /* !prev */
+            {
+              /* beginning of list */
+              eventq_pending = ev->next;
+            }
 
-	  /* put event on free list */
-	  ev->next = eventq_free;
-	  eventq_free = ev;
+          /* put event on free list */
+          ev->next = eventq_free;
+          eventq_free = ev;
 
-	  /* return success */
-	  return TRUE;
-	}
+          /* return success */
+          return TRUE;
+        }
     }
   /* not found */
   return FALSE;
@@ -280,32 +280,32 @@ eventq_dump(FILE *stream)
   for (ev=eventq_pending; ev; ev=ev->next)
     {
       fprintf(stream, "@ %.0f:%s:",
-	      (double)ev->when,
-	      ev->action == EventSetBit ? "set bit"
-	      : ev->action == EventClearBit ? "clear bit"
-	      : ev->action == EventSetFlag ? "set flag"
-	      : ev->action == EventAddOp ? "add operation"
-	      : ev->action == EventCallback ? "call back"
-	      : (abort(), ""));
+              (double)ev->when,
+              ev->action == EventSetBit ? "set bit"
+              : ev->action == EventClearBit ? "clear bit"
+              : ev->action == EventSetFlag ? "set flag"
+              : ev->action == EventAddOp ? "add operation"
+              : ev->action == EventCallback ? "call back"
+              : (abort(), ""));
       switch (ev->action) {
       case EventSetBit:
       case EventClearBit:
-	fprintf(stream, "0x%p, %d, %d",
-		ev->data.bit.bmap, ev->data.bit.sz, ev->data.bit.bitnum);
-	break;
+        fprintf(stream, "0x%p, %d, %d",
+                ev->data.bit.bmap, ev->data.bit.sz, ev->data.bit.bitnum);
+        break;
       case EventSetFlag:
-	fprintf(stream, "0x%p, %d", ev->data.flag.pflag, ev->data.flag.value);
-	break;
+        fprintf(stream, "0x%p, %d", ev->data.flag.pflag, ev->data.flag.value);
+        break;
       case EventAddOp:
-	fprintf(stream, "0x%p, %d",
-		ev->data.addop.summand, ev->data.addop.addend);
-	break;
+        fprintf(stream, "0x%p, %d",
+                ev->data.addop.summand, ev->data.addop.addend);
+        break;
       case EventCallback:
-	fprintf(stream, "0x%p, %d",
-		ev->data.callback.fn, ev->data.callback.arg);
-	break;
+        fprintf(stream, "0x%p, %d",
+                ev->data.callback.fn, ev->data.callback.arg);
+        break;
       default:
-	panic("bogus event action");
+        panic("bogus event action");
       }
       fprintf(stream, " ");
     }

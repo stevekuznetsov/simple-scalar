@@ -54,8 +54,8 @@
 #ifndef _MSC_VER
 #include <unistd.h>
 #else /* _MSC_VER */
-#define access	_access
-#define X_OK	4
+#define access  _access
+#define X_OK    4
 #endif
 
 #include "host.h"
@@ -75,9 +75,9 @@ char *gzip_paths[] =
 #define HOST_ONLY
 #include "endian.c"
 
-#define CAT(a,b)	a/**/b
+#define CAT(a,b)        a/**/b
 
-#define MSB		0x80000000
+#define MSB             0x80000000
 int
 fast_SRL(void)
 {
@@ -134,19 +134,19 @@ main(int argc, char **argv)
   if (argc == 2 && !strcmp(argv[1], "-s"))
     {
       switch (endian_host_byte_order())
-	{
-	case endian_big:
-	  fprintf(stdout, "big\n");
-	  break;
-	case endian_little:
-	  fprintf(stdout, "little\n");
-	  break;
-	case endian_unknown:
-	  fprintf(stderr, "\nerror: cannot determine byte order!\n");
-	  exit(1);
-	default:
-	  abort();
-	}
+        {
+        case endian_big:
+          fprintf(stdout, "big\n");
+          break;
+        case endian_little:
+          fprintf(stdout, "little\n");
+          break;
+        case endian_unknown:
+          fprintf(stderr, "\nerror: cannot determine byte order!\n");
+          exit(1);
+        default:
+          abort();
+        }
     }
   else if (argc == 2 && !strcmp(argv[1], "-libs"))
     {
@@ -166,94 +166,94 @@ main(int argc, char **argv)
   else if (argc == 1 || (argc == 2 && !strcmp(argv[1], "-flags")))
     {
       switch (endian_host_byte_order())
-	{
-	case endian_big:
-	  fprintf(stdout, "-DBYTES_BIG_ENDIAN ");
-	  break;
-	case endian_little:
-	  fprintf(stdout, "-DBYTES_LITTLE_ENDIAN ");
-	  little_bytes = 1;
-	  break;
-	case endian_unknown:
-	  fprintf(stderr, "\nerror: cannot determine byte order!\n");
-	  exit(1);
-	default:
-	  abort();
-	}
+        {
+        case endian_big:
+          fprintf(stdout, "-DBYTES_BIG_ENDIAN ");
+          break;
+        case endian_little:
+          fprintf(stdout, "-DBYTES_LITTLE_ENDIAN ");
+          little_bytes = 1;
+          break;
+        case endian_unknown:
+          fprintf(stderr, "\nerror: cannot determine byte order!\n");
+          exit(1);
+        default:
+          abort();
+        }
 
       switch (endian_host_word_order())
-	{
-	case endian_big:
-	  fprintf(stdout, "-DWORDS_BIG_ENDIAN ");
-	  break;
-	case endian_little:
-	  fprintf(stdout, "-DWORDS_LITTLE_ENDIAN ");
-	  little_words = 1;
-	  break;
-	case endian_unknown:
-	  fprintf(stderr, "\nerror: cannot determine word order!\n");
-	  exit(1);
-	default:
-	  abort();
-	}
+        {
+        case endian_big:
+          fprintf(stdout, "-DWORDS_BIG_ENDIAN ");
+          break;
+        case endian_little:
+          fprintf(stdout, "-DWORDS_LITTLE_ENDIAN ");
+          little_words = 1;
+          break;
+        case endian_unknown:
+          fprintf(stderr, "\nerror: cannot determine word order!\n");
+          exit(1);
+        default:
+          abort();
+        }
 
 #ifdef _AIX
-	fprintf(stdout, "-D_ALL_SOURCE ");
+        fprintf(stdout, "-D_ALL_SOURCE ");
 #endif /* _AIX */
 
 #if (defined(hpux) || defined(__hpux)) && !defined(__GNUC__)
-	fprintf(stdout, "-D_INCLUDE_HPUX_SOURCE -D_INCLUDE_XOPEN_SOURCE -D_INCLUDE_AES_SOURCE ");
+        fprintf(stdout, "-D_INCLUDE_HPUX_SOURCE -D_INCLUDE_XOPEN_SOURCE -D_INCLUDE_AES_SOURCE ");
 #endif /* hpux */
 
 #ifndef __GNUC__
       /* probe compiler approach needed to concatenate symbols in CPP,
-	 new style concatenation is always used with GNU GCC */
+         new style concatenation is always used with GNU GCC */
       {
-	int i = 5, j;
+        int i = 5, j;
 
-	j = CAT(-,-i);
+        j = CAT(-,-i);
 
-	if (j == 4)
-	  {
-	    /* old style symbol concatenation worked */
-	    fprintf(stdout, "-DOLD_SYMCAT ");
-	  }
-	else if (j == 5)
-	  {
-	    /* old style symbol concatenation does not work, assume that
-	       new style symbol concatenation works */
-	    ;
-	  }
-	else
-	  {
-	    /* huh!?!?! */
-	    fprintf(stderr, "\nerror: cannot grok symbol concat method!\n");
-	    exit(1);
-	  }
+        if (j == 4)
+          {
+            /* old style symbol concatenation worked */
+            fprintf(stdout, "-DOLD_SYMCAT ");
+          }
+        else if (j == 5)
+          {
+            /* old style symbol concatenation does not work, assume that
+               new style symbol concatenation works */
+            ;
+          }
+        else
+          {
+            /* huh!?!?! */
+            fprintf(stderr, "\nerror: cannot grok symbol concat method!\n");
+            exit(1);
+          }
       }
 #endif /* __GNUC__ */
 
 #ifndef SLOW_SHIFTS
       /* probe host shift capabilities */
       if (fast_SRL())
-	fprintf(stdout, "-DFAST_SRL ");
+        fprintf(stdout, "-DFAST_SRL ");
       if (fast_SRA())
-	fprintf(stdout, "-DFAST_SRA ");
+        fprintf(stdout, "-DFAST_SRA ");
 #endif /* !SLOW_SHIFTS */
 
       /* locate GZIP */
 #ifndef GZIP_PATH
       {
-	int i;
+        int i;
 
-	for (i=0; gzip_paths[i] != NULL; i++)
-	  {
-	    if (access(gzip_paths[i], X_OK) == 0)
-	      {
-		fprintf(stdout, "-DGZIP_PATH=\"%s\" ", gzip_paths[i]);
-		break;
-	      }
-	  }
+        for (i=0; gzip_paths[i] != NULL; i++)
+          {
+            if (access(gzip_paths[i], X_OK) == 0)
+              {
+                fprintf(stdout, "-DGZIP_PATH=\"%s\" ", gzip_paths[i]);
+                break;
+              }
+          }
       }
 #endif /* !GZIP_PATH */
 
@@ -269,7 +269,7 @@ main(int argc, char **argv)
   if (little_bytes != little_words)
     {
       fprintf(stderr,
-	      "\nerror: opposite byte/word endian currently not supported!\n");
+              "\nerror: opposite byte/word endian currently not supported!\n");
       exit(1);
     }
   exit(0);

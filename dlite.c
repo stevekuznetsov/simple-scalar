@@ -85,35 +85,35 @@ int dlite_check = FALSE;
 static int dlite_return = FALSE;
 
 /* size modifier mask bit definitions */
-#define MOD_BYTE	0x0001		/* b - print a byte */
-#define MOD_HALF	0x0002		/* h - print a half (short) */
-#define MOD_WORD	0x0004		/* w - print a word */
-#define MOD_QWORD	0x0008		/* q - print a qword */
-#define MOD_FLOAT	0x0010		/* F - print a float */
-#define MOD_DOUBLE	0x0020		/* f - print a double */
-#define MOD_CHAR	0x0040		/* c - print a character */
-#define MOD_STRING	0x0080		/* s - print a string */
+#define MOD_BYTE        0x0001          /* b - print a byte */
+#define MOD_HALF        0x0002          /* h - print a half (short) */
+#define MOD_WORD        0x0004          /* w - print a word */
+#define MOD_QWORD       0x0008          /* q - print a qword */
+#define MOD_FLOAT       0x0010          /* F - print a float */
+#define MOD_DOUBLE      0x0020          /* f - print a double */
+#define MOD_CHAR        0x0040          /* c - print a character */
+#define MOD_STRING      0x0080          /* s - print a string */
 
-#define MOD_SIZES							\
-  (MOD_BYTE|MOD_HALF|MOD_WORD|MOD_QWORD					\
+#define MOD_SIZES                                                       \
+  (MOD_BYTE|MOD_HALF|MOD_WORD|MOD_QWORD                                 \
    |MOD_FLOAT|MOD_DOUBLE|MOD_CHAR|MOD_STRING)
 
 /* format modifier mask bit definitions */
-#define MOD_DECIMAL	0x0100		/* d - print in decimal format */
-#define MOD_UNSIGNED	0x0200		/* u - print in unsigned format */
-#define MOD_OCTAL	0x0400		/* o - print in octal format */
-#define MOD_HEX		0x0800		/* x - print in hex format */
-#define MOD_BINARY	0x1000		/* 1 - print in binary format */
+#define MOD_DECIMAL     0x0100          /* d - print in decimal format */
+#define MOD_UNSIGNED    0x0200          /* u - print in unsigned format */
+#define MOD_OCTAL       0x0400          /* o - print in octal format */
+#define MOD_HEX         0x0800          /* x - print in hex format */
+#define MOD_BINARY      0x1000          /* 1 - print in binary format */
 
-#define MOD_FORMATS							\
+#define MOD_FORMATS                                                     \
   (MOD_DECIMAL|MOD_UNSIGNED|MOD_OCTAL|MOD_HEX|MOD_BINARY)
 
 
 /* DLite modifier parser, transforms /<mods> strings to modifier mask */
-static char *				/* error string, NULL for no err */
-modifier_parser(char *p,		/* ptr to /<mods> string */
-		char **endp,		/* ptr to first byte not consumed */
-		int *pmod)		/* modifier mask written to *PMOD */
+static char *                           /* error string, NULL for no err */
+modifier_parser(char *p,                /* ptr to /<mods> string */
+                char **endp,            /* ptr to first byte not consumed */
+                int *pmod)              /* modifier mask written to *PMOD */
 {
   int modifiers = 0;
 
@@ -126,53 +126,53 @@ modifier_parser(char *p,		/* ptr to /<mods> string */
       p++;
       /* parse modifiers until end-of-string or whitespace is found */
       while (*p != '\0' && *p != '\n' && *p != ' ' && *p != '\t')
-	{
-	  switch (*p)
-	    {
-	    case 'b':
-	      modifiers |= MOD_BYTE;
-	      break;
-	    case 'h':
-	      modifiers |= MOD_HALF;
-	      break;
-	    case 'w':
-	      modifiers |= MOD_WORD;
-	      break;
-	    case 'q':
-	      modifiers |= MOD_QWORD;
-	      break;
-	    case 'd':
-	      modifiers |= MOD_DECIMAL;
-	      break;
-	    case 'u':
-	      modifiers |= MOD_UNSIGNED;
-	      break;
-	    case 'o':
-	      modifiers |= MOD_OCTAL;
-	      break;
-	    case 'x':
-	      modifiers |= MOD_HEX;
-	      break;
-	    case '1':
-	      modifiers |= MOD_BINARY;
-	      break;
-	    case 'F':
-	      modifiers |= MOD_FLOAT;
-	      break;
-	    case 'f':
-	      modifiers |= MOD_DOUBLE;
-	      break;
-	    case 'c':
-	      modifiers |= MOD_CHAR;
-	      break;
-	    case 's':
-	      modifiers |= MOD_STRING;
-	      break;
-	    default:
-	      return "bad modifier (use one or more of /bhwqduox1fdcs)";
-	    }
-	  p++;
-	}
+        {
+          switch (*p)
+            {
+            case 'b':
+              modifiers |= MOD_BYTE;
+              break;
+            case 'h':
+              modifiers |= MOD_HALF;
+              break;
+            case 'w':
+              modifiers |= MOD_WORD;
+              break;
+            case 'q':
+              modifiers |= MOD_QWORD;
+              break;
+            case 'd':
+              modifiers |= MOD_DECIMAL;
+              break;
+            case 'u':
+              modifiers |= MOD_UNSIGNED;
+              break;
+            case 'o':
+              modifiers |= MOD_OCTAL;
+              break;
+            case 'x':
+              modifiers |= MOD_HEX;
+              break;
+            case '1':
+              modifiers |= MOD_BINARY;
+              break;
+            case 'F':
+              modifiers |= MOD_FLOAT;
+              break;
+            case 'f':
+              modifiers |= MOD_DOUBLE;
+              break;
+            case 'c':
+              modifiers |= MOD_CHAR;
+              break;
+            case 's':
+              modifiers |= MOD_STRING;
+              break;
+            default:
+              return "bad modifier (use one or more of /bhwqduox1fdcs)";
+            }
+          p++;
+        }
     }
 
   /* no error, return end of string and modifier mask */
@@ -188,8 +188,8 @@ static struct regs_t *local_regs = NULL;
 /* DLite identifier evaluator, used by the expression evaluator, returns
    the value of the ident in ES->TOK_BUF, sets eval_error to value other
    than ERR_NOERR if an error is encountered */
-static struct eval_value_t			/* value of identifier */
-ident_evaluator(struct eval_state_t *es)	/* expression evaluator */
+static struct eval_value_t                      /* value of identifier */
+ident_evaluator(struct eval_state_t *es)        /* expression evaluator */
 {
   int i;
   char *err_str;
@@ -202,17 +202,17 @@ ident_evaluator(struct eval_state_t *es)	/* expression evaluator */
   for (i=0; md_reg_names[i].str != NULL; i++)
     {
       if (!mystricmp(es->tok_buf, md_reg_names[i].str))
-	{
-	  err_str =
-	    f_dlite_reg_obj(local_regs, /* !is_write */FALSE,
-			    md_reg_names[i].file, md_reg_names[i].reg, &val);
-	  if (err_str)
-	    {
-	      eval_error = ERR_UNDEFVAR;
-	      val = err_value;
-	    }
-	  return val;
-	}
+        {
+          err_str =
+            f_dlite_reg_obj(local_regs, /* !is_write */FALSE,
+                            md_reg_names[i].file, md_reg_names[i].reg, &val);
+          if (err_str)
+            {
+              eval_error = ERR_UNDEFVAR;
+              val = err_value;
+            }
+          return val;
+        }
     }
 
   /* else, try to locate a program symbol */
@@ -232,53 +232,53 @@ ident_evaluator(struct eval_state_t *es)	/* expression evaluator */
     {
       /* found it, convert stat value to an eval_value_t value */
       switch (stat->sc)
-	{
-	case sc_int:
-	  val.type = et_int;
-	  val.value.as_int = *stat->variant.for_int.var;
-	  break;
-	case sc_uint:
-	  val.type = et_uint;
-	  val.value.as_uint = *stat->variant.for_uint.var;
-	  break;
+        {
+        case sc_int:
+          val.type = et_int;
+          val.value.as_int = *stat->variant.for_int.var;
+          break;
+        case sc_uint:
+          val.type = et_uint;
+          val.value.as_uint = *stat->variant.for_uint.var;
+          break;
 #ifdef HOST_HAS_QWORD
-	case sc_qword:
-	  val.type = et_qword;
-	  val.value.as_qword = *stat->variant.for_qword.var;
-	  break;
+        case sc_qword:
+          val.type = et_qword;
+          val.value.as_qword = *stat->variant.for_qword.var;
+          break;
 #endif /* HOST_HAS_QWORD */
-	case sc_float:
-	  val.type = et_float;
-	  val.value.as_float = *stat->variant.for_float.var;
-	  break;
-	case sc_double:
-	  val.type = et_double;
-	  val.value.as_double = *stat->variant.for_double.var;
-	  break;
-	case sc_dist:
-	case sc_sdist:
-	  eval_error = ERR_BADEXPR;
-	  val = err_value;
-	  break;
-	case sc_formula:
-	  {
-	    /* instantiate a new evaluator to avoid recursion problems */
-	    struct eval_state_t *es = eval_new(ident_evaluator, sim_sdb);
-	    char *endp;
+        case sc_float:
+          val.type = et_float;
+          val.value.as_float = *stat->variant.for_float.var;
+          break;
+        case sc_double:
+          val.type = et_double;
+          val.value.as_double = *stat->variant.for_double.var;
+          break;
+        case sc_dist:
+        case sc_sdist:
+          eval_error = ERR_BADEXPR;
+          val = err_value;
+          break;
+        case sc_formula:
+          {
+            /* instantiate a new evaluator to avoid recursion problems */
+            struct eval_state_t *es = eval_new(ident_evaluator, sim_sdb);
+            char *endp;
 
-	    val = eval_expr(es, stat->variant.for_formula.formula, &endp);
-	    if (eval_error != ERR_NOERR || *endp != '\0')
-	      {
-		/* pass through eval_error */
-		val = err_value;
-	      }
-	    /* else, use value returned */
-	    eval_delete(es);
-	  }
-	  break;
-	default:
-	  panic("bogus stat class");
-	}
+            val = eval_expr(es, stat->variant.for_formula.formula, &endp);
+            if (eval_error != ERR_NOERR || *endp != '\0')
+              {
+                /* pass through eval_error */
+                val = err_value;
+              }
+            /* else, use value returned */
+            eval_delete(es);
+          }
+          break;
+        default:
+          panic("bogus stat class");
+        }
       return val;
     }
   /* else, not found */
@@ -290,10 +290,10 @@ ident_evaluator(struct eval_state_t *es)	/* expression evaluator */
 }
 
 /* maximum number of arguments that can passed to a dlite command handler */
-#define MAX_ARGS	4
+#define MAX_ARGS        4
 
 /* maximum length of a dlite command string argument */
-#define MAX_STR		128
+#define MAX_STR         128
 
 /* argument array entry, argument arrays are passed to command handlers */
 union arg_val_t {
@@ -304,119 +304,119 @@ union arg_val_t {
 };
 
 /* a DLite command handler function pointer */
-typedef char *					/* err str, NULL for no err */
-(*cmd_fn_t)(int nargs,				/* number of arguments */
-	    union arg_val_t args[],		/* argument vector */
-	    struct regs_t *regs,		/* registers to access */
-	    struct mem_t *mem);			/* memory to access */
+typedef char *                                  /* err str, NULL for no err */
+(*cmd_fn_t)(int nargs,                          /* number of arguments */
+            union arg_val_t args[],             /* argument vector */
+            struct regs_t *regs,                /* registers to access */
+            struct mem_t *mem);                 /* memory to access */
 
 /* DLite command descriptor, fully describes a command supported by the
    DLite debugger command handler */
 struct dlite_cmd_t {
-  char *cmd_str;		/* DLite command string */
-  char *arg_strs[MAX_ARGS];	/* NULL-terminated cmd args (? - optional):
-				     m - size/type modifiers
-				     a - address expression
-				     c - count expression
-				     e - any expression
-				     s - any string
-				     t - access type {r|w|x}
-				     i - breakpoint id */
-  cmd_fn_t cmd_fn;		/* implementing function */
-  char *help_str;		/* DLite command help string */
+  char *cmd_str;                /* DLite command string */
+  char *arg_strs[MAX_ARGS];     /* NULL-terminated cmd args (? - optional):
+                                     m - size/type modifiers
+                                     a - address expression
+                                     c - count expression
+                                     e - any expression
+                                     s - any string
+                                     t - access type {r|w|x}
+                                     i - breakpoint id */
+  cmd_fn_t cmd_fn;              /* implementing function */
+  char *help_str;               /* DLite command help string */
 };
 
 /* forward handler decls */
 static char *
 dlite_help(int nargs, union arg_val_t args[],
-	   struct regs_t *regs, struct mem_t *mem);
+           struct regs_t *regs, struct mem_t *mem);
 static char *
 dlite_version(int nargs, union arg_val_t args[],
-	      struct regs_t *regs, struct mem_t *mem);
+              struct regs_t *regs, struct mem_t *mem);
 static char *
 dlite_terminate(int nargs, union arg_val_t args[],
-		struct regs_t *regs, struct mem_t *mem);
+                struct regs_t *regs, struct mem_t *mem);
 static char *
 dlite_quit(int nargs, union arg_val_t args[],
-	   struct regs_t *regs, struct mem_t *mem);
+           struct regs_t *regs, struct mem_t *mem);
 static char *
 dlite_cont(int nargs, union arg_val_t args[],
-	   struct regs_t *regs, struct mem_t *mem);
+           struct regs_t *regs, struct mem_t *mem);
 static char *
 dlite_step(int nargs, union arg_val_t args[],
-	   struct regs_t *regs, struct mem_t *mem);
+           struct regs_t *regs, struct mem_t *mem);
 static char *
 dlite_print(int nargs, union arg_val_t args[],
-	    struct regs_t *regs, struct mem_t *mem);
+            struct regs_t *regs, struct mem_t *mem);
 static char *
 dlite_options(int nargs, union arg_val_t args[],
-	      struct regs_t *regs, struct mem_t *mem);
+              struct regs_t *regs, struct mem_t *mem);
 static char *
 dlite_option(int nargs, union arg_val_t args[],
-	     struct regs_t *regs, struct mem_t *mem);
+             struct regs_t *regs, struct mem_t *mem);
 static char *
 dlite_stats(int nargs, union arg_val_t args[],
-	    struct regs_t *regs, struct mem_t *mem);
+            struct regs_t *regs, struct mem_t *mem);
 static char *
 dlite_stat(int nargs, union arg_val_t args[],
-	   struct regs_t *regs, struct mem_t *mem);
+           struct regs_t *regs, struct mem_t *mem);
 static char *
 dlite_whatis(int nargs, union arg_val_t args[],
-	     struct regs_t *regs, struct mem_t *mem);
+             struct regs_t *regs, struct mem_t *mem);
 static char *
 dlite_regs(int nargs, union arg_val_t args[],
-	   struct regs_t *regs, struct mem_t *mem);
+           struct regs_t *regs, struct mem_t *mem);
 static char *
 dlite_iregs(int nargs, union arg_val_t args[],
-	    struct regs_t *regs, struct mem_t *mem);
+            struct regs_t *regs, struct mem_t *mem);
 static char *
 dlite_fpregs(int nargs, union arg_val_t args[],
-	     struct regs_t *regs, struct mem_t *mem);
+             struct regs_t *regs, struct mem_t *mem);
 static char *
 dlite_cregs(int nargs, union arg_val_t args[],
-	    struct regs_t *regs, struct mem_t *mem);
+            struct regs_t *regs, struct mem_t *mem);
 static char *
 dlite_mstate(int nargs, union arg_val_t args[],
-	     struct regs_t *regs, struct mem_t *mem);
+             struct regs_t *regs, struct mem_t *mem);
 static char *
 dlite_display(int nargs, union arg_val_t args[],
-	      struct regs_t *regs, struct mem_t *mem);
+              struct regs_t *regs, struct mem_t *mem);
 static char *
 dlite_dump(int nargs, union arg_val_t args[],
-	   struct regs_t *regs, struct mem_t *mem);
+           struct regs_t *regs, struct mem_t *mem);
 static char *
 dlite_dis(int nargs, union arg_val_t args[],
-	  struct regs_t *regs, struct mem_t *mem);
+          struct regs_t *regs, struct mem_t *mem);
 static char *
 dlite_break(int nargs, union arg_val_t args[],
-	    struct regs_t *regs, struct mem_t *mem);
+            struct regs_t *regs, struct mem_t *mem);
 static char *
 dlite_dbreak(int nargs, union arg_val_t args[],
-	     struct regs_t *regs, struct mem_t *mem);
+             struct regs_t *regs, struct mem_t *mem);
 static char *
 dlite_rbreak(int nargs, union arg_val_t args[],
-	     struct regs_t *regs, struct mem_t *mem);
+             struct regs_t *regs, struct mem_t *mem);
 static char *
 dlite_breaks(int nargs, union arg_val_t args[],
-	     struct regs_t *regs, struct mem_t *mem);
+             struct regs_t *regs, struct mem_t *mem);
 static char *
 dlite_delete(int nargs, union arg_val_t args[],
-	     struct regs_t *regs, struct mem_t *mem);
+             struct regs_t *regs, struct mem_t *mem);
 static char *
 dlite_clear(int nargs, union arg_val_t args[],
-	    struct regs_t *regs, struct mem_t *mem);
+            struct regs_t *regs, struct mem_t *mem);
 static char *
 dlite_symbols(int nargs, union arg_val_t args[],
-	      struct regs_t *regs, struct mem_t *mem);
+              struct regs_t *regs, struct mem_t *mem);
 static char *
 dlite_tsymbols(int nargs, union arg_val_t args[],
-	       struct regs_t *regs, struct mem_t *mem);
+               struct regs_t *regs, struct mem_t *mem);
 static char *
 dlite_dsymbols(int nargs, union arg_val_t args[],
-	       struct regs_t *regs, struct mem_t *mem);
+               struct regs_t *regs, struct mem_t *mem);
 static char *
 dlite_symbol(int nargs, union arg_val_t args[],
-	     struct regs_t *regs, struct mem_t *mem);
+             struct regs_t *regs, struct mem_t *mem);
 
 /* DLite debugger command parser command definitions, NOTE: optional
    arguments must be trailing arguments, otherwise the command parser will
@@ -527,10 +527,10 @@ static char *dlite_help_tail =
 
 
 /* execute DLite command string CMD */
-static char *					/* err str, NULL if no err */
-dlite_exec(char *cmd_str,			/* command string */
-	   struct regs_t *regs,			/* registers to access */
-	   struct mem_t *mem)			/* memory to access */
+static char *                                   /* err str, NULL if no err */
+dlite_exec(char *cmd_str,                       /* command string */
+           struct regs_t *regs,                 /* registers to access */
+           struct mem_t *mem)                   /* memory to access */
 {
   int i, arg_cnt;
   struct dlite_cmd_t *cmd;
@@ -560,7 +560,7 @@ dlite_exec(char *cmd_str,			/* command string */
   for (cmd=cmd_db; cmd->cmd_str != NULL; cmd++)
     {
       if (!strcmp(cmd->cmd_str, cmd_buf))
-	break;
+        break;
     }
   if (cmd->cmd_str == NULL)
     return "unknown command";
@@ -574,93 +574,93 @@ dlite_exec(char *cmd_str,			/* command string */
 
       /* skip any whitespace before argument */
       while (*p == ' ' || *p == '\t' || *p == '\n')
-	p++;
+        p++;
 
       arg = cmd->arg_strs[i];
       arg_type = arg[0];
       optional = (arg[1] == '?');
 
       if (*p == '\0')
-	{
-	  if (optional)
-	    {
-	      /* all arguments parsed */
-	      break;
-	    }
-	  else
-	    return "missing an argument";
-	}
+        {
+          if (optional)
+            {
+              /* all arguments parsed */
+              break;
+            }
+          else
+            return "missing an argument";
+        }
 
       endp = p;
       switch (arg_type)
-	{
-	case 'm':
-	  err_str = modifier_parser(p, &endp, &modifiers);
-	  if (err_str)
-	    return err_str;
-	  args[arg_cnt].as_modifier = modifiers;
-	  break;
-	case 'a':
-	  local_regs = regs;
-	  val = eval_expr(dlite_evaluator, p, &endp);
-	  if (eval_error)
-	    return eval_err_str[eval_error];
-	  args[arg_cnt].as_value = val;
-	  break;
-	case 'c':
-	  local_regs = regs;
-	  val = eval_expr(dlite_evaluator, p, &endp);
-	  if (eval_error)
-	    return eval_err_str[eval_error];
-	  args[arg_cnt].as_value = val;
-	  break;
-	case 'e':
-	  local_regs = regs;
-	  val = eval_expr(dlite_evaluator, p, &endp);
-	  if (eval_error)
-	    return eval_err_str[eval_error];
-	  args[arg_cnt].as_value = val;
-	  break;
-	case 't':
-	  access = 0;
-	  while (*p != '\0' && *p != '\n' && *p != ' ' && *p != '\t')
-	    {
-	      switch (*p)
-		{
-		case 'r':
-		  access |= ACCESS_READ;
-		  break;
-		case 'w':
-		  access |= ACCESS_WRITE;
-		  break;
-		case 'x':
-		  access |= ACCESS_EXEC;
-		  break;
-		default:
-		  return "bad access type specifier (use r|w|x)";
-		}
-	      p++;
-	    }
-	  endp = p;
-	  args[arg_cnt].as_access = access;
-	  break;
-	case 'i':
-	  local_regs = regs;
-	  val = eval_expr(dlite_evaluator, p, &endp);
-	  if (eval_error)
-	    return eval_err_str[eval_error];
-	  args[arg_cnt].as_value = val;
-	  break;
-	case 's':
-	  q = args[arg_cnt].as_str;
-	  while (*p != ' ' && *p != '\t' && *p != '\0')
-	    *q++ = *p++;
-	  *q = '\0';
-	  endp = p;
-	  break;
-	default:
-	  panic("bogus argument type: `%c'", arg_type);
-	}
+        {
+        case 'm':
+          err_str = modifier_parser(p, &endp, &modifiers);
+          if (err_str)
+            return err_str;
+          args[arg_cnt].as_modifier = modifiers;
+          break;
+        case 'a':
+          local_regs = regs;
+          val = eval_expr(dlite_evaluator, p, &endp);
+          if (eval_error)
+            return eval_err_str[eval_error];
+          args[arg_cnt].as_value = val;
+          break;
+        case 'c':
+          local_regs = regs;
+          val = eval_expr(dlite_evaluator, p, &endp);
+          if (eval_error)
+            return eval_err_str[eval_error];
+          args[arg_cnt].as_value = val;
+          break;
+        case 'e':
+          local_regs = regs;
+          val = eval_expr(dlite_evaluator, p, &endp);
+          if (eval_error)
+            return eval_err_str[eval_error];
+          args[arg_cnt].as_value = val;
+          break;
+        case 't':
+          access = 0;
+          while (*p != '\0' && *p != '\n' && *p != ' ' && *p != '\t')
+            {
+              switch (*p)
+                {
+                case 'r':
+                  access |= ACCESS_READ;
+                  break;
+                case 'w':
+                  access |= ACCESS_WRITE;
+                  break;
+                case 'x':
+                  access |= ACCESS_EXEC;
+                  break;
+                default:
+                  return "bad access type specifier (use r|w|x)";
+                }
+              p++;
+            }
+          endp = p;
+          args[arg_cnt].as_access = access;
+          break;
+        case 'i':
+          local_regs = regs;
+          val = eval_expr(dlite_evaluator, p, &endp);
+          if (eval_error)
+            return eval_err_str[eval_error];
+          args[arg_cnt].as_value = val;
+          break;
+        case 's':
+          q = args[arg_cnt].as_str;
+          while (*p != ' ' && *p != '\t' && *p != '\0')
+            *q++ = *p++;
+          *q = '\0';
+          endp = p;
+          break;
+        default:
+          panic("bogus argument type: `%c'", arg_type);
+        }
       p = endp;
     }
 
@@ -678,9 +678,9 @@ dlite_exec(char *cmd_str,			/* command string */
 }
 
 /* print expression value VAL using modifiers MODIFIERS */
-static char *					/* err str, NULL for no err */
-print_val(int modifiers,			/* print modifiers */
-	  struct eval_value_t val)		/* expr value to print */
+static char *                                   /* err str, NULL for no err */
+print_val(int modifiers,                        /* print modifiers */
+          struct eval_value_t val)              /* expr value to print */
 {
   char *format = "", *prefix = "", radix, buf[512];
 
@@ -689,26 +689,26 @@ print_val(int modifiers,			/* print modifiers */
     {
       /* compute default size */
       switch (val.type)
-	{
-	case et_int:	modifiers |= MOD_WORD; break;
-	case et_uint:	modifiers |= MOD_WORD; break;
-	case et_addr:
+        {
+        case et_int:    modifiers |= MOD_WORD; break;
+        case et_uint:   modifiers |= MOD_WORD; break;
+        case et_addr:
 #ifdef HOST_HAS_QWORD
-	  if (sizeof(md_addr_t) > 4)
-	    modifiers |= MOD_QWORD;
-	  else
+          if (sizeof(md_addr_t) > 4)
+            modifiers |= MOD_QWORD;
+          else
 #endif /* HOST_HAS_QWORD */
-	    modifiers |= MOD_WORD;
-	  break;
+            modifiers |= MOD_WORD;
+          break;
 #ifdef HOST_HAS_QWORD
-	case et_qword:	modifiers |= MOD_QWORD; break;
-	case et_sqword:	modifiers |= MOD_QWORD; break;
+        case et_qword:  modifiers |= MOD_QWORD; break;
+        case et_sqword: modifiers |= MOD_QWORD; break;
 #endif /* HOST_HAS_QWORD */
-	case et_float:	modifiers |= MOD_FLOAT; break;
-	case et_double:	modifiers |= MOD_DOUBLE; break;
-	case et_symbol:
-	default:	return "bad print value";
-	}
+        case et_float:  modifiers |= MOD_FLOAT; break;
+        case et_double: modifiers |= MOD_DOUBLE; break;
+        case et_symbol:
+        default:        return "bad print value";
+        }
     }
   if (((modifiers & MOD_SIZES) & ((modifiers & MOD_SIZES) - 1)) != 0)
     return "multiple size specifiers";
@@ -718,19 +718,19 @@ print_val(int modifiers,			/* print modifiers */
     {
       /* compute default size */
       switch (val.type)
-	{
-	case et_int:	modifiers |= MOD_DECIMAL; break;
-	case et_uint:	modifiers |= MOD_UNSIGNED; break;
-	case et_addr:	modifiers |= MOD_HEX; break;
+        {
+        case et_int:    modifiers |= MOD_DECIMAL; break;
+        case et_uint:   modifiers |= MOD_UNSIGNED; break;
+        case et_addr:   modifiers |= MOD_HEX; break;
 #ifdef HOST_HAS_QWORD
-	case et_qword:	modifiers |= MOD_UNSIGNED; break;
-	case et_sqword:	modifiers |= MOD_DECIMAL; break;
+        case et_qword:  modifiers |= MOD_UNSIGNED; break;
+        case et_sqword: modifiers |= MOD_DECIMAL; break;
 #endif /* HOST_HAS_QWORD */
-	case et_float:	/* use default format */break;
-	case et_double:	/* use default format */break;
-	case et_symbol:
-	default:	return "bad print value";
-	}
+        case et_float:  /* use default format */break;
+        case et_double: /* use default format */break;
+        case et_symbol:
+        default:        return "bad print value";
+        }
     }
   if (((modifiers & MOD_FORMATS) & ((modifiers & MOD_FORMATS) - 1)) != 0)
     return "multiple format specifiers";
@@ -739,103 +739,103 @@ print_val(int modifiers,			/* print modifiers */
   if (modifiers & (MOD_BYTE|MOD_HALF|MOD_WORD|MOD_QWORD))
     {
       if (modifiers & MOD_DECIMAL)
-	radix = 'd';
+        radix = 'd';
       else if (modifiers & MOD_UNSIGNED)
-	radix = 'u';
+        radix = 'u';
       else if (modifiers & MOD_OCTAL)
-	radix = 'o';
+        radix = 'o';
       else if (modifiers & MOD_HEX)
-	radix = 'x';
+        radix = 'x';
       else if (modifiers & MOD_BINARY)
-	return "binary format not yet implemented";
+        return "binary format not yet implemented";
       else
-	panic("no default integer format");
+        panic("no default integer format");
 
       if (modifiers & MOD_BYTE)
-	{
-	  if (modifiers & MOD_OCTAL)
-	    {
-	      prefix = "0";
-	      format = "03";
-	    }
-	  else if (modifiers & MOD_HEX)
-	    {
-	      prefix = "0x";
-	      format = "02";
-	    }
-	  else
-	    {
-	      prefix = "";
-	      format = "";
-	    }
+        {
+          if (modifiers & MOD_OCTAL)
+            {
+              prefix = "0";
+              format = "03";
+            }
+          else if (modifiers & MOD_HEX)
+            {
+              prefix = "0x";
+              format = "02";
+            }
+          else
+            {
+              prefix = "";
+              format = "";
+            }
 
-	  sprintf(buf, "%s%%%s%c", prefix, format, radix);
-	  myfprintf(stdout, buf, eval_as_uint(val));
-	}
+          sprintf(buf, "%s%%%s%c", prefix, format, radix);
+          myfprintf(stdout, buf, eval_as_uint(val));
+        }
       else if (modifiers & MOD_HALF)
-	{
-	  if (modifiers & MOD_OCTAL)
-	    {
-	      prefix = "0";
-	      format = "06";
-	    }
-	  else if (modifiers & MOD_HEX)
-	    {
-	      prefix = "0x";
-	      format = "04";
-	    }
-	  else
-	    {
-	      prefix = "";
-	      format = "";
-	    }
+        {
+          if (modifiers & MOD_OCTAL)
+            {
+              prefix = "0";
+              format = "06";
+            }
+          else if (modifiers & MOD_HEX)
+            {
+              prefix = "0x";
+              format = "04";
+            }
+          else
+            {
+              prefix = "";
+              format = "";
+            }
 
-	  sprintf(buf, "%s%%%s%c", prefix, format, radix);
-	  myfprintf(stdout, buf, eval_as_uint(val));
-	}
+          sprintf(buf, "%s%%%s%c", prefix, format, radix);
+          myfprintf(stdout, buf, eval_as_uint(val));
+        }
       else if (modifiers & MOD_WORD)
-	{
-	  if (modifiers & MOD_OCTAL)
-	    {
-	      prefix = "0";
-	      format = "011";
-	    }
-	  else if (modifiers & MOD_HEX)
-	    {
-	      prefix = "0x";
-	      format = "08";
-	    }
-	  else
-	    {
-	      prefix = "";
-	      format = "";
-	    }
+        {
+          if (modifiers & MOD_OCTAL)
+            {
+              prefix = "0";
+              format = "011";
+            }
+          else if (modifiers & MOD_HEX)
+            {
+              prefix = "0x";
+              format = "08";
+            }
+          else
+            {
+              prefix = "";
+              format = "";
+            }
 
-	  sprintf(buf, "%s%%%s%c", prefix, format, radix);
-	  myfprintf(stdout, buf, eval_as_uint(val));
-	}
+          sprintf(buf, "%s%%%s%c", prefix, format, radix);
+          myfprintf(stdout, buf, eval_as_uint(val));
+        }
 #ifdef HOST_HAS_QWORD
       else if (modifiers & MOD_QWORD)
-	{
-	  if (modifiers & MOD_OCTAL)
-	    {
-	      prefix = "0";
-	      format = "022";
-	    }
-	  else if (modifiers & MOD_HEX)
-	    {
-	      prefix = "0x";
-	      format = "016";
-	    }
-	  else
-	    {
-	      prefix = "";
-	      format = "";
-	    }
+        {
+          if (modifiers & MOD_OCTAL)
+            {
+              prefix = "0";
+              format = "022";
+            }
+          else if (modifiers & MOD_HEX)
+            {
+              prefix = "0x";
+              format = "016";
+            }
+          else
+            {
+              prefix = "";
+              format = "";
+            }
 
-	  sprintf(buf, "%s%%%sl%c", prefix, format, radix);
-	  myfprintf(stdout, buf, eval_as_qword(val));
-	}
+          sprintf(buf, "%s%%%sl%c", prefix, format, radix);
+          myfprintf(stdout, buf, eval_as_qword(val));
+        }
 #endif /* HOST_HAS_QWORD */
     }
   else if (modifiers & MOD_FLOAT)
@@ -854,12 +854,12 @@ print_val(int modifiers,			/* print modifiers */
 }
 
 /* default memory state accessor */
-char *						/* err str, NULL for no err */
-dlite_mem_obj(struct mem_t *mem,		/* memory space to access */
-	      int is_write,			/* access type */
-	      md_addr_t addr,			/* address to access */
-	      char *p,				/* input/output buffer */
-	      int nbytes)			/* size of access */
+char *                                          /* err str, NULL for no err */
+dlite_mem_obj(struct mem_t *mem,                /* memory space to access */
+              int is_write,                     /* access type */
+              md_addr_t addr,                   /* address to access */
+              char *p,                          /* input/output buffer */
+              int nbytes)                       /* size of access */
 {
   enum mem_cmd cmd;
 
@@ -883,11 +883,11 @@ dlite_mem_obj(struct mem_t *mem,		/* memory space to access */
 }
 
 /* default machine state accessor */
-char *						/* err str, NULL for no err */
-dlite_mstate_obj(FILE *stream,			/* output stream */
-		 char *cmd,			/* optional command string */
-		 struct regs_t *regs,		/* registers to access */
-		 struct mem_t *mem)		/* memory to access */
+char *                                          /* err str, NULL for no err */
+dlite_mstate_obj(FILE *stream,                  /* output stream */
+                 char *cmd,                     /* optional command string */
+                 struct regs_t *regs,           /* registers to access */
+                 struct mem_t *mem)             /* memory to access */
 {
   /* nada */
   fprintf(stream, "No machine state.\n");
@@ -908,7 +908,7 @@ dlite_pause(void)
 
 /* print help information for DLite command CMD */
 static void
-print_help(struct dlite_cmd_t *cmd)		/* command to describe */
+print_help(struct dlite_cmd_t *cmd)             /* command to describe */
 {
   int i;
 
@@ -926,41 +926,41 @@ print_help(struct dlite_cmd_t *cmd)		/* command to describe */
       optional = (arg[1] == '?');
 
       if (optional)
-	fprintf(stdout, "{");
+        fprintf(stdout, "{");
       else
-	fprintf(stdout, "<");
+        fprintf(stdout, "<");
 
       switch (arg_type)
-	{
-	case 'm':
-	  fprintf(stdout, "/modifiers");
-	  break;
-	case 'a':
-	  fprintf(stdout, "addr");
-	  break;
-	case 'c':
-	  fprintf(stdout, "count");
-	  break;
-	case 'e':
-	  fprintf(stdout, "expr");
-	  break;
-	case 't':
-	  fprintf(stdout, "r|w|x");
-	  break;
-	case 'i':
-	  fprintf(stdout, "id");
-	  break;
-	case 's':
-	  fprintf(stdout, "string");
-	  break;
-	default:
-	  panic("bogus argument type: `%c'", arg_type);
-	}
+        {
+        case 'm':
+          fprintf(stdout, "/modifiers");
+          break;
+        case 'a':
+          fprintf(stdout, "addr");
+          break;
+        case 'c':
+          fprintf(stdout, "count");
+          break;
+        case 'e':
+          fprintf(stdout, "expr");
+          break;
+        case 't':
+          fprintf(stdout, "r|w|x");
+          break;
+        case 'i':
+          fprintf(stdout, "id");
+          break;
+        case 's':
+          fprintf(stdout, "string");
+          break;
+        default:
+          panic("bogus argument type: `%c'", arg_type);
+        }
 
       if (optional)
-	fprintf(stdout, "}");
+        fprintf(stdout, "}");
       else
-	fprintf(stdout, ">");
+        fprintf(stdout, ">");
 
       fprintf(stdout, " ");
     }
@@ -971,10 +971,10 @@ print_help(struct dlite_cmd_t *cmd)		/* command to describe */
 }
 
 /* print help messages for all (or single) DLite debugger commands */
-static char *					/* err str, NULL for no err */
-dlite_help(int nargs, union arg_val_t args[],	/* command arguments */
-	   struct regs_t *regs,			/* registers to access */
-	   struct mem_t *mem)			/* memory to access */
+static char *                                   /* err str, NULL for no err */
+dlite_help(int nargs, union arg_val_t args[],   /* command arguments */
+           struct regs_t *regs,                 /* registers to access */
+           struct mem_t *mem)                   /* memory to access */
 {
   struct dlite_cmd_t *cmd;
 
@@ -985,12 +985,12 @@ dlite_help(int nargs, union arg_val_t args[],	/* command arguments */
     {
       /* print help for specified commands */
       for (cmd=cmd_db; cmd->cmd_str != NULL; cmd++)
-	{
-	  if (!strcmp(cmd->cmd_str, args[0].as_str))
-	    break;
-	}
+        {
+          if (!strcmp(cmd->cmd_str, args[0].as_str))
+            break;
+        }
       if (!cmd->cmd_str)
-	return "command unknown";
+        return "command unknown";
 
       print_help(cmd);
     }
@@ -998,17 +998,17 @@ dlite_help(int nargs, union arg_val_t args[],	/* command arguments */
     {
       /* print help for all commands */
       for (cmd=cmd_db; cmd->cmd_str != NULL; cmd++)
-	{
-	  /* `---' specifies a good point for a scroll pause */
-	  if (!strcmp(cmd->cmd_str, "---"))
-	    dlite_pause();
-	  else
-	    print_help(cmd);
-	}
+        {
+          /* `---' specifies a good point for a scroll pause */
+          if (!strcmp(cmd->cmd_str, "---"))
+            dlite_pause();
+          else
+            print_help(cmd);
+        }
 
       fprintf (stdout, "\n");
       if (dlite_help_tail)
-	fprintf (stdout, "%s\n", dlite_help_tail);
+        fprintf (stdout, "%s\n", dlite_help_tail);
     }
 
   /* no error */
@@ -1016,17 +1016,17 @@ dlite_help(int nargs, union arg_val_t args[],	/* command arguments */
 }
 
 /* print version information for simulator */
-static char *				 	/* err str, NULL for no err */
+static char *                                   /* err str, NULL for no err */
 dlite_version(int nargs, union arg_val_t args[],/* command arguments */
-	      struct regs_t *regs,		/* registers to access */
-	      struct mem_t *mem)		/* memory to access */
+              struct regs_t *regs,              /* registers to access */
+              struct mem_t *mem)                /* memory to access */
 {
   if (nargs != 0)
     return "too many arguments";
 
   /* print simulator version info */
   fprintf(stdout, "The SimpleScalar/%s Tool Set, version %d.%d of %s.\n",
-	  VER_TARGET, VER_MAJOR, VER_MINOR, VER_UPDATE);
+          VER_TARGET, VER_MAJOR, VER_MINOR, VER_UPDATE);
   fprintf(stdout,
     "Copyright (c) 1994-1998 by Todd M. Austin.  All Rights Reserved.\n");
 
@@ -1035,10 +1035,10 @@ dlite_version(int nargs, union arg_val_t args[],/* command arguments */
 }
 
 /* terminate simulation with statistics */
-static char *					/* err str, NULL for no err */
+static char *                                   /* err str, NULL for no err */
 dlite_terminate(int nargs, union arg_val_t args[],/* command arguments */
-		struct regs_t *regs,		/* registers to access */
-		struct mem_t *mem)		/* memory to access */
+                struct regs_t *regs,            /* registers to access */
+                struct mem_t *mem)              /* memory to access */
 {
   if (nargs != 0)
     return "too many arguments";
@@ -1051,10 +1051,10 @@ dlite_terminate(int nargs, union arg_val_t args[],/* command arguments */
 }
 
 /* quit the simulator, omit any stats dump */
-static char *					/* err str, NULL for no err */
-dlite_quit(int nargs, union arg_val_t args[],	/* command arguments */
-	   struct regs_t *regs,			/* registers to access */
-	   struct mem_t *mem)			/* memory to access */
+static char *                                   /* err str, NULL for no err */
+dlite_quit(int nargs, union arg_val_t args[],   /* command arguments */
+           struct regs_t *regs,                 /* registers to access */
+           struct mem_t *mem)                   /* memory to access */
 {
   if (nargs != 0)
     return "too many arguments";
@@ -1067,10 +1067,10 @@ dlite_quit(int nargs, union arg_val_t args[],	/* command arguments */
 }
 
 /* continue executing program (possibly at specified address) */
-static char *					/* err str, NULL for no err */
-dlite_cont(int nargs, union arg_val_t args[],	/* command arguments */
-	   struct regs_t *regs,			/* registers to access */
-	   struct mem_t *mem)			/* memory to access */
+static char *                                   /* err str, NULL for no err */
+dlite_cont(int nargs, union arg_val_t args[],   /* command arguments */
+           struct regs_t *regs,                 /* registers to access */
+           struct mem_t *mem)                   /* memory to access */
 {
   struct eval_value_t val;
 
@@ -1084,7 +1084,7 @@ dlite_cont(int nargs, union arg_val_t args[],	/* command arguments */
     {
       /* continue from specified address, check address */
       if (!EVAL_INTEGRAL(args[0].as_value.type))
-	return "address argument must be an integral type";
+        return "address argument must be an integral type";
 
       /* reset PC */
       val.type = et_addr;
@@ -1092,7 +1092,7 @@ dlite_cont(int nargs, union arg_val_t args[],	/* command arguments */
       f_dlite_reg_obj(regs, /* is_write */TRUE, rt_PC, 0, &val);
 
       myfprintf(stdout, "DLite: continuing execution @ 0x%08p...\n",
-		val.value.as_addr);
+                val.value.as_addr);
     }
 
   /* signal end of main debugger loop, and continuation of prog execution */
@@ -1104,10 +1104,10 @@ dlite_cont(int nargs, union arg_val_t args[],	/* command arguments */
 }
 
 /* step program one instruction */
-static char *					/* err str, NULL for no err */
-dlite_step(int nargs, union arg_val_t args[],	/* command arguments */
-	   struct regs_t *regs,			/* registers to access */
-	   struct mem_t *mem)			/* memory to access */
+static char *                                   /* err str, NULL for no err */
+dlite_step(int nargs, union arg_val_t args[],   /* command arguments */
+           struct regs_t *regs,                 /* registers to access */
+           struct mem_t *mem)                   /* memory to access */
 {
   if (nargs != 0)
     return "too many arguments";
@@ -1122,8 +1122,8 @@ dlite_step(int nargs, union arg_val_t args[],	/* command arguments */
 
 #if 0 /* NYI */
 /* step program one instruction in current procedure */
-static char *					/* err str, NULL for no err */
-dlite_next(int nargs, union arg_val_t args[])	/* command arguments */
+static char *                                   /* err str, NULL for no err */
+dlite_next(int nargs, union arg_val_t args[])   /* command arguments */
 {
   if (nargs != 0)
     return "too many arguments";
@@ -1138,10 +1138,10 @@ dlite_next(int nargs, union arg_val_t args[])	/* command arguments */
 #endif
 
 /* print the value of <expr> using format <modifiers> */
-static char *				      	/* err str, NULL for no err */
-dlite_print(int nargs, union arg_val_t args[],	/* command arguments */
-	    struct regs_t *regs,		/* registers to access */
-	    struct mem_t *mem)			/* memory to access */
+static char *                                   /* err str, NULL for no err */
+dlite_print(int nargs, union arg_val_t args[],  /* command arguments */
+            struct regs_t *regs,                /* registers to access */
+            struct mem_t *mem)                  /* memory to access */
 {
   int modifiers = 0;
   char *err_str;
@@ -1173,10 +1173,10 @@ dlite_print(int nargs, union arg_val_t args[],	/* command arguments */
 }
 
 /* print the value of all command line options */
-static char *					/* err str, NULL for no err */
+static char *                                   /* err str, NULL for no err */
 dlite_options(int nargs, union arg_val_t args[],/* command arguments */
-	      struct regs_t *regs,		/* registers to access */
-	      struct mem_t *mem)		/* memory to access */
+              struct regs_t *regs,              /* registers to access */
+              struct mem_t *mem)                /* memory to access */
 {
   if (nargs != 0)
     return "wrong number of arguments";
@@ -1189,10 +1189,10 @@ dlite_options(int nargs, union arg_val_t args[],/* command arguments */
 }
 
 /* print the value of all (or single) command line options */
-static char *					/* err str, NULL for no err */
-dlite_option(int nargs, union arg_val_t args[],	/* command arguments */
-	     struct regs_t *regs,		/* registers to access */
-	     struct mem_t *mem)			/* memory to access */
+static char *                                   /* err str, NULL for no err */
+dlite_option(int nargs, union arg_val_t args[], /* command arguments */
+             struct regs_t *regs,               /* registers to access */
+             struct mem_t *mem)                 /* memory to access */
 {
   struct opt_opt_t *opt;
 
@@ -1216,10 +1216,10 @@ dlite_option(int nargs, union arg_val_t args[],	/* command arguments */
 }
 
 /* print the value of all statistical variables */
-static char *					/* err str, NULL for no err */
-dlite_stats(int nargs, union arg_val_t args[],	/* command arguments */
-	    struct regs_t *regs,		/* registers to access */
-	    struct mem_t *mem)			/* memory to access */
+static char *                                   /* err str, NULL for no err */
+dlite_stats(int nargs, union arg_val_t args[],  /* command arguments */
+            struct regs_t *regs,                /* registers to access */
+            struct mem_t *mem)                  /* memory to access */
 {
   if (nargs != 0)
     return "wrong number of arguments";
@@ -1233,10 +1233,10 @@ dlite_stats(int nargs, union arg_val_t args[],	/* command arguments */
 }
 
 /* print the value of a statistical variable */
-static char *					/* err str, NULL for no err */
-dlite_stat(int nargs, union arg_val_t args[],	/* command arguments */
-	   struct regs_t *regs,			/* registers to access */
-	   struct mem_t *mem)			/* memory to access */
+static char *                                   /* err str, NULL for no err */
+dlite_stat(int nargs, union arg_val_t args[],   /* command arguments */
+           struct regs_t *regs,                 /* registers to access */
+           struct mem_t *mem)                   /* memory to access */
 {
   struct stat_stat_t *stat;
 
@@ -1256,10 +1256,10 @@ dlite_stat(int nargs, union arg_val_t args[],	/* command arguments */
 }
 
 /* print the type of expression <expr> */
-static char *					/* err str, NULL for no err */
-dlite_whatis(int nargs, union arg_val_t args[],	/* command arguments */
-	     struct regs_t *regs,		/* registers to access */
-	     struct mem_t *mem)			/* memory to access */
+static char *                                   /* err str, NULL for no err */
+dlite_whatis(int nargs, union arg_val_t args[], /* command arguments */
+             struct regs_t *regs,               /* registers to access */
+             struct mem_t *mem)                 /* memory to access */
 {
   if (nargs != 1)
     return "wrong number of arguments";
@@ -1271,10 +1271,10 @@ dlite_whatis(int nargs, union arg_val_t args[],	/* command arguments */
 }
 
 /* print integer register contents */
-static char *					/* err str, NULL for no err */
-dlite_iregs(int nargs, union arg_val_t args[],	/* command arguments */
-	    struct regs_t *regs,		/* registers to access */
-	    struct mem_t *mem)			/* memory to access */
+static char *                                   /* err str, NULL for no err */
+dlite_iregs(int nargs, union arg_val_t args[],  /* command arguments */
+            struct regs_t *regs,                /* registers to access */
+            struct mem_t *mem)                  /* memory to access */
 {
   char *err_str;
 
@@ -1283,7 +1283,7 @@ dlite_iregs(int nargs, union arg_val_t args[],	/* command arguments */
 
   /* print integer registers */
   myfprintf(stdout, "PC: 0x%08p   NPC: 0x%08p\n",
-	    regs->regs_PC, regs->regs_NPC);
+            regs->regs_PC, regs->regs_NPC);
   if ((err_str = dlite_cregs(nargs, args, regs, mem)) != NULL)
     return err_str;
   md_print_iregs(regs->regs_R, stdout);
@@ -1293,10 +1293,10 @@ dlite_iregs(int nargs, union arg_val_t args[],	/* command arguments */
 }
 
 /* print floating point register contents */
-static char *					/* err str, NULL for no err */
-dlite_fpregs(int nargs, union arg_val_t args[],	/* command arguments */
-	     struct regs_t *regs,		/* registers to access */
-	     struct mem_t *mem)			/* memory to access */
+static char *                                   /* err str, NULL for no err */
+dlite_fpregs(int nargs, union arg_val_t args[], /* command arguments */
+             struct regs_t *regs,               /* registers to access */
+             struct mem_t *mem)                 /* memory to access */
 {
   /* print floating point registers */
   md_print_fpregs(regs->regs_F, stdout);
@@ -1306,10 +1306,10 @@ dlite_fpregs(int nargs, union arg_val_t args[],	/* command arguments */
 }
 
 /* print floating point register contents */
-static char *					/* err str, NULL for no err */
-dlite_cregs(int nargs, union arg_val_t args[],	/* command arguments */
-	    struct regs_t *regs,		/* registers to access */
-	    struct mem_t *mem)			/* memory to access */
+static char *                                   /* err str, NULL for no err */
+dlite_cregs(int nargs, union arg_val_t args[],  /* command arguments */
+            struct regs_t *regs,                /* registers to access */
+            struct mem_t *mem)                  /* memory to access */
 {
   /* print floating point registers */
   md_print_cregs(regs->regs_C, stdout);
@@ -1319,15 +1319,15 @@ dlite_cregs(int nargs, union arg_val_t args[],	/* command arguments */
 }
 
 /* print all register contents */
-static char *					/* err str, NULL for no err */
-dlite_regs(int nargs, union arg_val_t args[],	/* command arguments */
-	   struct regs_t *regs,			/* registers to access */
-	   struct mem_t *mem)			/* memory to access */
+static char *                                   /* err str, NULL for no err */
+dlite_regs(int nargs, union arg_val_t args[],   /* command arguments */
+           struct regs_t *regs,                 /* registers to access */
+           struct mem_t *mem)                   /* memory to access */
 {
   char *err_str;
 
   myfprintf(stdout, "PC: 0x%08p   NPC: 0x%08p\n",
-	    regs->regs_PC, regs->regs_NPC);
+            regs->regs_PC, regs->regs_NPC);
   if ((err_str = dlite_cregs(nargs, args, regs, mem)) != NULL)
     return err_str;
   md_print_iregs(regs->regs_R, stdout);
@@ -1340,10 +1340,10 @@ dlite_regs(int nargs, union arg_val_t args[],	/* command arguments */
 }
 
 /* print machine specific state (simulator dependent) */
-static char *					/* err str, NULL for no err */
-dlite_mstate(int nargs, union arg_val_t args[],	/* command arguments */
-	     struct regs_t *regs,		/* registers to access */
-	     struct mem_t *mem)			/* memory to access */
+static char *                                   /* err str, NULL for no err */
+dlite_mstate(int nargs, union arg_val_t args[], /* command arguments */
+             struct regs_t *regs,               /* registers to access */
+             struct mem_t *mem)                 /* memory to access */
 {
   char *errstr;
 
@@ -1353,17 +1353,17 @@ dlite_mstate(int nargs, union arg_val_t args[],	/* command arguments */
   if (f_dlite_mstate_obj)
     {
       if (nargs == 0)
-	{
-	  errstr = f_dlite_mstate_obj(stdout, NULL, regs, mem);
-	  if (errstr)
-	    return errstr;
-	}
+        {
+          errstr = f_dlite_mstate_obj(stdout, NULL, regs, mem);
+          if (errstr)
+            return errstr;
+        }
       else
-	{
-	  errstr = f_dlite_mstate_obj(stdout, args[0].as_str, regs, mem);
-	  if (errstr)
-	    return errstr;
-	}
+        {
+          errstr = f_dlite_mstate_obj(stdout, args[0].as_str, regs, mem);
+          if (errstr)
+            return errstr;
+        }
     }
 
   /* no error */
@@ -1371,10 +1371,10 @@ dlite_mstate(int nargs, union arg_val_t args[],	/* command arguments */
 }
 
 /* display the value at memory location <addr> using format <modifiers> */
-static char *					/* err str, NULL for no err */
+static char *                                   /* err str, NULL for no err */
 dlite_display(int nargs, union arg_val_t args[],/* command arguments */
-	      struct regs_t *regs,		/* registers to access */
-	      struct mem_t *mem)		/* memory to access */
+              struct regs_t *regs,              /* registers to access */
+              struct mem_t *mem)                /* memory to access */
 {
   int modifiers, size;
   md_addr_t addr;
@@ -1392,7 +1392,7 @@ dlite_display(int nargs, union arg_val_t args[],/* command arguments */
 
       /* check address */
       if (!EVAL_INTEGRAL(args[0].as_value.type))
-	return "address argument must be an integral type";
+        return "address argument must be an integral type";
 
       /* reset address */
       addr = eval_as_addr(args[0].as_value);
@@ -1403,7 +1403,7 @@ dlite_display(int nargs, union arg_val_t args[],/* command arguments */
 
       /* check address */
       if (!EVAL_INTEGRAL(args[1].as_value.type))
-	return "address argument must be an integral type";
+        return "address argument must be an integral type";
 
       /* reset address */
       addr = eval_as_addr(args[1].as_value);
@@ -1461,14 +1461,14 @@ dlite_display(int nargs, union arg_val_t args[],/* command arguments */
 }
 
 /* `dump' command print format */
-#define BYTES_PER_LINE			16 /* must be a power of two */
-#define LINES_PER_SCREEN		4
+#define BYTES_PER_LINE                  16 /* must be a power of two */
+#define LINES_PER_SCREEN                4
 
 /* dump the contents of memory to screen */
-static char *					/* err str, NULL for no err */
-dlite_dump(int nargs, union arg_val_t args[],	/* command arguments */
-	   struct regs_t *regs,			/* registers to access */
-	   struct mem_t *mem)			/* memory to access */
+static char *                                   /* err str, NULL for no err */
+dlite_dump(int nargs, union arg_val_t args[],   /* command arguments */
+           struct regs_t *regs,                 /* registers to access */
+           struct mem_t *mem)                   /* memory to access */
 {
   int i, j;
   int count = LINES_PER_SCREEN * BYTES_PER_LINE, i_count, fmt_count, fmt_lines;
@@ -1485,7 +1485,7 @@ dlite_dump(int nargs, union arg_val_t args[],	/* command arguments */
     {
       /* check address */
       if (!EVAL_INTEGRAL(args[0].as_value.type))
-	return "address argument must be an integral type";
+        return "address argument must be an integral type";
 
       /* reset PC */
       addr = eval_as_addr(args[0].as_value);
@@ -1494,17 +1494,17 @@ dlite_dump(int nargs, union arg_val_t args[],	/* command arguments */
     {
       /* check address */
       if (!EVAL_INTEGRAL(args[0].as_value.type))
-	return "address argument must be an integral type";
+        return "address argument must be an integral type";
 
       /* reset addr */
       addr = eval_as_addr(args[0].as_value);
 
       /* check count */
       if (!EVAL_INTEGRAL(args[1].as_value.type))
-	return "count argument must be an integral type";
+        return "count argument must be an integral type";
 
       if (eval_as_uint(args[1].as_value) > 1024)
-	return "bad count argument";
+        return "bad count argument";
 
       /* reset count */
       count = eval_as_uint(args[1].as_value);
@@ -1526,20 +1526,20 @@ dlite_dump(int nargs, union arg_val_t args[],	/* command arguments */
       i_addr = fmt_addr;
       myfprintf(stdout, "0x%08p: ", i_addr);
       for (i=0; i < count; i++)
-	{
-	  errstr =
-	    f_dlite_mem_obj(mem, /* !is_write */FALSE,
-			    i_addr, (char *)&byte, 1);
-	  if (errstr)
-	    return errstr;
-	  fprintf(stdout, "%02x ", byte);
-	  if (isprint(byte))
-	    buf[i] = byte;
-	  else
-	    buf[i] = '.';
-	  i_addr++;
-	  addr++;
-	}
+        {
+          errstr =
+            f_dlite_mem_obj(mem, /* !is_write */FALSE,
+                            i_addr, (char *)&byte, 1);
+          if (errstr)
+            return errstr;
+          fprintf(stdout, "%02x ", byte);
+          if (isprint(byte))
+            buf[i] = byte;
+          else
+            buf[i] = '.';
+          i_addr++;
+          addr++;
+        }
       buf[i] = '\0';
 
       /* character view */
@@ -1550,39 +1550,39 @@ dlite_dump(int nargs, union arg_val_t args[],	/* command arguments */
       i_count = 0;
       i_addr = fmt_addr;
       for (i=0; i < fmt_lines; i++)
-	{
-	  myfprintf(stdout, "0x%08p: ", i_addr);
+        {
+          myfprintf(stdout, "0x%08p: ", i_addr);
 
-	  /* byte view */
-	  for (j=0; j < BYTES_PER_LINE; j++)
-	    {
-	      if (i_addr >= addr && i_count <= count)
-		{
-		  errstr =
-		    f_dlite_mem_obj(mem, /* !is_write */FALSE,
-				    i_addr, (char *)&byte, 1);
-		  if (errstr)
-		    return errstr;
-		  fprintf(stdout, "%02x ", byte);
-		  if (isprint(byte))
-		    buf[j] = byte;
-		  else
-		    buf[j] = '.';
-		  i_count++;
-		  addr++;
-		}
-	      else
-		{
-		  fprintf(stdout, "   ");
-		  buf[j] = ' ';
-		}
-	      i_addr++;
-	    }
-	  buf[j] = '\0';
+          /* byte view */
+          for (j=0; j < BYTES_PER_LINE; j++)
+            {
+              if (i_addr >= addr && i_count <= count)
+                {
+                  errstr =
+                    f_dlite_mem_obj(mem, /* !is_write */FALSE,
+                                    i_addr, (char *)&byte, 1);
+                  if (errstr)
+                    return errstr;
+                  fprintf(stdout, "%02x ", byte);
+                  if (isprint(byte))
+                    buf[j] = byte;
+                  else
+                    buf[j] = '.';
+                  i_count++;
+                  addr++;
+                }
+              else
+                {
+                  fprintf(stdout, "   ");
+                  buf[j] = ' ';
+                }
+              i_addr++;
+            }
+          buf[j] = '\0';
 
-	  /* character view */
-	  fprintf(stdout, "[%s]\n", buf);
-	}
+          /* character view */
+          fprintf(stdout, "[%s]\n", buf);
+        }
     }
 
   /* no error */
@@ -1590,13 +1590,13 @@ dlite_dump(int nargs, union arg_val_t args[],	/* command arguments */
 }
 
 /* disassembler print format */
-#define INSTS_PER_SCREEN		16
+#define INSTS_PER_SCREEN                16
 
 /* disassemble instructions at specified address */
-static char *					/* err str, NULL for no err */
-dlite_dis(int nargs, union arg_val_t args[],	/* command arguments */
-	  struct regs_t *regs,			/* registers to access */
-	  struct mem_t *mem)			/* memory to access */
+static char *                                   /* err str, NULL for no err */
+dlite_dis(int nargs, union arg_val_t args[],    /* command arguments */
+          struct regs_t *regs,                  /* registers to access */
+          struct mem_t *mem)                    /* memory to access */
 {
   int i;
   int count = INSTS_PER_SCREEN;
@@ -1611,7 +1611,7 @@ dlite_dis(int nargs, union arg_val_t args[],	/* command arguments */
     {
       /* check address */
       if (!EVAL_INTEGRAL(args[0].as_value.type))
-	return "address argument must be an integral type";
+        return "address argument must be an integral type";
 
       /* reset PC */
       addr = eval_as_addr(args[0].as_value);
@@ -1620,20 +1620,20 @@ dlite_dis(int nargs, union arg_val_t args[],	/* command arguments */
     {
       /* check address */
       if (!EVAL_INTEGRAL(args[0].as_value.type))
-	return "address argument must be an integral type";
+        return "address argument must be an integral type";
 
       /* reset addr */
       addr = eval_as_addr(args[0].as_value);
 
       /* check count */
       if (!EVAL_INTEGRAL(args[0].as_value.type))
-	return "count argument must be an integral type";
+        return "count argument must be an integral type";
 
       /* reset count */
       count = eval_as_uint(args[1].as_value);
 
       if (count < 0 || count > 1024)
-	return "bad count argument";
+        return "bad count argument";
     }
   /* else, nargs == 0, use addr, count */
 
@@ -1646,11 +1646,11 @@ dlite_dis(int nargs, union arg_val_t args[],	/* command arguments */
       /* read and disassemble instruction */
       myfprintf(stdout, "    0x%08p:   ", addr);
       errstr =
-	f_dlite_mem_obj(mem, /* !is_write */FALSE,
-			addr, (char *)&inst, sizeof(inst));
+        f_dlite_mem_obj(mem, /* !is_write */FALSE,
+                        addr, (char *)&inst, sizeof(inst));
       inst = MD_SWAPI(inst);
       if (errstr)
-	return errstr;
+        return errstr;
       md_print_insn(inst, addr, stdout);
       fprintf(stdout, "\n");
 
@@ -1664,10 +1664,10 @@ dlite_dis(int nargs, union arg_val_t args[],	/* command arguments */
 
 /* break instance descriptor, one allocated for each breakpoint set */
 struct dlite_break_t {
-  struct dlite_break_t *next;	/* next active breakpoint */
-  int id;			/* break id */
-  int class;			/* break class */
-  struct range_range_t range;	/* break range */
+  struct dlite_break_t *next;   /* next active breakpoint */
+  int id;                       /* break id */
+  int class;                    /* break class */
+  struct range_range_t range;   /* break range */
 };
 
 /* all active break points, in a list */
@@ -1677,8 +1677,8 @@ static struct dlite_break_t *dlite_bps = NULL;
 static int break_id = 1;
 
 /* return breakpoint class as a string */
-static char *					/* breakpoint class string */
-bp_class_str(int class)				/* breakpoint class mask */
+static char *                                   /* breakpoint class string */
+bp_class_str(int class)                         /* breakpoint class mask */
 {
   if (class == (ACCESS_READ|ACCESS_WRITE|ACCESS_EXEC))
     return "read|write|exec";
@@ -1699,9 +1699,9 @@ bp_class_str(int class)				/* breakpoint class mask */
 }
 
 /* set a breakpoint of class CLASS at address ADDR */
-static char *					/* err str, NULL for no err */
-set_break(int class,				/* break class, use ACCESS_* */
-	  struct range_range_t *range)		/* range breakpoint */
+static char *                                   /* err str, NULL for no err */
+set_break(int class,                            /* break class, use ACCESS_* */
+          struct range_range_t *range)          /* range breakpoint */
 {
   struct dlite_break_t *bp;
 
@@ -1729,8 +1729,8 @@ set_break(int class,				/* break class, use ACCESS_* */
 }
 
 /* delete breakpoint with id ID */
-static char *					/* err str, NULL for no err */
-delete_break(int id)				/* id of brkpnt to delete */
+static char *                                   /* err str, NULL for no err */
+delete_break(int id)                            /* id of brkpnt to delete */
 {
   struct dlite_break_t *bp, *prev;
 
@@ -1740,7 +1740,7 @@ delete_break(int id)				/* id of brkpnt to delete */
   for (bp=dlite_bps,prev=NULL; bp != NULL; prev=bp,bp=bp->next)
     {
       if (bp->id == id)
-	break;
+        break;
     }
   if (!bp)
     return "breakpoint not found";
@@ -1782,12 +1782,12 @@ delete_break(int id)				/* id of brkpnt to delete */
 static int break_access = 0;
 
 /* internal break check interface */
-int						/* non-zero if brkpt hit */
-__check_break(md_addr_t next_PC,		/* address of next inst */
-	      int access,			/* mem access of last inst */
-	      md_addr_t addr,			/* mem addr of last inst */
-	      counter_t icount,			/* instruction count */
-	      counter_t cycle)			/* cycle count */
+int                                             /* non-zero if brkpt hit */
+__check_break(md_addr_t next_PC,                /* address of next inst */
+              int access,                       /* mem access of last inst */
+              md_addr_t addr,                   /* mem addr of last inst */
+              counter_t icount,                 /* instruction count */
+              counter_t cycle)                  /* cycle count */
 {
   struct dlite_break_t *bp;
 
@@ -1802,69 +1802,69 @@ __check_break(md_addr_t next_PC,		/* address of next inst */
   for (bp=dlite_bps; bp != NULL; bp=bp->next)
     {
       switch (bp->range.start.ptype)
-	{
-	case pt_addr:
-	  if ((bp->class & ACCESS_EXEC)
-	      && !range_cmp_range(&bp->range, next_PC))
-	    {
-	      /* hit a code breakpoint */
-	      myfprintf(stdout,
-			"Stopping at code breakpoint #%d @ 0x%08p...\n",
-			bp->id, next_PC);
-	      break_access = ACCESS_EXEC;
-	      return TRUE;
-	    }
-	  if ((bp->class & ACCESS_READ)
-	      && ((access & ACCESS_READ)
-		  && !range_cmp_range(&bp->range, addr)))
-	    {
-	      /* hit a read breakpoint */
-	      myfprintf(stdout,
-			"Stopping at read breakpoint #%d @ 0x%08p...\n",
-			bp->id, addr);
-	      break_access = ACCESS_READ;
-	      return TRUE;
-	    }
-	  if ((bp->class & ACCESS_WRITE)
-	      && ((access & ACCESS_WRITE)
-		  && !range_cmp_range(&bp->range, addr)))
-	    {
-	      /* hit a write breakpoint */
-	      myfprintf(stdout,
-			"Stopping at write breakpoint #%d @ 0x%08p...\n",
-			bp->id, addr);
-	      break_access = ACCESS_WRITE;
-	      return TRUE;
-	    }
-	  break;
+        {
+        case pt_addr:
+          if ((bp->class & ACCESS_EXEC)
+              && !range_cmp_range(&bp->range, next_PC))
+            {
+              /* hit a code breakpoint */
+              myfprintf(stdout,
+                        "Stopping at code breakpoint #%d @ 0x%08p...\n",
+                        bp->id, next_PC);
+              break_access = ACCESS_EXEC;
+              return TRUE;
+            }
+          if ((bp->class & ACCESS_READ)
+              && ((access & ACCESS_READ)
+                  && !range_cmp_range(&bp->range, addr)))
+            {
+              /* hit a read breakpoint */
+              myfprintf(stdout,
+                        "Stopping at read breakpoint #%d @ 0x%08p...\n",
+                        bp->id, addr);
+              break_access = ACCESS_READ;
+              return TRUE;
+            }
+          if ((bp->class & ACCESS_WRITE)
+              && ((access & ACCESS_WRITE)
+                  && !range_cmp_range(&bp->range, addr)))
+            {
+              /* hit a write breakpoint */
+              myfprintf(stdout,
+                        "Stopping at write breakpoint #%d @ 0x%08p...\n",
+                        bp->id, addr);
+              break_access = ACCESS_WRITE;
+              return TRUE;
+            }
+          break;
 
-	case pt_inst:
-	  if (!range_cmp_range(&bp->range, icount))
-	    {
-	      /* hit a code breakpoint */
-	      fprintf(stdout,
-		      "Stopping at inst count breakpoint #%d @ %.0f...\n",
-		      bp->id, (double)icount);
-	      break_access = ACCESS_EXEC;
-	      return TRUE;
-	    }
-	  break;
+        case pt_inst:
+          if (!range_cmp_range(&bp->range, icount))
+            {
+              /* hit a code breakpoint */
+              fprintf(stdout,
+                      "Stopping at inst count breakpoint #%d @ %.0f...\n",
+                      bp->id, (double)icount);
+              break_access = ACCESS_EXEC;
+              return TRUE;
+            }
+          break;
 
-	case pt_cycle:
-	  if (!range_cmp_range(&bp->range, cycle))
-	    {
-	      /* hit a code breakpoint */
-	      fprintf(stdout,
-		      "Stopping at cycle count breakpoint #%d @ %.0f...\n",
-		      bp->id, (double)cycle);
-	      break_access = ACCESS_EXEC;
-	      return TRUE;
-	    }
-	  break;
+        case pt_cycle:
+          if (!range_cmp_range(&bp->range, cycle))
+            {
+              /* hit a code breakpoint */
+              fprintf(stdout,
+                      "Stopping at cycle count breakpoint #%d @ %.0f...\n",
+                      bp->id, (double)cycle);
+              break_access = ACCESS_EXEC;
+              return TRUE;
+            }
+          break;
 
-	default:
-	  panic("bogus range type");
-	}
+        default:
+          panic("bogus range type");
+        }
 
 
     }
@@ -1875,10 +1875,10 @@ __check_break(md_addr_t next_PC,		/* address of next inst */
 }
 
 /* set a text breakpoint */
-static char *					/* err str, NULL for no err */
-dlite_break(int nargs, union arg_val_t args[],	/* command arguments */
-	    struct regs_t *regs,		/* registers to access */
-	    struct mem_t *mem)			/* memory to access */
+static char *                                   /* err str, NULL for no err */
+dlite_break(int nargs, union arg_val_t args[],  /* command arguments */
+            struct regs_t *regs,                /* registers to access */
+            struct mem_t *mem)                  /* memory to access */
 {
   md_addr_t addr;
   struct range_range_t range;
@@ -1910,10 +1910,10 @@ dlite_break(int nargs, union arg_val_t args[],	/* command arguments */
 }
 
 /* set a data breakpoint at specified address */
-static char *					/* err str, NULL for no err */
-dlite_dbreak(int nargs, union arg_val_t args[],	/* command arguments */
-	     struct regs_t *regs,		/* registers to access */
-	     struct mem_t *mem)			/* memory to access */
+static char *                                   /* err str, NULL for no err */
+dlite_dbreak(int nargs, union arg_val_t args[], /* command arguments */
+             struct regs_t *regs,               /* registers to access */
+             struct mem_t *mem)                 /* memory to access */
 {
   int access;
   md_addr_t addr;
@@ -1926,7 +1926,7 @@ dlite_dbreak(int nargs, union arg_val_t args[],	/* command arguments */
     {
       /* check address */
       if (!EVAL_INTEGRAL(args[0].as_value.type))
-	return "address argument must be an integral type";
+        return "address argument must be an integral type";
 
       /* reset addr */
       addr = eval_as_addr(args[0].as_value);
@@ -1938,7 +1938,7 @@ dlite_dbreak(int nargs, union arg_val_t args[],	/* command arguments */
     {
       /* check address */
       if (!EVAL_INTEGRAL(args[0].as_value.type))
-	return "address argument must be an integral type";
+        return "address argument must be an integral type";
 
       /* reset addr */
       addr = eval_as_addr(args[0].as_value);
@@ -1958,10 +1958,10 @@ dlite_dbreak(int nargs, union arg_val_t args[],	/* command arguments */
 }
 
 /* set a breakpoint at specified range */
-static char *					/* err str, NULL for no err */
-dlite_rbreak(int nargs, union arg_val_t args[],	/* command arguments */
-	     struct regs_t *regs,		/* registers to access */
-	     struct mem_t *mem)			/* memory to access */
+static char *                                   /* err str, NULL for no err */
+dlite_rbreak(int nargs, union arg_val_t args[], /* command arguments */
+             struct regs_t *regs,               /* registers to access */
+             struct mem_t *mem)                 /* memory to access */
 {
   int access;
   char *errstr;
@@ -1997,10 +1997,10 @@ dlite_rbreak(int nargs, union arg_val_t args[],	/* command arguments */
 }
 
 /* list all outstanding breakpoints */
-static char *					/* err str, NULL for no err */
-dlite_breaks(int nargs, union arg_val_t args[],	/* command arguments */
-	     struct regs_t *regs,		/* registers to access */
-	     struct mem_t *mem)			/* memory to access */
+static char *                                   /* err str, NULL for no err */
+dlite_breaks(int nargs, union arg_val_t args[], /* command arguments */
+             struct regs_t *regs,               /* registers to access */
+             struct mem_t *mem)                 /* memory to access */
 {
   struct dlite_break_t *bp;
 
@@ -2025,10 +2025,10 @@ dlite_breaks(int nargs, union arg_val_t args[],	/* command arguments */
 }
 
 /* delete specified breakpoint */
-static char *					/* err str, NULL for no err */
-dlite_delete(int nargs, union arg_val_t args[],	/* command arguments */
-	     struct regs_t *regs,		/* registers to access */
-	     struct mem_t *mem)			/* memory to access */
+static char *                                   /* err str, NULL for no err */
+dlite_delete(int nargs, union arg_val_t args[], /* command arguments */
+             struct regs_t *regs,               /* registers to access */
+             struct mem_t *mem)                 /* memory to access */
 {
   int id;
 
@@ -2044,10 +2044,10 @@ dlite_delete(int nargs, union arg_val_t args[],	/* command arguments */
 }
 
 /* clear all breakpoints */
-static char *					/* err str, NULL for no err */
-dlite_clear(int nargs, union arg_val_t args[],	/* command arguments */
-	    struct regs_t *regs,		/* registers to access */
-	    struct mem_t *mem)			/* memory to access */
+static char *                                   /* err str, NULL for no err */
+dlite_clear(int nargs, union arg_val_t args[],  /* command arguments */
+            struct regs_t *regs,                /* registers to access */
+            struct mem_t *mem)                  /* memory to access */
 {
   if (!dlite_bps)
     {
@@ -2069,10 +2069,10 @@ dlite_clear(int nargs, union arg_val_t args[],	/* command arguments */
 }
 
 /* print the value of all program symbols */
-static char *					/* err str, NULL for no err */
+static char *                                   /* err str, NULL for no err */
 dlite_symbols(int nargs, union arg_val_t args[],/* command arguments */
-	      struct regs_t *regs,		/* registers to access */
-	      struct mem_t *mem)		/* memory to access */
+              struct regs_t *regs,              /* registers to access */
+              struct mem_t *mem)                /* memory to access */
 {
   int i;
 
@@ -2091,10 +2091,10 @@ dlite_symbols(int nargs, union arg_val_t args[],/* command arguments */
 }
 
 /* print the value of all text symbols */
-static char *					/* err str, NULL for no err */
+static char *                                   /* err str, NULL for no err */
 dlite_tsymbols(int nargs, union arg_val_t args[],/* command arguments */
-	       struct regs_t *regs,		/* registers to access */
-	       struct mem_t *mem)		/* memory to access */
+               struct regs_t *regs,             /* registers to access */
+               struct mem_t *mem)               /* memory to access */
 {
   int i;
 
@@ -2113,10 +2113,10 @@ dlite_tsymbols(int nargs, union arg_val_t args[],/* command arguments */
 }
 
 /* print the value of all text symbols */
-static char *					/* err str, NULL for no err */
+static char *                                   /* err str, NULL for no err */
 dlite_dsymbols(int nargs, union arg_val_t args[],/* command arguments */
-	       struct regs_t *regs,		/* registers to access */
-	       struct mem_t *mem)		/* memory to access */
+               struct regs_t *regs,             /* registers to access */
+               struct mem_t *mem)               /* memory to access */
 {
   int i;
 
@@ -2135,10 +2135,10 @@ dlite_dsymbols(int nargs, union arg_val_t args[],/* command arguments */
 }
 
 /* print the value of all (or single) command line options */
-static char *					/* err str, NULL for no err */
-dlite_symbol(int nargs, union arg_val_t args[],	/* command arguments */
-	     struct regs_t *regs,		/* registers to access */
-	     struct mem_t *mem)			/* memory to access */
+static char *                                   /* err str, NULL for no err */
+dlite_symbol(int nargs, union arg_val_t args[], /* command arguments */
+             struct regs_t *regs,               /* registers to access */
+             struct mem_t *mem)                 /* memory to access */
 {
   int index;
   struct sym_sym_t *sym;
@@ -2163,9 +2163,9 @@ dlite_symbol(int nargs, union arg_val_t args[],	/* command arguments */
 
 /* initialize the DLite debugger */
 void
-dlite_init(dlite_reg_obj_t reg_obj,		/* register state object */
-	   dlite_mem_obj_t mem_obj,		/* memory state object */
-	   dlite_mstate_obj_t mstate_obj)	/* machine state object */
+dlite_init(dlite_reg_obj_t reg_obj,             /* register state object */
+           dlite_mem_obj_t mem_obj,             /* memory state object */
+           dlite_mstate_obj_t mstate_obj)       /* machine state object */
 {
   /* architected state accessors */
   f_dlite_reg_obj = reg_obj;
@@ -2178,12 +2178,12 @@ dlite_init(dlite_reg_obj_t reg_obj,		/* register state object */
 
 /* print a mini-state header */
 static void
-dlite_status(md_addr_t regs_PC,			/* PC of just completed inst */
-	     md_addr_t next_PC,			/* PC of next inst to exec */
-	     counter_t cycle,			/* current cycle */
-	     int dbreak,			/* last break a data break? */
-	     struct regs_t *regs,		/* registers to access */
-	     struct mem_t *mem)			/* memory to access */
+dlite_status(md_addr_t regs_PC,                 /* PC of just completed inst */
+             md_addr_t next_PC,                 /* PC of next inst to exec */
+             counter_t cycle,                   /* current cycle */
+             int dbreak,                        /* last break a data break? */
+             struct regs_t *regs,               /* registers to access */
+             struct mem_t *mem)                 /* memory to access */
 {
   md_inst_t inst;
   char *errstr;
@@ -2194,13 +2194,13 @@ dlite_status(md_addr_t regs_PC,			/* PC of just completed inst */
       fprintf(stdout, "Instruction (now finished) that caused data break:\n");
       myfprintf(stdout, "[%10n] 0x%08p:    ", cycle, regs_PC);
       errstr =
-	f_dlite_mem_obj(mem, /* !is_write */FALSE,
-			regs_PC, (char *)&inst, sizeof(inst));
+        f_dlite_mem_obj(mem, /* !is_write */FALSE,
+                        regs_PC, (char *)&inst, sizeof(inst));
       inst = MD_SWAPI(inst);
       if (errstr)
-	fprintf(stdout, "<invalid memory>: %s", errstr);
+        fprintf(stdout, "<invalid memory>: %s", errstr);
       else
-	md_print_insn(inst, regs_PC, stdout);
+        md_print_insn(inst, regs_PC, stdout);
       fprintf(stdout, "\n");
       fprintf(stdout, "\n");
     }
@@ -2209,7 +2209,7 @@ dlite_status(md_addr_t regs_PC,			/* PC of just completed inst */
   myfprintf(stdout, "[%10n] 0x%08p:    ", cycle, next_PC);
   errstr =
     f_dlite_mem_obj(mem, /* !is_write */FALSE,
-		    next_PC, (char *)&inst, sizeof(inst));
+                    next_PC, (char *)&inst, sizeof(inst));
   inst = MD_SWAPI(inst);
   if (errstr)
     fprintf(stdout, "<invalid memory>: %s", errstr);
@@ -2219,15 +2219,15 @@ dlite_status(md_addr_t regs_PC,			/* PC of just completed inst */
 }
 
 /* DLite command line prompt */
-#define DLITE_PROMPT		"DLite! > "
+#define DLITE_PROMPT            "DLite! > "
 
 /* DLite debugger main loop */
 void
-dlite_main(md_addr_t regs_PC,			/* addr of last inst to exec */
-	   md_addr_t next_PC,			/* addr of next inst to exec */
-	   counter_t cycle,			/* current procesor cycle */
-	   struct regs_t *regs,			/* registers to access */
-	   struct mem_t *mem)			/* memory to access */
+dlite_main(md_addr_t regs_PC,                   /* addr of last inst to exec */
+           md_addr_t next_PC,                   /* addr of next inst to exec */
+           counter_t cycle,                     /* current procesor cycle */
+           struct regs_t *regs,                 /* registers to access */
+           struct mem_t *mem)                   /* memory to access */
 {
   char buf[512], *err_str;
   int dbreak = (break_access & (ACCESS_READ|ACCESS_WRITE)) != 0;
@@ -2245,17 +2245,17 @@ dlite_main(md_addr_t regs_PC,			/* addr of last inst to exec */
 
       /* chop */
       if (buf[strlen(buf)-1] == '\n')
-	buf[strlen(buf)-1] = '\0';
+        buf[strlen(buf)-1] = '\0';
 
       if (buf[0] != '\0')
-	{
-	  /* use this command */
-	  strcpy(cmd, buf);
-	}
+        {
+          /* use this command */
+          strcpy(cmd, buf);
+        }
       /* else, use last command */
 
       err_str = dlite_exec(cmd, regs, mem);
       if (err_str)
-	fprintf(stdout, "Dlite: error: %s\n", err_str);
+        fprintf(stdout, "Dlite: error: %s\n", err_str);
     }
 }

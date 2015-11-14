@@ -78,7 +78,7 @@ static void (*hook_fn)(FILE *stream) = NULL;
 
 /* register a function to be called when an error is detected */
 void
-fatal_hook(void (*fn)(FILE *stream))	/* fatal hook function */
+fatal_hook(void (*fn)(FILE *stream))    /* fatal hook function */
 {
   hook_fn = fn;
 }
@@ -199,7 +199,7 @@ debug(char *fmt, ...)
 
 /* seed the random number generator */
 void
-mysrand(unsigned int seed)	/* random number generator seed */
+mysrand(unsigned int seed)      /* random number generator seed */
 {
 #if defined(hpux) || defined(__hpux) || defined(__svr4__) || defined(_MSC_VER)
       srand(seed);
@@ -210,7 +210,7 @@ mysrand(unsigned int seed)	/* random number generator seed */
 
 /* get a random number */
 int
-myrand(void)			/* returns random number */
+myrand(void)                    /* returns random number */
 {
 #if !defined(__alpha) && !defined(unix)
   extern long random(void);
@@ -225,8 +225,8 @@ myrand(void)			/* returns random number */
 
 /* copy a string to a new storage allocation (NOTE: many machines are missing
    this trivial function, so I funcdup() it here...) */
-char *				/* duplicated string */
-mystrdup(char *s)		/* string to duplicate to heap storage */
+char *                          /* duplicated string */
+mystrdup(char *s)               /* string to duplicate to heap storage */
 {
   char *buf;
 
@@ -252,8 +252,8 @@ mystrrchr(char *s, char c)
 
 /* case insensitive string compare (NOTE: many machines are missing this
    trivial function, so I funcdup() it here...) */
-int				/* compare result, see strcmp() */
-mystricmp(char *s1, char *s2)	/* strings to compare, case insensitive */
+int                             /* compare result, see strcmp() */
+mystricmp(char *s1, char *s2)   /* strings to compare, case insensitive */
 {
   unsigned char u1, u2;
 
@@ -263,9 +263,9 @@ mystricmp(char *s1, char *s2)	/* strings to compare, case insensitive */
       u2 = (unsigned char)*s2++; u2 = tolower(u2);
 
       if (u1 != u2)
-	return u1 - u2;
+        return u1 - u2;
       if (u1 == '\0')
-	return 0;
+        return 0;
     }
 }
 
@@ -360,39 +360,39 @@ elapsed_time(long sec)
    bit, for example, extractl(word, 6, 3) w/ 8 bit word = 01101011 returns
    00000110 */
 unsigned int
-extractl(int word,		/* the word from which to extract */
-         int pos,		/* bit positions 31 to 0 */
-         int num)		/* number of bits to extract */
+extractl(int word,              /* the word from which to extract */
+         int pos,               /* bit positions 31 to 0 */
+         int num)               /* number of bits to extract */
 {
     return(((unsigned int) word >> (pos + 1 - num)) & ~(~0 << num));
 }
 
-#define PUT(p, n)							\
-  {									\
-    int nn, cc;								\
-									\
-    for (nn = 0; nn < n; nn++)						\
-      {									\
-	cc = *(p+nn);							\
-        *obuf++ = cc;							\
-      }									\
+#define PUT(p, n)                                                       \
+  {                                                                     \
+    int nn, cc;                                                         \
+                                                                        \
+    for (nn = 0; nn < n; nn++)                                          \
+      {                                                                 \
+        cc = *(p+nn);                                                   \
+        *obuf++ = cc;                                                   \
+      }                                                                 \
   }
 
-#define PAD(s, n)							\
-  {									\
-    int nn, cc;								\
-									\
-    cc = *s;								\
-    for (nn = n; nn > 0; nn--)						\
-      *obuf++ = cc;							\
+#define PAD(s, n)                                                       \
+  {                                                                     \
+    int nn, cc;                                                         \
+                                                                        \
+    cc = *s;                                                            \
+    for (nn = n; nn > 0; nn--)                                          \
+      *obuf++ = cc;                                                     \
   }
 
 #ifdef HOST_HAS_QWORD
-#define HIBITL		LL(0x8000000000000000)
+#define HIBITL          LL(0x8000000000000000)
 typedef sqword_t slargeint_t;
 typedef qword_t largeint_t;
 #else /* !HOST_HAS_QWORD */
-#define HIBITL		0x80000000L
+#define HIBITL          0x80000000L
 typedef sword_t slargeint_t;
 typedef word_t largeint_t;
 #endif /* HOST_HAS_QWORD */
@@ -438,15 +438,15 @@ myvsprintf(char *obuf, char *format, va_list v)
   int otherlength;
 
   /* format flags */
-#define PADZERO		0x0001	/* padding zeroes requested via '0' */
-#define RZERO		0x0002	/* there will be trailing zeros in output */
-#define LZERO		0x0004	/* there will be leading zeroes in output */
-#define DOTSEEN		0x0008	/* dot appeared in format specification */
-#define LENGTH		0x0010	/* l */
+#define PADZERO         0x0001  /* padding zeroes requested via '0' */
+#define RZERO           0x0002  /* there will be trailing zeros in output */
+#define LZERO           0x0004  /* there will be leading zeroes in output */
+#define DOTSEEN         0x0008  /* dot appeared in format specification */
+#define LENGTH          0x0010  /* l */
   int flagword;
 
   /* maximum number of digits in printable number */
-#define MAXDIGS		22
+#define MAXDIGS         22
 
   /* starting and ending points for value to be printed */
   char *bp, *p;
@@ -474,270 +474,270 @@ myvsprintf(char *obuf, char *format, va_list v)
       int n;
 
       while ((fcode = *format) != '\0' && fcode != '%')
-	{
-	  *obuf++ = fcode;
-	  format++;
-	  count++;
-	}
+        {
+          *obuf++ = fcode;
+          format++;
+          count++;
+        }
 
       if (fcode == '\0')
-	{
-	  /* end of format; terminate and return */
-	  *obuf = '\0';
-	  return obuf;
-	}
+        {
+          /* end of format; terminate and return */
+          *obuf = '\0';
+          return obuf;
+        }
 
 
       /* % has been found, the following switch is used to parse the format
-	 specification and to perform the operation specified by the format
-	 letter; the program repeatedly goes back to this switch until the
-	 format letter is encountered */
+         specification and to perform the operation specified by the format
+         letter; the program repeatedly goes back to this switch until the
+         format letter is encountered */
 
       width = prefixlength = otherlength = flagword = 0;
       format++;
 
     charswitch:
       switch (fcode = *format++)
-	{
-	case '0': /* means pad with leading zeros */
-	  flagword |= PADZERO;
-	case '1':
-	case '2':
-	case '3':
-	case '4':
-	case '5':
-	case '6':
-	case '7':
-	case '8':
-	case '9':
-	  {
-	    int num = fcode - '0';
-	    while (isdigit(fcode = *format))
-	      {
-		num = num * 10 + fcode - '0';
-		format++;
-	      }
-	    if (flagword & DOTSEEN)
-	      prec = num;
-	    else
-	      width = num;
-	    goto charswitch;
-	  }
+        {
+        case '0': /* means pad with leading zeros */
+          flagword |= PADZERO;
+        case '1':
+        case '2':
+        case '3':
+        case '4':
+        case '5':
+        case '6':
+        case '7':
+        case '8':
+        case '9':
+          {
+            int num = fcode - '0';
+            while (isdigit(fcode = *format))
+              {
+                num = num * 10 + fcode - '0';
+                format++;
+              }
+            if (flagword & DOTSEEN)
+              prec = num;
+            else
+              width = num;
+            goto charswitch;
+          }
 
-	case '.':
-	  flagword |= DOTSEEN;
-	  goto charswitch;
+        case '.':
+          flagword |= DOTSEEN;
+          goto charswitch;
 
-	case 'l':
-	  flagword |= LENGTH;
-	  goto charswitch;
+        case 'l':
+          flagword |= LENGTH;
+          goto charswitch;
 
-	case 'n': /* host counter */
+        case 'n': /* host counter */
 #ifdef HOST_HAS_QWORD
-	  flagword |= LENGTH;
-	  /* fallthru */
+          flagword |= LENGTH;
+          /* fallthru */
 #else /* !HOST_HAS_QWORD */
-	  flagword |= DOTSEEN;
-	  if (!width)
-	    width = 12;
-	  prec = 0;
-	  goto process_float;
+          flagword |= DOTSEEN;
+          if (!width)
+            width = 12;
+          prec = 0;
+          goto process_float;
 #endif /* HOST_HAS_QWORD */
-	  
-	case 'd':
-	  /* fetch the argument to be printed */
-	  if (flagword & LENGTH)
-	    val = va_arg(v, slargeint_t);
-	  else
-	    val = (slargeint_t)va_arg(v, sword_t);
+          
+        case 'd':
+          /* fetch the argument to be printed */
+          if (flagword & LENGTH)
+            val = va_arg(v, slargeint_t);
+          else
+            val = (slargeint_t)va_arg(v, sword_t);
 
-	  /* set buffer pointer to last digit */
-	  p = bp = buf + MAXDIGS;
+          /* set buffer pointer to last digit */
+          p = bp = buf + MAXDIGS;
 
-	  /* If signed conversion, make sign */
-	  if (val < 0)
-	    {
-	      prefix = "-";
-	      prefixlength = 1;
-	      /* negate, checking in advance for possible overflow */
-	      if (val != (slargeint_t)HIBITL)
-		val = -val;
-	      else
-		{
-		  /* number is -HIBITL; convert last digit and get pos num */
-		  *--bp = _lowdigit(&val);
-		}
-	    }
+          /* If signed conversion, make sign */
+          if (val < 0)
+            {
+              prefix = "-";
+              prefixlength = 1;
+              /* negate, checking in advance for possible overflow */
+              if (val != (slargeint_t)HIBITL)
+                val = -val;
+              else
+                {
+                  /* number is -HIBITL; convert last digit and get pos num */
+                  *--bp = _lowdigit(&val);
+                }
+            }
 
-	decimal:
-	  {
-	    slargeint_t qval = val;
+        decimal:
+          {
+            slargeint_t qval = val;
 
-	    if (qval <= 9)
-	      *--bp = (int)qval + '0';
-	    else
-	      {
-		do {
-		  n = (int)qval;
-		  qval /= 10;
-		  *--bp = n - (int)qval * 10 + '0';
-		}
-		while (qval > 9);
-		*--bp = (int)qval + '0';
-	      }
-	  }
-	  break;
+            if (qval <= 9)
+              *--bp = (int)qval + '0';
+            else
+              {
+                do {
+                  n = (int)qval;
+                  qval /= 10;
+                  *--bp = n - (int)qval * 10 + '0';
+                }
+                while (qval > 9);
+                *--bp = (int)qval + '0';
+              }
+          }
+          break;
 
-	case 'u':
-	  /* fetch the argument to be printed */
-	  if (flagword & LENGTH)
-	    val = va_arg(v, largeint_t);
-	  else
-	    val = (largeint_t)va_arg(v, word_t);
+        case 'u':
+          /* fetch the argument to be printed */
+          if (flagword & LENGTH)
+            val = va_arg(v, largeint_t);
+          else
+            val = (largeint_t)va_arg(v, word_t);
 
-	  /* set buffer pointer to last digit */
-	  p = bp = buf + MAXDIGS;
+          /* set buffer pointer to last digit */
+          p = bp = buf + MAXDIGS;
 
-	  if (val & HIBITL)
-	    *--bp = _lowdigit(&val);
-	  goto decimal;
+          if (val & HIBITL)
+            *--bp = _lowdigit(&val);
+          goto decimal;
 
-	case 'o':
-	  mradix = 7;
-	  lradix = 2;
-	  goto fixed;
+        case 'o':
+          mradix = 7;
+          lradix = 2;
+          goto fixed;
 
-	case 'p': /* target address */
-	  if (sizeof(md_addr_t) > 4)
-	    flagword |= LENGTH;
-	  /* fallthru */
+        case 'p': /* target address */
+          if (sizeof(md_addr_t) > 4)
+            flagword |= LENGTH;
+          /* fallthru */
 
-	case 'X':
-	case 'x':
-	  mradix = 15;
-	  lradix = 3;
+        case 'X':
+        case 'x':
+          mradix = 15;
+          lradix = 3;
 
-	fixed:
-	  /* fetch the argument to be printed */
-	  if (flagword & LENGTH)
-	    val = va_arg(v, largeint_t);
-	  else
-	    val = (largeint_t)va_arg(v, word_t);
+        fixed:
+          /* fetch the argument to be printed */
+          if (flagword & LENGTH)
+            val = va_arg(v, largeint_t);
+          else
+            val = (largeint_t)va_arg(v, word_t);
 
-	  /* set translate table for digits */
-	  tab = (fcode == 'X') ? "0123456789ABCDEF" : "0123456789abcdef";
+          /* set translate table for digits */
+          tab = (fcode == 'X') ? "0123456789ABCDEF" : "0123456789abcdef";
 
-	  /* develop the digits of the value */
-	  p = bp = buf + MAXDIGS;
+          /* develop the digits of the value */
+          p = bp = buf + MAXDIGS;
 
-	  {
-	    slargeint_t qval = val;
+          {
+            slargeint_t qval = val;
 
-	    if (qval == 0)
-	      {
-		otherlength = lzero = 1;
-		flagword |= LZERO;
-	      }
-	    else
-	      do {
-		*--bp = tab[qval & mradix];
-		qval = ((qval >> 1) & ~HIBITL) >> lradix;
-	      } while (qval != 0);
-	  }
-	  break;
+            if (qval == 0)
+              {
+                otherlength = lzero = 1;
+                flagword |= LZERO;
+              }
+            else
+              do {
+                *--bp = tab[qval & mradix];
+                qval = ((qval >> 1) & ~HIBITL) >> lradix;
+              } while (qval != 0);
+          }
+          break;
 
 #ifndef HOST_HAS_QWORD
-	process_float:
+        process_float:
 #endif /* !HOST_HAS_QWORD */
 
-	case 'f':
-	  if (flagword & DOTSEEN)
-	    sprintf(buf1, "%%%d.%df", width, prec);
-	  else if (width)
-	    sprintf(buf1, "%%%df", width);
-	  else
-	    sprintf(buf1, "%%f");
+        case 'f':
+          if (flagword & DOTSEEN)
+            sprintf(buf1, "%%%d.%df", width, prec);
+          else if (width)
+            sprintf(buf1, "%%%df", width);
+          else
+            sprintf(buf1, "%%f");
 
-	  /* fetch the argument to be printed */
-	  fval = va_arg(v, dfloat_t);
+          /* fetch the argument to be printed */
+          fval = va_arg(v, dfloat_t);
 
-	  /* print floating point value */
-	  sprintf(buf, buf1, fval);
-	  bp = buf;
-	  p = bp + strlen(bp);
-	  break;
+          /* print floating point value */
+          sprintf(buf, buf1, fval);
+          bp = buf;
+          p = bp + strlen(bp);
+          break;
 
-	case 's':
-	  bp = va_arg(v, char *);
-	  if (bp == NULL)
-	    bp = "(null)";
-	  p = bp + strlen(bp);
-	  break;
+        case 's':
+          bp = va_arg(v, char *);
+          if (bp == NULL)
+            bp = "(null)";
+          p = bp + strlen(bp);
+          break;
 
-	case '%':
-	  buf[0] = fcode;
-	  goto c_merge;
+        case '%':
+          buf[0] = fcode;
+          goto c_merge;
 
-	case 'c':
-	  buf[0] = va_arg(v, int);
-	c_merge:
-	  p = (bp = &buf[0]) + 1;
-	  break;
+        case 'c':
+          buf[0] = va_arg(v, int);
+        c_merge:
+          p = (bp = &buf[0]) + 1;
+          break;
 
-	default:
-	  /* this is technically an error; what we do is to back up the format
+        default:
+          /* this is technically an error; what we do is to back up the format
              pointer to the offending char and continue with the format scan */
-	  format--;
-	  continue;
-	}
+          format--;
+          continue;
+        }
 
       /* calculate number of padding blanks */
       k = (n = p - bp) + prefixlength + otherlength;
       if (width <= k)
-	count += k;
+        count += k;
       else
-	{
-	  count += width;
+        {
+          count += width;
 
-	  /* set up for padding zeroes if requested; otherwise emit padding
+          /* set up for padding zeroes if requested; otherwise emit padding
              blanks unless output is to be left-justified */
-	  if (flagword & PADZERO)
-	    {
-	      if (!(flagword & LZERO))
-		{
-		  flagword |= LZERO;
-		  lzero = width - k;
-		}
-	      else
-		lzero += width - k;
+          if (flagword & PADZERO)
+            {
+              if (!(flagword & LZERO))
+                {
+                  flagword |= LZERO;
+                  lzero = width - k;
+                }
+              else
+                lzero += width - k;
 
-	      /* cancel padding blanks */
-	      k = width;
-	    }
-	  else
-	    {
-	      /* blanks on left if required */
-	      PAD(_blanks, width - k);
-	    }
-	}
+              /* cancel padding blanks */
+              k = width;
+            }
+          else
+            {
+              /* blanks on left if required */
+              PAD(_blanks, width - k);
+            }
+        }
 
       /* prefix, if any */
       if (prefixlength != 0)
-	{
-	  PUT(prefix, prefixlength);
-	}
+        {
+          PUT(prefix, prefixlength);
+        }
 
       /* zeroes on the left */
       if (flagword & LZERO)
-	{
-	  PAD(_zeroes, lzero);
-	}
+        {
+          PAD(_zeroes, lzero);
+        }
 
       /* the value itself */
       if (n > 0)
-	{
-	  PUT(bp, n);
-	}
+        {
+          PUT(bp, n);
+        }
     }
 }
 
@@ -780,9 +780,9 @@ myfprintf(FILE *stream, char *format, ...)
 
 #ifdef HOST_HAS_QWORD
 
-#define LL_MAX		LL(9223372036854775807)
-#define LL_MIN		(-LL_MAX - 1)
-#define ULL_MAX		(ULL(9223372036854775807) * ULL(2) + 1)
+#define LL_MAX          LL(9223372036854775807)
+#define LL_MIN          (-LL_MAX - 1)
+#define ULL_MAX         (ULL(9223372036854775807) * ULL(2) + 1)
 
 /* convert a string to a signed result */
 sqword_t
@@ -808,9 +808,9 @@ myatosq(char *nptr, char **endp, int base)
   if (base == 0)
     {
       if (s[0] == '0' && toupper(s[1]) == 'X')
-	base = 16;
+        base = 16;
       else
-	base = 10;
+        base = 10;
     }
 
   if (base <= 1 || base > 36)
@@ -915,9 +915,9 @@ myatoq(char *nptr, char **endp, int base)
   if (base == 0)
     {
       if (s[0] == '0' && toupper(s[1]) == 'X')
-	base = 16;
+        base = 16;
       else
-	base = 10;
+        base = 10;
     }
 
   if (base <= 1 || base > 36)
@@ -1064,13 +1064,13 @@ static struct {
   char *ext;
   char *cmd;
 } gzcmds[] = {
-  /* type */	/* extension */		/* command */
-  { "r",	".gz",			"%s -dc %s" },
-  { "rb",	".gz",			"%s -dc %s" },
-  { "r",	".Z",			"%s -dc %s" },
-  { "rb",	".Z",			"%s -dc %s" },
-  { "w",	".gz",			"%s > %s" },
-  { "wb",	".gz",			"%s > %s" }
+  /* type */    /* extension */         /* command */
+  { "r",        ".gz",                  "%s -dc %s" },
+  { "rb",       ".gz",                  "%s -dc %s" },
+  { "r",        ".Z",                   "%s -dc %s" },
+  { "rb",       ".Z",                   "%s -dc %s" },
+  { "w",        ".gz",                  "%s > %s" },
+  { "wb",       ".gz",                  "%s > %s" }
 };
 
 /* same semantics as fopen() except that filenames ending with a ".gz" or ".Z"
@@ -1090,13 +1090,13 @@ gzopen(char *fname, char *type)
   if (ext != NULL && *ext != '\0')
     {
       for (i=0; i < N_ELT(gzcmds); i++)
-	{
-	  if (!strcmp(gzcmds[i].type, type) && !strcmp(gzcmds[i].ext, ext))
-	    {
-	      cmd = gzcmds[i].cmd;
-	      break;
-	    }
-	}
+        {
+          if (!strcmp(gzcmds[i].type, type) && !strcmp(gzcmds[i].ext, ext))
+            {
+              cmd = gzcmds[i].cmd;
+              break;
+            }
+        }
     }
 
   if (!cmd)
@@ -1157,12 +1157,12 @@ crc_gentab(void)
     {
       crc_accum = ((unsigned long)i << 24);
       for (j=0; j < 8; j++)
-	{
-	  if (crc_accum & 0x80000000L)
-	    crc_accum = (crc_accum << 1) ^ POLYNOMIAL;
-	  else
-	    crc_accum = (crc_accum << 1);
-	}
+        {
+          if (crc_accum & 0x80000000L)
+            crc_accum = (crc_accum << 1) ^ POLYNOMIAL;
+          else
+            crc_accum = (crc_accum << 1);
+        }
       crc_table[i] = crc_accum;
     }
   return;

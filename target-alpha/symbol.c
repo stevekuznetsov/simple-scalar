@@ -94,8 +94,8 @@ static int syms_loaded = FALSE;
 
 #ifdef PRINT_SYMS
 /* convert BFD symbols flags to a printable string */
-static char *			/* symbol flags string */
-flags2str(unsigned int flags)	/* bfd symbol flags */
+static char *                   /* symbol flags string */
+flags2str(unsigned int flags)   /* bfd symbol flags */
 {
   static char buf[256];
   char *p;
@@ -197,26 +197,26 @@ ncmp(struct sym_sym_t **sym1, struct sym_sym_t **sym2)
   return strcmp((*sym1)->name, (*sym2)->name);
 }
 
-#define RELEVANT_SCOPE(SYM)						\
-(/* global symbol */							\
- ((SYM)->flags & BSF_GLOBAL)						\
- || (/* local symbol */							\
-     (((SYM)->flags & (BSF_LOCAL|BSF_DEBUGGING)) == BSF_LOCAL)		\
-     && (SYM)->name[0] != '$')						\
- || (/* compiler local */						\
-     load_locals							\
-     && ((/* basic block idents */					\
-	  ((SYM)->flags&(BSF_LOCAL|BSF_DEBUGGING))==(BSF_LOCAL|BSF_DEBUGGING)\
-	  && (SYM)->name[0] == '$')					\
-	 || (/* local constant idents */				\
-	     ((SYM)->flags & (BSF_LOCAL|BSF_DEBUGGING)) == (BSF_LOCAL)	\
-	     && (SYM)->name[0] == '$'))))
+#define RELEVANT_SCOPE(SYM)                                             \
+(/* global symbol */                                                    \
+ ((SYM)->flags & BSF_GLOBAL)                                            \
+ || (/* local symbol */                                                 \
+     (((SYM)->flags & (BSF_LOCAL|BSF_DEBUGGING)) == BSF_LOCAL)          \
+     && (SYM)->name[0] != '$')                                          \
+ || (/* compiler local */                                               \
+     load_locals                                                        \
+     && ((/* basic block idents */                                      \
+          ((SYM)->flags&(BSF_LOCAL|BSF_DEBUGGING))==(BSF_LOCAL|BSF_DEBUGGING)\
+          && (SYM)->name[0] == '$')                                     \
+         || (/* local constant idents */                                \
+             ((SYM)->flags & (BSF_LOCAL|BSF_DEBUGGING)) == (BSF_LOCAL)  \
+             && (SYM)->name[0] == '$'))))
      
 
 /* load symbols out of FNAME */
 void
-sym_loadsyms(char *fname,	/* file name containing symbols */
-	     int load_locals)	/* load local symbols */
+sym_loadsyms(char *fname,       /* file name containing symbols */
+             int load_locals)   /* load local symbols */
 {
   int i, debug_cnt;
 #ifdef BFD_LOADER
@@ -265,15 +265,15 @@ sym_loadsyms(char *fname,	/* file name containing symbols */
       /* file has locals, read them in */
       storage = bfd_get_symtab_upper_bound(abfd);
       if (storage <= 0)
-	fatal("HAS_SYMS is set, but `%s' still lacks symbols", fname);
+        fatal("HAS_SYMS is set, but `%s' still lacks symbols", fname);
 
       syms = (asymbol **)calloc(storage, 1);
       if (!syms)
-	fatal("out of virtual memory");
+        fatal("out of virtual memory");
 
       nsyms = bfd_canonicalize_symtab (abfd, syms);
       if (nsyms <= 0)
-	fatal("HAS_SYMS is set, but `%s' still lacks symbols", fname);
+        fatal("HAS_SYMS is set, but `%s' still lacks symbols", fname);
 
       /*
        * convert symbols to local format
@@ -282,113 +282,113 @@ sym_loadsyms(char *fname,	/* file name containing symbols */
       /* first count symbols */
       sym_ndatasyms = 0; sym_ntextsyms = 0;
       for (i=0; i < nsyms; i++)
-	{
-	  asymbol *sym = syms[i];
+        {
+          asymbol *sym = syms[i];
 
-	  /* decode symbol type */
-	  if (/* from the data section */
-	      (!strcmp(sym->section->name, ".rdata")
-	       || !strcmp(sym->section->name, ".data")
-	       || !strcmp(sym->section->name, ".sdata")
-	       || !strcmp(sym->section->name, ".bss")
-	       || !strcmp(sym->section->name, ".sbss"))
-	      /* from a scope we are interested in */
-	      && RELEVANT_SCOPE(sym))
-	    {
-	      /* data segment symbol */
-	      sym_ndatasyms++;
+          /* decode symbol type */
+          if (/* from the data section */
+              (!strcmp(sym->section->name, ".rdata")
+               || !strcmp(sym->section->name, ".data")
+               || !strcmp(sym->section->name, ".sdata")
+               || !strcmp(sym->section->name, ".bss")
+               || !strcmp(sym->section->name, ".sbss"))
+              /* from a scope we are interested in */
+              && RELEVANT_SCOPE(sym))
+            {
+              /* data segment symbol */
+              sym_ndatasyms++;
 #ifdef PRINT_SYMS
-	      fprintf(stderr,
-		      "+sym: %s  sect: %s  flags: %s  value: 0x%08lx\n",
-		      sym->name, sym->section->name, flags2str(sym->flags),
-		      sym->value + sym->section->vma);
+              fprintf(stderr,
+                      "+sym: %s  sect: %s  flags: %s  value: 0x%08lx\n",
+                      sym->name, sym->section->name, flags2str(sym->flags),
+                      sym->value + sym->section->vma);
 #endif /* PRINT_SYMS */
-	    }
-	  else if (/* from the text section */
-		   !strcmp(sym->section->name, ".text")
-		   /* from a scope we are interested in */
-		   && RELEVANT_SCOPE(sym))
-	    {
-	      /* text segment symbol */
-	      sym_ntextsyms++;
+            }
+          else if (/* from the text section */
+                   !strcmp(sym->section->name, ".text")
+                   /* from a scope we are interested in */
+                   && RELEVANT_SCOPE(sym))
+            {
+              /* text segment symbol */
+              sym_ntextsyms++;
 #ifdef PRINT_SYMS
-	      fprintf(stderr,
-		      "+sym: %s  sect: %s  flags: %s  value: 0x%08lx\n",
-		      sym->name, sym->section->name, flags2str(sym->flags),
-		      sym->value + sym->section->vma);
+              fprintf(stderr,
+                      "+sym: %s  sect: %s  flags: %s  value: 0x%08lx\n",
+                      sym->name, sym->section->name, flags2str(sym->flags),
+                      sym->value + sym->section->vma);
 #endif /* PRINT_SYMS */
-	    }
-	  else
-	    {
-	      /* non-segment sections */
+            }
+          else
+            {
+              /* non-segment sections */
 #ifdef PRINT_SYMS
-	      fprintf(stderr,
-		      "-sym: %s  sect: %s  flags: %s  value: 0x%08lx\n",
-		      sym->name, sym->section->name, flags2str(sym->flags),
-		      sym->value + sym->section->vma);
+              fprintf(stderr,
+                      "-sym: %s  sect: %s  flags: %s  value: 0x%08lx\n",
+                      sym->name, sym->section->name, flags2str(sym->flags),
+                      sym->value + sym->section->vma);
 #endif /* PRINT_SYMS */
-	    }
-	}
+            }
+        }
       sym_nsyms = sym_ntextsyms + sym_ndatasyms;
       if (sym_nsyms <= 0)
-	fatal("`%s' has no text or data symbols", fname);
+        fatal("`%s' has no text or data symbols", fname);
 
       /* allocate symbol space */
       sym_db = (struct sym_sym_t *)calloc(sym_nsyms, sizeof(struct sym_sym_t));
       if (!sym_db)
-	fatal("out of virtual memory");
+        fatal("out of virtual memory");
 
       /* convert symbols to internal format */
       for (debug_cnt=0, i=0; i < nsyms; i++)
-	{
-	  asymbol *sym = syms[i];
+        {
+          asymbol *sym = syms[i];
 
-	  /* decode symbol type */
-	  if (/* from the data section */
-	      (!strcmp(sym->section->name, ".rdata")
-	       || !strcmp(sym->section->name, ".data")
-	       || !strcmp(sym->section->name, ".sdata")
-	       || !strcmp(sym->section->name, ".bss")
-	       || !strcmp(sym->section->name, ".sbss"))
-	      /* from a scope we are interested in */
-	      && RELEVANT_SCOPE(sym))
-	    {
-	      /* data segment symbol, insert into symbol database */
-	      sym_db[debug_cnt].name = mystrdup((char *)sym->name);
-	      sym_db[debug_cnt].seg = ss_data;
-	      sym_db[debug_cnt].initialized =
-		(!strcmp(sym->section->name, ".rdata")
-		 || !strcmp(sym->section->name, ".data")
-		 || !strcmp(sym->section->name, ".sdata"));
-	      sym_db[debug_cnt].pub = (sym->flags & BSF_GLOBAL);
-	      sym_db[debug_cnt].local = (sym->name[0] == '$');
-	      sym_db[debug_cnt].addr = sym->value + sym->section->vma;
+          /* decode symbol type */
+          if (/* from the data section */
+              (!strcmp(sym->section->name, ".rdata")
+               || !strcmp(sym->section->name, ".data")
+               || !strcmp(sym->section->name, ".sdata")
+               || !strcmp(sym->section->name, ".bss")
+               || !strcmp(sym->section->name, ".sbss"))
+              /* from a scope we are interested in */
+              && RELEVANT_SCOPE(sym))
+            {
+              /* data segment symbol, insert into symbol database */
+              sym_db[debug_cnt].name = mystrdup((char *)sym->name);
+              sym_db[debug_cnt].seg = ss_data;
+              sym_db[debug_cnt].initialized =
+                (!strcmp(sym->section->name, ".rdata")
+                 || !strcmp(sym->section->name, ".data")
+                 || !strcmp(sym->section->name, ".sdata"));
+              sym_db[debug_cnt].pub = (sym->flags & BSF_GLOBAL);
+              sym_db[debug_cnt].local = (sym->name[0] == '$');
+              sym_db[debug_cnt].addr = sym->value + sym->section->vma;
 
-	      debug_cnt++;
-	    }
-	  else if (/* from the text section */
-		   !strcmp(sym->section->name, ".text")
-		   /* from a scope we are interested in */
-		   && RELEVANT_SCOPE(sym))
-	    {
-	      /* text segment symbol, insert into symbol database */
-	      sym_db[debug_cnt].name = mystrdup((char *)sym->name);
-	      sym_db[debug_cnt].seg = ss_text;
-	      sym_db[debug_cnt].initialized = /* seems reasonable */TRUE;
-	      sym_db[debug_cnt].pub = (sym->flags & BSF_GLOBAL);
-	      sym_db[debug_cnt].local = (sym->name[0] == '$');
-	      sym_db[debug_cnt].addr = sym->value + sym->section->vma;
+              debug_cnt++;
+            }
+          else if (/* from the text section */
+                   !strcmp(sym->section->name, ".text")
+                   /* from a scope we are interested in */
+                   && RELEVANT_SCOPE(sym))
+            {
+              /* text segment symbol, insert into symbol database */
+              sym_db[debug_cnt].name = mystrdup((char *)sym->name);
+              sym_db[debug_cnt].seg = ss_text;
+              sym_db[debug_cnt].initialized = /* seems reasonable */TRUE;
+              sym_db[debug_cnt].pub = (sym->flags & BSF_GLOBAL);
+              sym_db[debug_cnt].local = (sym->name[0] == '$');
+              sym_db[debug_cnt].addr = sym->value + sym->section->vma;
 
-	      debug_cnt++;
-	    }
-	  else
-	    {
-	      /* non-segment sections */
-	    }
-	}
+              debug_cnt++;
+            }
+          else
+            {
+              /* non-segment sections */
+            }
+        }
       /* sanity check */
       if (debug_cnt != sym_nsyms)
-	panic("could not locate all counted symbols");
+        panic("could not locate all counted symbols");
 
       /* release bfd symbol storage */
       free(syms);
@@ -468,54 +468,54 @@ sym_loadsyms(char *fname,	/* file name containing symbols */
 
 #if 0
       printf("ext %2d: ifd = %2d, iss = %3d, value = %8x, st = %3x, "
-	     "sc = %3x, index = %3x\n",
-	     i, extr[i].ifd,
-	     extr[i].asym.iss, extr[i].asym.value,
-	     extr[i].asym.st, extr[i].asym.sc,
-	     extr[i].asym.index);
+             "sc = %3x, index = %3x\n",
+             i, extr[i].ifd,
+             extr[i].asym.iss, extr[i].asym.value,
+             extr[i].asym.st, extr[i].asym.sc,
+             extr[i].asym.index);
       printf("       %08x %2d %2d %s\n",
-	     extr[i].asym.value,
-	     extr[i].asym.st,
-	     extr[i].asym.sc,
-	     &strtab[str_offset]);
+             extr[i].asym.value,
+             extr[i].asym.st,
+             extr[i].asym.sc,
+             &strtab[str_offset]);
 #endif
 
       switch (extr[i].asym.st)
-	{
-	case ECOFF_stGlobal:
-	case ECOFF_stStatic:
-	  /* from data segment */
-	  sym_db[sym_nsyms].name = mystrdup(&strtab[str_offset]);
-	  sym_db[sym_nsyms].seg = ss_data;
-	  sym_db[sym_nsyms].initialized = /* FIXME: ??? */TRUE;
-	  sym_db[sym_nsyms].pub = /* FIXME: ??? */TRUE;
-	  sym_db[sym_nsyms].local = /* FIXME: ??? */FALSE;
-	  sym_db[sym_nsyms].addr = extr[i].asym.value;
-	  sym_nsyms++;
-	  sym_ndatasyms++;
-	  break;
+        {
+        case ECOFF_stGlobal:
+        case ECOFF_stStatic:
+          /* from data segment */
+          sym_db[sym_nsyms].name = mystrdup(&strtab[str_offset]);
+          sym_db[sym_nsyms].seg = ss_data;
+          sym_db[sym_nsyms].initialized = /* FIXME: ??? */TRUE;
+          sym_db[sym_nsyms].pub = /* FIXME: ??? */TRUE;
+          sym_db[sym_nsyms].local = /* FIXME: ??? */FALSE;
+          sym_db[sym_nsyms].addr = extr[i].asym.value;
+          sym_nsyms++;
+          sym_ndatasyms++;
+          break;
 
-	case ECOFF_stProc:
-	case ECOFF_stStaticProc:
-	case ECOFF_stLabel:
-	  /* from text segment */
-	  sym_db[sym_nsyms].name = mystrdup(&strtab[str_offset]);
-	  sym_db[sym_nsyms].seg = ss_text;
-	  sym_db[sym_nsyms].initialized = /* FIXME: ??? */TRUE;
-	  sym_db[sym_nsyms].pub = /* FIXME: ??? */TRUE;
-	  sym_db[sym_nsyms].local = /* FIXME: ??? */FALSE;
-	  sym_db[sym_nsyms].addr = extr[i].asym.value;
-	  sym_nsyms++;
-	  sym_ntextsyms++;
-	  break;
+        case ECOFF_stProc:
+        case ECOFF_stStaticProc:
+        case ECOFF_stLabel:
+          /* from text segment */
+          sym_db[sym_nsyms].name = mystrdup(&strtab[str_offset]);
+          sym_db[sym_nsyms].seg = ss_text;
+          sym_db[sym_nsyms].initialized = /* FIXME: ??? */TRUE;
+          sym_db[sym_nsyms].pub = /* FIXME: ??? */TRUE;
+          sym_db[sym_nsyms].local = /* FIXME: ??? */FALSE;
+          sym_db[sym_nsyms].addr = extr[i].asym.value;
+          sym_nsyms++;
+          sym_ntextsyms++;
+          break;
 
-	default:
-	  /* FIXME: ignored... */;
+        default:
+          /* FIXME: ignored... */;
 #if 0
-	  fprintf(stderr, "** skipping: %s...\n", &strtab[str_offset]);
-	  break;
+          fprintf(stderr, "** skipping: %s...\n", &strtab[str_offset]);
+          break;
 #endif
-	}
+        }
     }
   free(extr);
 
@@ -570,11 +570,11 @@ sym_loadsyms(char *fname,	/* file name containing symbols */
   for (debug_cnt=0, i=0; i<sym_nsyms; i++)
     {
       if (sym_db[i].seg == ss_text)
-	{
-	  sym_textsyms[debug_cnt] = &sym_db[i];
-	  sym_textsyms_by_name[debug_cnt] = &sym_db[i];
-	  debug_cnt++;
-	}
+        {
+          sym_textsyms[debug_cnt] = &sym_db[i];
+          sym_textsyms_by_name[debug_cnt] = &sym_db[i];
+          debug_cnt++;
+        }
     }
   /* sanity check */
   if (debug_cnt != sym_ntextsyms)
@@ -585,7 +585,7 @@ sym_loadsyms(char *fname,	/* file name containing symbols */
 
   /* sort by name */
   qsort(sym_textsyms_by_name, sym_ntextsyms,
-	sizeof(struct sym_sym_t *), (void *)ncmp);
+        sizeof(struct sym_sym_t *), (void *)ncmp);
 
   /* data segment sorted by address and name */
   sym_datasyms =
@@ -601,11 +601,11 @@ sym_loadsyms(char *fname,	/* file name containing symbols */
   for (debug_cnt=0, i=0; i<sym_nsyms; i++)
     {
       if (sym_db[i].seg == ss_data)
-	{
-	  sym_datasyms[debug_cnt] = &sym_db[i];
-	  sym_datasyms_by_name[debug_cnt] = &sym_db[i];
-	  debug_cnt++;
-	}
+        {
+          sym_datasyms[debug_cnt] = &sym_db[i];
+          sym_datasyms_by_name[debug_cnt] = &sym_db[i];
+          debug_cnt++;
+        }
     }
   /* sanity check */
   if (debug_cnt != sym_ndatasyms)
@@ -616,22 +616,22 @@ sym_loadsyms(char *fname,	/* file name containing symbols */
 
   /* sort by name */
   qsort(sym_datasyms_by_name, sym_ndatasyms,
-	sizeof(struct sym_sym_t *), (void *)ncmp);
+        sizeof(struct sym_sym_t *), (void *)ncmp);
 
   /* compute symbol sizes */
   for (i=0; i<sym_ntextsyms; i++)
     {
       sym_textsyms[i]->size =
-	(i != (sym_ntextsyms - 1)
-	 ? (sym_textsyms[i+1]->addr - sym_textsyms[i]->addr)
-	 : ((ld_text_base + ld_text_size) - sym_textsyms[i]->addr));
+        (i != (sym_ntextsyms - 1)
+         ? (sym_textsyms[i+1]->addr - sym_textsyms[i]->addr)
+         : ((ld_text_base + ld_text_size) - sym_textsyms[i]->addr));
     }
   for (i=0; i<sym_ndatasyms; i++)
     {
       sym_datasyms[i]->size =
-	(i != (sym_ndatasyms - 1)
-	 ? (sym_datasyms[i+1]->addr - sym_datasyms[i]->addr)
-	 : ((ld_data_base + ld_data_size) - sym_datasyms[i]->addr));
+        (i != (sym_ndatasyms - 1)
+         ? (sym_datasyms[i+1]->addr - sym_datasyms[i]->addr)
+         : ((ld_data_base + ld_data_size) - sym_datasyms[i]->addr));
     }
 
   /* symbols are now available for use */
@@ -640,23 +640,23 @@ sym_loadsyms(char *fname,	/* file name containing symbols */
 
 /* dump symbol SYM to output stream FD */
 void
-sym_dumpsym(struct sym_sym_t *sym,	/* symbol to display */
-	    FILE *fd)			/* output stream */
+sym_dumpsym(struct sym_sym_t *sym,      /* symbol to display */
+            FILE *fd)                   /* output stream */
 {
   myfprintf(fd,
     "sym `%s': %s seg, init-%s, pub-%s, local-%s, addr=0x%08p, size=%d\n",
-	  sym->name,
-	  sym->seg == ss_data ? "data" : "text",
-	  sym->initialized ? "y" : "n",
-	  sym->pub ? "y" : "n",
-	  sym->local ? "y" : "n",
-	  sym->addr,
-	  sym->size);
+          sym->name,
+          sym->seg == ss_data ? "data" : "text",
+          sym->initialized ? "y" : "n",
+          sym->pub ? "y" : "n",
+          sym->local ? "y" : "n",
+          sym->addr,
+          sym->size);
 }
 
 /* dump all symbols to output stream FD */
 void
-sym_dumpsyms(FILE *fd)			/* output stream */
+sym_dumpsyms(FILE *fd)                  /* output stream */
 {
   int i;
 
@@ -666,7 +666,7 @@ sym_dumpsyms(FILE *fd)			/* output stream */
 
 /* dump all symbol state to output stream FD */
 void
-sym_dumpstate(FILE *fd)			/* output stream */
+sym_dumpstate(FILE *fd)                 /* output stream */
 {
   int i;
 
@@ -702,11 +702,11 @@ sym_dumpstate(FILE *fd)			/* output stream */
    match exactly if EXACT is non-zero, the index of the symbol in the
    requested symbol database is returned in *PINDEX if the pointer is
    non-NULL */
-struct sym_sym_t *			/* symbol found, or NULL */
-sym_bind_addr(md_addr_t addr,	/* address of symbol to locate */
-	      int *pindex,		/* ptr to index result var */
-	      int exact,		/* require exact address match? */
-	      enum sym_db_t db)		/* symbol database to search */
+struct sym_sym_t *                      /* symbol found, or NULL */
+sym_bind_addr(md_addr_t addr,   /* address of symbol to locate */
+              int *pindex,              /* ptr to index result var */
+              int exact,                /* require exact address match? */
+              enum sym_db_t db)         /* symbol database to search */
 {
   int nsyms, low, high, pos;
   struct sym_sym_t **syms;
@@ -733,7 +733,7 @@ sym_bind_addr(md_addr_t addr,	/* address of symbol to locate */
   if (!nsyms)
     {
       if (pindex)
-	*pindex = -1;
+        *pindex = -1;
       return NULL;
     }
 
@@ -742,24 +742,24 @@ sym_bind_addr(md_addr_t addr,	/* address of symbol to locate */
   high = nsyms-1;
   pos = (low + high) >> 1;
   while (!(/* exact match */
-	   (exact && syms[pos]->addr == addr)
-	   /* in bounds match */
-	   || (!exact
-	       && syms[pos]->addr <= addr
-	       && addr < (syms[pos]->addr + MAX(1, syms[pos]->size)))))
+           (exact && syms[pos]->addr == addr)
+           /* in bounds match */
+           || (!exact
+               && syms[pos]->addr <= addr
+               && addr < (syms[pos]->addr + MAX(1, syms[pos]->size)))))
     {
       if (addr < syms[pos]->addr)
-	high = pos - 1;
+        high = pos - 1;
       else
-	low = pos + 1;
+        low = pos + 1;
       if (high >= low)
-	pos = (low + high) >> 1;
+        pos = (low + high) >> 1;
       else
-	{
-	  if (pindex)
-	    *pindex = -1;
-	  return NULL;
-	}
+        {
+          if (pindex)
+            *pindex = -1;
+          return NULL;
+        }
     }
 
   /* bound! */
@@ -771,10 +771,10 @@ sym_bind_addr(md_addr_t addr,	/* address of symbol to locate */
 /* bind name NAME to a symbol in symbol database DB, the index of the symbol
    in the requested symbol database is returned in *PINDEX if the pointer is
    non-NULL */
-struct sym_sym_t *				/* symbol found, or NULL */
-sym_bind_name(char *name,			/* symbol name to locate */
-	      int *pindex,			/* ptr to index result var */
-	      enum sym_db_t db)			/* symbol database to search */
+struct sym_sym_t *                              /* symbol found, or NULL */
+sym_bind_name(char *name,                       /* symbol name to locate */
+              int *pindex,                      /* ptr to index result var */
+              enum sym_db_t db)                 /* symbol database to search */
 {
   int nsyms, low, high, pos, cmp;
   struct sym_sym_t **syms;
@@ -801,7 +801,7 @@ sym_bind_name(char *name,			/* symbol name to locate */
   if (!nsyms)
     {
       if (pindex)
-	*pindex = -1;
+        *pindex = -1;
       return NULL;
     }
 
@@ -812,17 +812,17 @@ sym_bind_name(char *name,			/* symbol name to locate */
   while (!(/* exact string match */!(cmp = strcmp(syms[pos]->name, name))))
     {
       if (cmp > 0)
-	high = pos - 1;
+        high = pos - 1;
       else
-	low = pos + 1;
+        low = pos + 1;
       if (high >= low)
-	pos = (low + high) >> 1;
+        pos = (low + high) >> 1;
       else
-	{
-	  if (pindex)
-	    *pindex = -1;
-	  return NULL;
-	}
+        {
+          if (pindex)
+            *pindex = -1;
+          return NULL;
+        }
     }
 
   /* bound! */

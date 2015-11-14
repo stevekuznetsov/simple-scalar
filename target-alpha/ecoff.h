@@ -56,11 +56,11 @@
 
 #include "alpha.h"
 
-#define ECOFF_EB_MAGIC		0x0160
-#define ECOFF_EB_OTHER		0x6001
-#define ECOFF_EL_MAGIC		0x0162
-#define ECOFF_EL_OTHER		0x6201
-#define ECOFF_ALPHAMAGIC	0603
+#define ECOFF_EB_MAGIC          0x0160
+#define ECOFF_EB_OTHER          0x6001
+#define ECOFF_EL_MAGIC          0x0162
+#define ECOFF_EL_OTHER          0x6201
+#define ECOFF_ALPHAMAGIC        0603
 
 struct ecoff_filehdr {
   half_t f_magic;
@@ -106,29 +106,29 @@ typedef struct ecoff_symhdr_t {
   half_t magic;
   half_t vstamp;
 
-  sword_t ilineMax;		/* number of line number entries */
-  sword_t idnMax;		/* max index into dense number table */
-  sword_t ipdMax;		/* number of procedures */
-  sword_t isymMax;		/* number of local symbols */
-  sword_t ioptMax;		/* max index into optimization sym entries */
-  sword_t iauxMax;		/* number of auxiliary symbol entries */
-  sword_t issMax;		/* max index into local strings */
-  sword_t issExtMax;		/* max index into external strings */
-  sword_t ifdMax;		/* number of file descriptor entries */
-  sword_t crfd;			/* number of relative file descriptor ents */
-  sword_t iextMax;		/* max index into external symbols */
-  qword_t cbLine;		/* number of bytes for line number entries */
-  qword_t cbLineOffset;		/* offset to start of line number entries*/
-  qword_t cbDnOffset;		/* offset to start dense number table */
-  qword_t cbPdOffset;		/* offset to procedure descriptor table */
-  qword_t cbSymOffset;		/* offset to start of local symbols */
-  qword_t cbOptOffset;		/* offset to optimization symbol entries */
-  qword_t cbAuxOffset;		/* offset to start of aux symbol entries */
-  qword_t cbSsOffset;		/* offset to start of local strings */
-  qword_t cbSsExtOffset;	/* offset to start of external strings */
-  qword_t cbFdOffset;		/* offset to file descriptor table */
-  qword_t cbRfdOffset;		/* offset to relative file descriptor table */
-  qword_t cbExtOffset;		/* offset to start of ext symbol entries */
+  sword_t ilineMax;             /* number of line number entries */
+  sword_t idnMax;               /* max index into dense number table */
+  sword_t ipdMax;               /* number of procedures */
+  sword_t isymMax;              /* number of local symbols */
+  sword_t ioptMax;              /* max index into optimization sym entries */
+  sword_t iauxMax;              /* number of auxiliary symbol entries */
+  sword_t issMax;               /* max index into local strings */
+  sword_t issExtMax;            /* max index into external strings */
+  sword_t ifdMax;               /* number of file descriptor entries */
+  sword_t crfd;                 /* number of relative file descriptor ents */
+  sword_t iextMax;              /* max index into external symbols */
+  qword_t cbLine;               /* number of bytes for line number entries */
+  qword_t cbLineOffset;         /* offset to start of line number entries*/
+  qword_t cbDnOffset;           /* offset to start dense number table */
+  qword_t cbPdOffset;           /* offset to procedure descriptor table */
+  qword_t cbSymOffset;          /* offset to start of local symbols */
+  qword_t cbOptOffset;          /* offset to optimization symbol entries */
+  qword_t cbAuxOffset;          /* offset to start of aux symbol entries */
+  qword_t cbSsOffset;           /* offset to start of local strings */
+  qword_t cbSsExtOffset;        /* offset to start of external strings */
+  qword_t cbFdOffset;           /* offset to file descriptor table */
+  qword_t cbRfdOffset;          /* offset to relative file descriptor table */
+  qword_t cbExtOffset;          /* offset to start of ext symbol entries */
 } ecoff_HDRR;
 
 #define ECOFF_magicSym 0x1992
@@ -191,44 +191,44 @@ typedef struct ecoff_EXTR {
   sword_t reserved;
 } ecoff_EXTR;
 
-#define ECOFF_R_SN_TEXT		1
-#define ECOFF_R_SN_RDATA	2
-#define ECOFF_R_SN_DATA		3
-#define ECOFF_R_SN_SDATA	4
-#define ECOFF_R_SN_SBSS		5
-#define ECOFF_R_SN_BSS		6
+#define ECOFF_R_SN_TEXT         1
+#define ECOFF_R_SN_RDATA        2
+#define ECOFF_R_SN_DATA         3
+#define ECOFF_R_SN_SDATA        4
+#define ECOFF_R_SN_SBSS         5
+#define ECOFF_R_SN_BSS          6
 
-#define ECOFF_STYP_TEXT		0x0020
-#define ECOFF_STYP_RDATA	0x0100
-#define ECOFF_STYP_DATA		0x0040
-#define ECOFF_STYP_SDATA	0x0200
-#define ECOFF_STYP_SBSS		0x0400
-#define ECOFF_STYP_BSS		0x0080
-#define ECOFF_STYP_INIT		0x80000000	/* sect only contains the text
-						   insts for the .init sec. */
-#define ECOFF_STYP_FINI		0x01000000	/* insts for .fini */
-#define ECOFF_STYP_RCONST	0x02200000	/* overloads with reginfo */
-#define ECOFF_STYP_LITA		0x04000000	/* addr literals only        */
-#define ECOFF_STYP_LIT8		0x08000000	/* lit pool for 8 byte lits */
-#define ECOFF_STYP_LIT4		0x10000000	/* lit pool for 4 byte lits */
-#define ECOFF_STYP_XDATA	0x02400000	/* exception sections */
-#define ECOFF_STYP_PDATA	0x02800000	/* exception sections */
+#define ECOFF_STYP_TEXT         0x0020
+#define ECOFF_STYP_RDATA        0x0100
+#define ECOFF_STYP_DATA         0x0040
+#define ECOFF_STYP_SDATA        0x0200
+#define ECOFF_STYP_SBSS         0x0400
+#define ECOFF_STYP_BSS          0x0080
+#define ECOFF_STYP_INIT         0x80000000      /* sect only contains the text
+                                                   insts for the .init sec. */
+#define ECOFF_STYP_FINI         0x01000000      /* insts for .fini */
+#define ECOFF_STYP_RCONST       0x02200000      /* overloads with reginfo */
+#define ECOFF_STYP_LITA         0x04000000      /* addr literals only        */
+#define ECOFF_STYP_LIT8         0x08000000      /* lit pool for 8 byte lits */
+#define ECOFF_STYP_LIT4         0x10000000      /* lit pool for 4 byte lits */
+#define ECOFF_STYP_XDATA        0x02400000      /* exception sections */
+#define ECOFF_STYP_PDATA        0x02800000      /* exception sections */
 
-#define ECOFF_stNil		0
-#define ECOFF_stGlobal		1
-#define ECOFF_stStatic		2
-#define ECOFF_stParam		3
-#define ECOFF_stLocal		4
-#define ECOFF_stLabel		5
-#define ECOFF_stProc		6
-#define ECOFF_stBlock		7
-#define ECOFF_stEnd		8
-#define ECOFF_stMember		9
-#define ECOFF_stTypedef		10
-#define ECOFF_stFile		11
-#define ECOFF_stRegReloc	12
-#define ECOFF_stForward		13
-#define ECOFF_stStaticProc	14
-#define ECOFF_stConstant	15
+#define ECOFF_stNil             0
+#define ECOFF_stGlobal          1
+#define ECOFF_stStatic          2
+#define ECOFF_stParam           3
+#define ECOFF_stLocal           4
+#define ECOFF_stLabel           5
+#define ECOFF_stProc            6
+#define ECOFF_stBlock           7
+#define ECOFF_stEnd             8
+#define ECOFF_stMember          9
+#define ECOFF_stTypedef         10
+#define ECOFF_stFile            11
+#define ECOFF_stRegReloc        12
+#define ECOFF_stForward         13
+#define ECOFF_stStaticProc      14
+#define ECOFF_stConstant        15
 
 #endif /* ECOFF_H */

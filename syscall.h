@@ -70,13 +70,13 @@
  * behalf of the simulated program (the target). The basic procedure for
  * implementing a system call is as follows:
  *
- *	1) decode the system call (this is the enum in "syscode")
- *	2) copy system call inputs in target (simulated program) memory
- *	   to host memory (simulator memory), note: the location and
- *	   amount of memory to copy is system call specific
- *	3) the simulator performs the system call on behalf of the target prog
- *	4) copy system call results in host memory to target memory
- *	5) set result register to indicate the error status of the system call
+ *      1) decode the system call (this is the enum in "syscode")
+ *      2) copy system call inputs in target (simulated program) memory
+ *         to host memory (simulator memory), note: the location and
+ *         amount of memory to copy is system call specific
+ *      3) the simulator performs the system call on behalf of the target prog
+ *      4) copy system call results in host memory to target memory
+ *      5) set result register to indicate the error status of the system call
  *
  * That's it...  If you encounter an unimplemented system call and would like
  * to add support for it, first locate the syscode and arguments for the system
@@ -90,10 +90,10 @@
    precise when this function is called, register and memory are updated with
    the results of the sustem call */
 void
-sys_syscall(struct regs_t *regs,	/* registers to access */
-	    mem_access_fn mem_fn,	/* generic memory accessor */
-	    struct mem_t *mem,		/* memory space to access */
-	    md_inst_t inst,		/* system call inst */
-	    int traceable);		/* traceable system call? */
+sys_syscall(struct regs_t *regs,        /* registers to access */
+            mem_access_fn mem_fn,       /* generic memory accessor */
+            struct mem_t *mem,          /* memory space to access */
+            md_inst_t inst,             /* system call inst */
+            int traceable);             /* traceable system call? */
 
 #endif /* SYSCALL_H */

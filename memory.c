@@ -62,7 +62,7 @@
 
 /* create a flat memory space */
 struct mem_t *
-mem_create(char *name)			/* name of the memory space */
+mem_create(char *name)                  /* name of the memory space */
 {
   struct mem_t *mem;
 
@@ -76,8 +76,8 @@ mem_create(char *name)			/* name of the memory space */
 
 /* translate address ADDR in memory space MEM, returns pointer to host page */
 byte_t *
-mem_translate(struct mem_t *mem,	/* memory space to access */
-	      md_addr_t addr)		/* virtual address to translate */
+mem_translate(struct mem_t *mem,        /* memory space to access */
+              md_addr_t addr)           /* virtual address to translate */
 {
   struct mem_pte_t *pte, *prev;
 
@@ -90,16 +90,16 @@ mem_translate(struct mem_t *mem,	/* memory space to access */
        prev=pte, pte=pte->next)
     {
       if (pte->tag == MEM_PTAB_TAG(addr))
-	{
-	  /* move this PTE to head of the bucket list */
-	  if (prev)
-	    {
-	      prev->next = pte->next;
-	      pte->next = mem->ptab[MEM_PTAB_SET(addr)];
-	      mem->ptab[MEM_PTAB_SET(addr)] = pte;
-	    }
-	  return pte->page;
-	}
+        {
+          /* move this PTE to head of the bucket list */
+          if (prev)
+            {
+              prev->next = pte->next;
+              pte->next = mem->ptab[MEM_PTAB_SET(addr)];
+              mem->ptab[MEM_PTAB_SET(addr)] = pte;
+            }
+          return pte->page;
+        }
     }
 
   /* no translation found, return NULL */
@@ -108,8 +108,8 @@ mem_translate(struct mem_t *mem,	/* memory space to access */
 
 /* allocate a memory page */
 void
-mem_newpage(struct mem_t *mem,		/* memory space to allocate in */
-	    md_addr_t addr)		/* virtual address to allocate */
+mem_newpage(struct mem_t *mem,          /* memory space to allocate in */
+            md_addr_t addr)             /* virtual address to allocate */
 {
   byte_t *page;
   struct mem_pte_t *pte;
@@ -138,11 +138,11 @@ mem_newpage(struct mem_t *mem,		/* memory space to allocate in */
    are checked, handles any natural transfer sizes; note, faults out if nbytes
    is not a power-of-two or larger then MD_PAGE_SIZE */
 enum md_fault_type
-mem_access(struct mem_t *mem,		/* memory space to access */
-	   enum mem_cmd cmd,		/* Read (from sim mem) or Write */
-	   md_addr_t addr,		/* target address to access */
-	   void *vp,			/* host memory address to access */
-	   int nbytes)			/* number of bytes to access */
+mem_access(struct mem_t *mem,           /* memory space to access */
+           enum mem_cmd cmd,            /* Read (from sim mem) or Write */
+           md_addr_t addr,              /* target address to access */
+           void *vp,                    /* host memory address to access */
+           int nbytes)                  /* number of bytes to access */
 {
   byte_t *p = vp;
 
@@ -158,21 +158,21 @@ mem_access(struct mem_t *mem,		/* memory space to access */
   {
     if (cmd == Read)
       {
-	while (nbytes-- > 0)
-	  {
-	    *((byte_t *)p) = MEM_READ_BYTE(mem, addr);
-	    p += sizeof(byte_t);
-	    addr += sizeof(byte_t);
-	  }
+        while (nbytes-- > 0)
+          {
+            *((byte_t *)p) = MEM_READ_BYTE(mem, addr);
+            p += sizeof(byte_t);
+            addr += sizeof(byte_t);
+          }
       }
     else
       {
-	while (nbytes-- > 0)
-	  {
-	    MEM_WRITE_BYTE(mem, addr, *((byte_t *)p));
-	    p += sizeof(byte_t);
-	    addr += sizeof(byte_t);
-	  }
+        while (nbytes-- > 0)
+          {
+            MEM_WRITE_BYTE(mem, addr, *((byte_t *)p));
+            p += sizeof(byte_t);
+            addr += sizeof(byte_t);
+          }
       }
   }
 
@@ -181,31 +181,31 @@ mem_access(struct mem_t *mem,		/* memory space to access */
     {
     case 1:
       if (cmd == Read)
-	*((byte_t *)p) = MEM_READ_BYTE(mem, addr);
+        *((byte_t *)p) = MEM_READ_BYTE(mem, addr);
       else
-	MEM_WRITE_BYTE(mem, addr, *((byte_t *)p));
+        MEM_WRITE_BYTE(mem, addr, *((byte_t *)p));
       break;
 
     case 2:
       if (cmd == Read)
-	*((half_t *)p) = MEM_READ_HALF(mem, addr);
+        *((half_t *)p) = MEM_READ_HALF(mem, addr);
       else
-	MEM_WRITE_HALF(mem, addr, *((half_t *)p));
+        MEM_WRITE_HALF(mem, addr, *((half_t *)p));
       break;
 
     case 4:
       if (cmd == Read)
-	*((word_t *)p) = MEM_READ_WORD(mem, addr);
+        *((word_t *)p) = MEM_READ_WORD(mem, addr);
       else
-	MEM_WRITE_WORD(mem, addr, *((word_t *)p));
+        MEM_WRITE_WORD(mem, addr, *((word_t *)p));
       break;
 
 #ifdef HOST_HAS_QWORD
     case 8:
       if (cmd == Read)
-	*((qword_t *)p) = MEM_READ_QWORD(mem, addr);
+        *((qword_t *)p) = MEM_READ_QWORD(mem, addr);
       else
-	MEM_WRITE_QWORD(mem, addr, *((qword_t *)p));
+        MEM_WRITE_QWORD(mem, addr, *((qword_t *)p));
       break;
 #endif /* HOST_HAS_QWORD */
 
@@ -220,27 +220,27 @@ mem_access(struct mem_t *mem,		/* memory space to access */
 
 /* register memory system-specific statistics */
 void
-mem_reg_stats(struct mem_t *mem,	/* memory space to declare */
-	      struct stat_sdb_t *sdb)	/* stats data base */
+mem_reg_stats(struct mem_t *mem,        /* memory space to declare */
+              struct stat_sdb_t *sdb)   /* stats data base */
 {
   char buf[512], buf1[512];
 
   sprintf(buf, "%s.page_count", mem->name);
   stat_reg_counter(sdb, buf, "total number of pages allocated",
-		   &mem->page_count, mem->page_count, NULL);
+                   &mem->page_count, mem->page_count, NULL);
 
   sprintf(buf, "%s.page_mem", mem->name);
   sprintf(buf1, "%s.page_count * %d / 1024", mem->name, MD_PAGE_SIZE);
   stat_reg_formula(sdb, buf, "total size of memory pages allocated",
-		   buf1, "%11.0fk");
+                   buf1, "%11.0fk");
 
   sprintf(buf, "%s.ptab_misses", mem->name);
   stat_reg_counter(sdb, buf, "total first level page table misses",
-		   &mem->ptab_misses, mem->ptab_misses, NULL);
+                   &mem->ptab_misses, mem->ptab_misses, NULL);
 
   sprintf(buf, "%s.ptab_accesses", mem->name);
   stat_reg_counter(sdb, buf, "total page table accesses",
-		   &mem->ptab_accesses, mem->ptab_accesses, NULL);
+                   &mem->ptab_accesses, mem->ptab_accesses, NULL);
 
   sprintf(buf, "%s.ptab_miss_rate", mem->name);
   sprintf(buf1, "%s.ptab_misses / %s.ptab_accesses", mem->name, mem->name);
@@ -249,7 +249,7 @@ mem_reg_stats(struct mem_t *mem,	/* memory space to declare */
 
 /* initialize memory system, call before loader.c */
 void
-mem_init(struct mem_t *mem)	/* memory space to initialize */
+mem_init(struct mem_t *mem)     /* memory space to initialize */
 {
   int i;
 
@@ -264,10 +264,10 @@ mem_init(struct mem_t *mem)	/* memory space to initialize */
 
 /* dump a block of memory, returns any faults encountered */
 enum md_fault_type
-mem_dump(struct mem_t *mem,		/* memory space to display */
-	 md_addr_t addr,		/* target address to dump */
-	 int len,			/* number bytes to dump */
-	 FILE *stream)			/* output stream */
+mem_dump(struct mem_t *mem,             /* memory space to display */
+         md_addr_t addr,                /* target address to dump */
+         int len,                       /* number bytes to dump */
+         FILE *stream)                  /* output stream */
 {
   int data;
   enum md_fault_type fault;
@@ -281,7 +281,7 @@ mem_dump(struct mem_t *mem,		/* memory space to display */
     {
       fault = mem_access(mem, Read, addr, &data, sizeof(word_t));
       if (fault != md_fault_none)
-	return fault;
+        return fault;
 
       myfprintf(stream, "0x%08p: %08x\n", addr, data);
       addr += sizeof(word_t);
@@ -294,11 +294,11 @@ mem_dump(struct mem_t *mem,		/* memory space to display */
 /* copy a '\0' terminated string to/from simulated memory space, returns
    the number of bytes copied, returns any fault encountered */
 enum md_fault_type
-mem_strcpy(mem_access_fn mem_fn,	/* user-specified memory accessor */
-	   struct mem_t *mem,		/* memory space to access */
-	   enum mem_cmd cmd,		/* Read (from sim mem) or Write */
-	   md_addr_t addr,		/* target address to access */
-	   char *s)
+mem_strcpy(mem_access_fn mem_fn,        /* user-specified memory accessor */
+           struct mem_t *mem,           /* memory space to access */
+           enum mem_cmd cmd,            /* Read (from sim mem) or Write */
+           md_addr_t addr,              /* target address to access */
+           char *s)
 {
   int n = 0;
   char c;
@@ -309,22 +309,22 @@ mem_strcpy(mem_access_fn mem_fn,	/* user-specified memory accessor */
     case Read:
       /* copy until string terminator ('\0') is encountered */
       do {
-	fault = mem_fn(mem, Read, addr++, &c, 1);
-	if (fault != md_fault_none)
-	  return fault;
-	*s++ = c;
-	n++;
+        fault = mem_fn(mem, Read, addr++, &c, 1);
+        if (fault != md_fault_none)
+          return fault;
+        *s++ = c;
+        n++;
       } while (c);
       break;
 
     case Write:
       /* copy until string terminator ('\0') is encountered */
       do {
-	c = *s++;
-	fault = mem_fn(mem, Write, addr++, &c, 1);
-	if (fault != md_fault_none)
-	  return fault;
-	n++;
+        c = *s++;
+        fault = mem_fn(mem, Write, addr++, &c, 1);
+        if (fault != md_fault_none)
+          return fault;
+        n++;
       } while (c);
       break;
 
@@ -338,12 +338,12 @@ mem_strcpy(mem_access_fn mem_fn,	/* user-specified memory accessor */
 
 /* copy NBYTES to/from simulated memory space, returns any faults */
 enum md_fault_type
-mem_bcopy(mem_access_fn mem_fn,		/* user-specified memory accessor */
-	  struct mem_t *mem,		/* memory space to access */
-	  enum mem_cmd cmd,		/* Read (from sim mem) or Write */
-	  md_addr_t addr,		/* target address to access */
-	  void *vp,			/* host memory address to access */
-	  int nbytes)
+mem_bcopy(mem_access_fn mem_fn,         /* user-specified memory accessor */
+          struct mem_t *mem,            /* memory space to access */
+          enum mem_cmd cmd,             /* Read (from sim mem) or Write */
+          md_addr_t addr,               /* target address to access */
+          void *vp,                     /* host memory address to access */
+          int nbytes)
 {
   byte_t *p = vp;
   enum md_fault_type fault;
@@ -353,7 +353,7 @@ mem_bcopy(mem_access_fn mem_fn,		/* user-specified memory accessor */
     {
       fault = mem_fn(mem, cmd, addr++, p++, 1);
       if (fault != md_fault_none)
-	return fault;
+        return fault;
     }
 
   /* no faults... */
@@ -364,22 +364,22 @@ mem_bcopy(mem_access_fn mem_fn,		/* user-specified memory accessor */
    of 4 bytes, this function is faster than mem_bcopy(), returns any
    faults encountered */
 enum md_fault_type
-mem_bcopy4(mem_access_fn mem_fn,	/* user-specified memory accessor */
-	   struct mem_t *mem,		/* memory space to access */
-	   enum mem_cmd cmd,		/* Read (from sim mem) or Write */
-	   md_addr_t addr,		/* target address to access */
-	   void *vp,			/* host memory address to access */
-	   int nbytes)
+mem_bcopy4(mem_access_fn mem_fn,        /* user-specified memory accessor */
+           struct mem_t *mem,           /* memory space to access */
+           enum mem_cmd cmd,            /* Read (from sim mem) or Write */
+           md_addr_t addr,              /* target address to access */
+           void *vp,                    /* host memory address to access */
+           int nbytes)
 {
   byte_t *p = vp;
-  int words = nbytes >> 2;		/* note: nbytes % 2 == 0 is assumed */
+  int words = nbytes >> 2;              /* note: nbytes % 2 == 0 is assumed */
   enum md_fault_type fault;
 
   while (words-- > 0)
     {
       fault = mem_fn(mem, cmd, addr, p, sizeof(word_t));
       if (fault != md_fault_none)
-	return fault;
+        return fault;
 
       addr += sizeof(word_t);
       p += sizeof(word_t);
@@ -391,10 +391,10 @@ mem_bcopy4(mem_access_fn mem_fn,	/* user-specified memory accessor */
 
 /* zero out NBYTES of simulated memory, returns any faults encountered */
 enum md_fault_type
-mem_bzero(mem_access_fn mem_fn,		/* user-specified memory accessor */
-	  struct mem_t *mem,		/* memory space to access */
-	  md_addr_t addr,		/* target address to access */
-	  int nbytes)
+mem_bzero(mem_access_fn mem_fn,         /* user-specified memory accessor */
+          struct mem_t *mem,            /* memory space to access */
+          md_addr_t addr,               /* target address to access */
+          int nbytes)
 {
   byte_t c = 0;
   enum md_fault_type fault;
@@ -404,7 +404,7 @@ mem_bzero(mem_access_fn mem_fn,		/* user-specified memory accessor */
     {
       fault = mem_fn(mem, Write, addr++, &c, 1);
       if (fault != md_fault_none)
-	return fault;
+        return fault;
     }
 
   /* no faults... */
@@ -485,22 +485,22 @@ extern SS_ADDR_TYPE mem_stack_min;
  */
 
 /* memory indirect table size (upper mem is not used) */
-#define MEM_TABLE_SIZE		0x8000 /* was: 0x7fff */
+#define MEM_TABLE_SIZE          0x8000 /* was: 0x7fff */
 
-#ifndef HIDE_MEM_TABLE_DEF	/* used by sim-fast.c */
+#ifndef HIDE_MEM_TABLE_DEF      /* used by sim-fast.c */
 /* the level 1 page table map */
 extern char *mem_table[MEM_TABLE_SIZE];
 #endif /* HIDE_MEM_TABLE_DEF */
 
 /* memory block size, in bytes */
-#define MEM_BLOCK_SIZE		0x10000
+#define MEM_BLOCK_SIZE          0x10000
 
   /* check permissions, no probes allowed into undefined segment regions */
   if (!(/* text access and a read */
-	(addr >= ld_text_base && addr < (ld_text_base+ld_text_size)
-	 && cmd == Read)
-	/* data access within bounds */
-	|| (addr >= ld_data_base && addr < ld_stack_base)))
+        (addr >= ld_text_base && addr < (ld_text_base+ld_text_size)
+         && cmd == Read)
+        /* data access within bounds */
+        || (addr >= ld_data_base && addr < ld_stack_base)))
     fatal("access error: segmentation violation, addr 0x%08p", addr);
 
   /* track the minimum SP for memory access stats */
@@ -508,19 +508,19 @@ extern char *mem_table[MEM_TABLE_SIZE];
     mem_stack_min = addr;
 
 /* determines if the memory access is valid, returns error str or NULL */
-char *					/* error string, or NULL */
-mem_valid(struct mem_t *mem,		/* memory space to probe */
-	  enum mem_cmd cmd,		/* Read (from sim'ed mem) or Write */
-	  md_addr_t addr,		/* target address to access */
-	  int nbytes,			/* number of bytes to access */
-	  int declare);			/* declare any detected error? */
+char *                                  /* error string, or NULL */
+mem_valid(struct mem_t *mem,            /* memory space to probe */
+          enum mem_cmd cmd,             /* Read (from sim'ed mem) or Write */
+          md_addr_t addr,               /* target address to access */
+          int nbytes,                   /* number of bytes to access */
+          int declare);                 /* declare any detected error? */
 
 /* determines if the memory access is valid, returns error str or NULL */
-char *					/* error string, or NULL */
-mem_valid(enum mem_cmd cmd,		/* Read (from sim mem) or Write */
-	  SS_ADDR_TYPE addr,		/* target address to access */
-	  int nbytes,			/* number of bytes to access */
-	  int declare)			/* declare the error if detected? */
+char *                                  /* error string, or NULL */
+mem_valid(enum mem_cmd cmd,             /* Read (from sim mem) or Write */
+          SS_ADDR_TYPE addr,            /* target address to access */
+          int nbytes,                   /* number of bytes to access */
+          int declare)                  /* declare the error if detected? */
 {
   char *err_str = NULL;
 
@@ -531,10 +531,10 @@ mem_valid(enum mem_cmd cmd,		/* Read (from sim mem) or Write */
     }
   /* check permissions, no probes allowed into undefined segment regions */
   else if (!(/* text access and a read */
-	   (addr >= ld_text_base && addr < (ld_text_base+ld_text_size)
-	    && cmd == Read)
-	   /* data access within bounds */
-	   || (addr >= ld_data_base && addr < ld_stack_base)))
+           (addr >= ld_text_base && addr < (ld_text_base+ld_text_size)
+            && cmd == Read)
+           /* data access within bounds */
+           || (addr >= ld_data_base && addr < ld_stack_base)))
     {
       err_str = "segmentation violation";
     }

@@ -75,7 +75,7 @@ regs_create(void)
 
 /* initialize architected register state */
 void
-regs_init(struct regs_t *regs)		/* register file to initialize */
+regs_init(struct regs_t *regs)          /* register file to initialize */
 {
   /* FIXME: assuming all entries should be zero... */
   memset(regs, 0, sizeof(*regs));
@@ -90,9 +90,9 @@ regs_init(struct regs_t *regs)		/* register file to initialize */
 
 /* floating point register file format */
 union regs_FP_t {
-    md_gpr_t l[MD_NUM_FREGS];			/* integer word view */
-    md_SS_FLOAT_TYPE f[SS_NUM_REGS];		/* single-precision FP view */
-    SS_DOUBLE_TYPE d[SS_NUM_REGS/2];		/* double-precision FP view */
+    md_gpr_t l[MD_NUM_FREGS];                   /* integer word view */
+    md_SS_FLOAT_TYPE f[SS_NUM_REGS];            /* single-precision FP view */
+    SS_DOUBLE_TYPE d[SS_NUM_REGS/2];            /* double-precision FP view */
 };
 
 /* floating point register file */
@@ -112,7 +112,7 @@ extern SS_ADDR_TYPE regs_PC;
 
 /* dump all architected register state values to output stream STREAM */
 void
-regs_dump(FILE *stream)		/* output stream */
+regs_dump(FILE *stream)         /* output stream */
 {
   int i;
 
@@ -126,18 +126,18 @@ regs_dump(FILE *stream)		/* output stream */
   for (i=0; i<SS_NUM_REGS; i += 2)
     {
       fprintf(stream, "    R[%2d]: %12d/0x%08x",
-	      i, regs_R[i], regs_R[i]);
+              i, regs_R[i], regs_R[i]);
       fprintf(stream, "  R[%2d]: %12d/0x%08x\n",
-	      i+1, regs_R[i+1], regs_R[i+1]);
+              i+1, regs_R[i+1], regs_R[i+1]);
     }
   fprintf(stream, "    HI:      %10d/0x%08x  LO:      %10d/0x%08x\n",
-	  regs_HI, regs_HI, regs_LO, regs_LO);
+          regs_HI, regs_HI, regs_LO, regs_LO);
   for (i=0; i<SS_NUM_REGS; i += 2)
     {
       fprintf(stream, "    F[%2d]: %12d/0x%08x",
-	      i, regs_F.l[i], regs_F.l[i]);
+              i, regs_F.l[i], regs_F.l[i]);
       fprintf(stream, "  F[%2d]: %12d/0x%08x\n",
-	      i+1, regs_F.l[i+1], regs_F.l[i+1]);
+              i+1, regs_F.l[i+1], regs_F.l[i+1]);
     }
   fprintf(stream, "    FCC:                0x%08x\n", regs_FCC);
 }

@@ -72,8 +72,8 @@ int ptrace_oneshot = FALSE;
 
 /* open pipeline trace */
 void
-ptrace_open(char *fname,		/* output filename */
-	    char *range)		/* trace range */
+ptrace_open(char *fname,                /* output filename */
+            char *range)                /* trace range */
 {
   char *errstr;
 
@@ -83,14 +83,14 @@ ptrace_open(char *fname,		/* output filename */
       /* no range */
       errstr = range_parse_range(":", &ptrace_range);
       if (errstr)
-	panic("cannot parse pipetrace range, use: {<start>}:{<end>}");
+        panic("cannot parse pipetrace range, use: {<start>}:{<end>}");
       ptrace_active = TRUE;
     }
   else
     {
       errstr = range_parse_range(range, &ptrace_range);
       if (errstr)
-	fatal("cannot parse pipetrace range, use: {<start>}:{<end>}");
+        fatal("cannot parse pipetrace range, use: {<start>}:{<end>}");
       ptrace_active = FALSE;
     }
 
@@ -106,7 +106,7 @@ ptrace_open(char *fname,		/* output filename */
     {
       ptrace_outfd = fopen(fname, "w");
       if (!ptrace_outfd)
-	fatal("cannot open pipetrace output file `%s'", fname);
+        fatal("cannot open pipetrace output file `%s'", fname);
     }
 }
 
@@ -120,10 +120,10 @@ ptrace_close(void)
 
 /* declare a new instruction */
 void
-__ptrace_newinst(unsigned int iseq,	/* instruction sequence number */
-		 md_inst_t inst,	/* new instruction */
-		 md_addr_t pc,		/* program counter of instruction */
-		 md_addr_t addr)	/* address referenced, if load/store */
+__ptrace_newinst(unsigned int iseq,     /* instruction sequence number */
+                 md_inst_t inst,        /* new instruction */
+                 md_addr_t pc,          /* program counter of instruction */
+                 md_addr_t addr)        /* address referenced, if load/store */
 {
   myfprintf(ptrace_outfd, "+ %u 0x%08p 0x%08p ", iseq, pc, addr);
   md_print_insn(inst, addr, ptrace_outfd);
@@ -135,13 +135,13 @@ __ptrace_newinst(unsigned int iseq,	/* instruction sequence number */
 
 /* declare a new uop */
 void
-__ptrace_newuop(unsigned int iseq,	/* instruction sequence number */
-		char *uop_desc,		/* new uop description */
-		md_addr_t pc,		/* program counter of instruction */
-		md_addr_t addr)		/* address referenced, if load/store */
+__ptrace_newuop(unsigned int iseq,      /* instruction sequence number */
+                char *uop_desc,         /* new uop description */
+                md_addr_t pc,           /* program counter of instruction */
+                md_addr_t addr)         /* address referenced, if load/store */
 {
   myfprintf(ptrace_outfd,
-	    "+ %u 0x%08p 0x%08p [%s]\n", iseq, pc, addr, uop_desc);
+            "+ %u 0x%08p 0x%08p [%s]\n", iseq, pc, addr, uop_desc);
 
   if (ptrace_outfd == stderr || ptrace_outfd == stdout)
     fflush(ptrace_outfd);
@@ -149,7 +149,7 @@ __ptrace_newuop(unsigned int iseq,	/* instruction sequence number */
 
 /* declare instruction retirement or squash */
 void
-__ptrace_endinst(unsigned int iseq)	/* instruction sequence number */
+__ptrace_endinst(unsigned int iseq)     /* instruction sequence number */
 {
   fprintf(ptrace_outfd, "- %u\n", iseq);
 
@@ -159,7 +159,7 @@ __ptrace_endinst(unsigned int iseq)	/* instruction sequence number */
 
 /* declare a new cycle */
 void
-__ptrace_newcycle(tick_t cycle)		/* new cycle */
+__ptrace_newcycle(tick_t cycle)         /* new cycle */
 {
   fprintf(ptrace_outfd, "@ %.0f\n", (double)cycle);
 
@@ -169,9 +169,9 @@ __ptrace_newcycle(tick_t cycle)		/* new cycle */
 
 /* indicate instruction transition to a new pipeline stage */
 void
-__ptrace_newstage(unsigned int iseq,	/* instruction sequence number */
-		  char *pstage,		/* pipeline stage entered */
-		  unsigned int pevents)/* pipeline events while in stage */
+__ptrace_newstage(unsigned int iseq,    /* instruction sequence number */
+                  char *pstage,         /* pipeline stage entered */
+                  unsigned int pevents)/* pipeline events while in stage */
 {
   fprintf(ptrace_outfd, "* %u %s 0x%08x\n", iseq, pstage, pevents);
 

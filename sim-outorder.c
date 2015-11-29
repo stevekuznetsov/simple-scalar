@@ -110,7 +110,7 @@ static int ruu_branch_penalty;
 /* speed of front-end of machine relative to execution core */
 static int fetch_speed;
 
-/* branch predictor type {nottaken|taken|perfect|bimod|2lev|1bit} */
+/* branch predictor type {nottaken|taken|perfect|bimod|2lev|1bit|3bit} */
 static char *pred_type;
 
 /* bimodal predictor config (<table_size>) */
@@ -650,7 +650,7 @@ sim_reg_options(struct opt_odb_t *odb)
                );
 
   opt_reg_string(odb, "-bpred",
-                 "branch predictor type {nottaken|taken|perfect|bimod|2lev|comb|1bit}",
+                 "branch predictor type {nottaken|taken|perfect|bimod|2lev|comb|1bit|3bit}",
                  &pred_type, /* default */"bimod",
                  /* print */TRUE, /* format */NULL);
 
@@ -940,6 +940,26 @@ sim_check_options(struct opt_odb_t *odb,        /* options database */
 
       /* bimodal predictor, bpred_create() checks BTB_SIZE */
       pred = bpred_create(BPred1bit,
+                          /* bimod table size */bimod_config[0],
+                          /* 2lev l1 size */0,
+                          /* 2lev l2 size */0,
+                          /* meta table size */0,
+                          /* history reg size */0,
+                          /* history xor address */0,
+                          /* btb sets */btb_config[0],
+                          /* btb assoc */btb_config[1],
+                          /* ret-addr stack size */ras_size);
+    }
+  else if (!mystricmp(pred_type, "3bit"))
+    {
+      /* 3bit predictor, bpred_create() checks BTB_SIZE */
+      if (bimod_nelt != 1)
+        fatal("bad 3bit predictor config (<table_size>)");
+      if (btb_nelt != 2)
+        fatal("bad btb config (<num_sets> <associativity>)");
+
+      /* bimodal predictor, bpred_create() checks BTB_SIZE */
+      pred = bpred_create(BPred3bit,
                           /* bimod table size */bimod_config[0],
                           /* 2lev l1 size */0,
                           /* 2lev l2 size */0,

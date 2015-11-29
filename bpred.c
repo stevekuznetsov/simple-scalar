@@ -104,14 +104,9 @@ bpred_create(enum bpred_class class,    /* type of predictor to create */
 
     break;
 
+  case BPred3bit:
   case BPred2bit:
-    pred->dirpred.bimod = 
-      bpred_dir_create(class, bimod_size, 0, 0, 0);
-
-      break;
-
   case BPred1bit:
-  /* we re-use the bimodal table size here */
     pred->dirpred.bimod = 
       bpred_dir_create(class, bimod_size, 0, 0, 0);
 
@@ -130,6 +125,7 @@ bpred_create(enum bpred_class class,    /* type of predictor to create */
   switch (class) {
   case BPredComb:
   case BPred2Level:
+  case BPred3bit:
   case BPred2bit:
   case BPred1bit:
     {
@@ -244,6 +240,7 @@ bpred_dir_create (
     }
 
   case BPred2bit:
+
     if (!l1size || (l1size & (l1size-1)) != 0)
       fatal("2bit table size, `%d', must be non-zero and a power of two", l1size);
     pred_dir->config.bimod.size = l1size;
@@ -273,6 +270,21 @@ bpred_dir_create (
 
     break;
 
+  case BPred3bit:
+    if (!l1size || (l1size & (l1size-1)) != 0)
+      fatal("3bit table size, `%d', must be non-zero and a power of two", l1size);
+    pred_dir->config.bimod.size = l1size;
+    if (!(pred_dir->config.bimod.table = calloc(l1size, sizeof(unsigned char))))
+      fatal("cannot allocate 3bit storage");
+    /* initialize counters to weakly this-or-that */
+    flipflop = 3;
+    for (cnt = 0; cnt < l1size; cnt++) {
+      pred_dir->config.bimod.table[cnt] = flipflop;
+      flipflop = 7 - flipflop;
+    }
+
+    break;
+
   case BPredTaken:
   case BPredNotTaken:
     /* no other state */
@@ -298,6 +310,11 @@ bpred_dir_config(
       "pred_dir: %s: 2-lvl: %d l1-sz, %d bits/ent, %s xor, %d l2-sz, direct-mapped\n",
       name, pred_dir->config.two.l1size, pred_dir->config.two.shift_width,
       pred_dir->config.two.xor ? "" : "no", pred_dir->config.two.l2size);
+    break;
+
+  case BPred3bit:
+    fprintf(stream, "pred_dir: %s: 3-bit: %d entries, direct-mapped\n",
+      name, pred_dir->config.bimod.size);
     break;
 
   case BPred2bit:
@@ -340,6 +357,13 @@ bpred_config(struct bpred_t *pred,      /* branch predictor instance */
 
   case BPred2Level:
     bpred_dir_config (pred->dirpred.twolev, "2lev", stream);
+    fprintf(stream, "btb: %d sets x %d associativity", 
+            pred->btb.sets, pred->btb.assoc);
+    fprintf(stream, "ret_stack: %d entries", pred->retstack.size);
+    break;
+
+  case BPred3bit:
+    bpred_dir_config (pred->dirpred.bimod, "3bit", stream);
     fprintf(stream, "btb: %d sets x %d associativity", 
             pred->btb.sets, pred->btb.assoc);
     fprintf(stream, "ret_stack: %d entries", pred->retstack.size);
@@ -397,6 +421,9 @@ bpred_reg_stats(struct bpred_t *pred,   /* branch predictor instance */
       break;
     case BPred2Level:
       name = "bpred_2lev";
+      break;
+    case BPred3bit:
+      name = "bpred_3bit";
       break;
     case BPred2bit:
       name = "bpred_bimod";
@@ -560,9 +587,8 @@ bpred_dir_lookup(struct bpred_dir_t *pred_dir,  /* branch dir predictor inst */
         p = &pred_dir->config.two.l2table[l2index];
       }
       break;
+    case BPred3bit:
     case BPred2bit:
-      p = &pred_dir->config.bimod.table[BIMOD_HASH(pred_dir, baddr)];
-      break;
     case BPred1bit:
       p = &pred_dir->config.bimod.table[BIMOD_HASH(pred_dir, baddr)];
       break;
@@ -641,12 +667,8 @@ bpred_lookup(struct bpred_t *pred,      /* branch predictor instance */
           dir_update_ptr->pdir1 = bpred_dir_lookup (pred->dirpred.twolev, baddr);
         }
       break;
+    case BPred3bit:
     case BPred2bit:
-      if ((MD_OP_FLAGS(op) & (F_CTRL|F_UNCOND)) != (F_CTRL|F_UNCOND))
-        {
-          dir_update_ptr->pdir1 = bpred_dir_lookup (pred->dirpred.bimod, baddr);
-        }
-      break;
     case BPred1bit:
       if ((MD_OP_FLAGS(op) & (F_CTRL|F_UNCOND)) != (F_CTRL|F_UNCOND))
         {
@@ -738,6 +760,9 @@ bpred_lookup(struct bpred_t *pred,      /* branch predictor instance */
 
   unsigned int threshold;
   switch (pred->class) {
+    case BPred3bit:
+      threshold = 4;
+      break;
     case BPredComb:
     case BPred2Level:
     case BPred2bit:
@@ -959,6 +984,9 @@ bpred_update(struct bpred_t *pred,      /* branch predictor instance */
 
   unsigned int saturation;
   switch (pred->class) {
+    case BPred3bit:
+      saturation = 7;
+      break;
     case BPredComb:
     case BPred2Level:
     case BPred2bit:

@@ -39,8 +39,8 @@ rm -rf ${output_dir}/*
 benchmark_names=('anagram') 
 benchmarks=('anagram.alpha words < anagram.in')
 
-names=('perfect' 'three-bit' 'two-bit' 'one-bit')
-args=('-bpred perfect' '-bpred 3bit' '-bpred bimod' '-bpred 1bit')
+names=('perfect' 'four-bit' 'three-bit' 'two-bit' 'one-bit')
+args=('-bpred perfect' '-bpred 4bit' '-bpred 3bit' '-bpred bimod' '-bpred 1bit')
 
 # run all combinations of benchmarks and arguments
 for (( i=0; i<${#benchmarks[@]}; i++ )); do

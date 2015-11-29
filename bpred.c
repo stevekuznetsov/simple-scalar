@@ -108,6 +108,15 @@ bpred_create(enum bpred_class class,    /* type of predictor to create */
     pred->dirpred.bimod = 
       bpred_dir_create(class, bimod_size, 0, 0, 0);
 
+      break;
+
+  case BPred1bit:
+  /* we re-use the bimodal table size here */
+    pred->dirpred.bimod = 
+      bpred_dir_create(class, bimod_size, 0, 0, 0);
+
+      break;
+
   case BPredTaken:
   case BPredNotTaken:
     /* no other state */
@@ -122,6 +131,7 @@ bpred_create(enum bpred_class class,    /* type of predictor to create */
   case BPredComb:
   case BPred2Level:
   case BPred2bit:
+  case BPred1bit:
     {
       int i;
 
@@ -235,19 +245,31 @@ bpred_dir_create (
 
   case BPred2bit:
     if (!l1size || (l1size & (l1size-1)) != 0)
-      fatal("2bit table size, `%d', must be non-zero and a power of two", 
-            l1size);
+      fatal("2bit table size, `%d', must be non-zero and a power of two", l1size);
     pred_dir->config.bimod.size = l1size;
-    if (!(pred_dir->config.bimod.table =
-          calloc(l1size, sizeof(unsigned char))))
+    if (!(pred_dir->config.bimod.table = calloc(l1size, sizeof(unsigned char))))
       fatal("cannot allocate 2bit storage");
     /* initialize counters to weakly this-or-that */
     flipflop = 1;
-    for (cnt = 0; cnt < l1size; cnt++)
-      {
-        pred_dir->config.bimod.table[cnt] = flipflop;
-        flipflop = 3 - flipflop;
-      }
+    for (cnt = 0; cnt < l1size; cnt++) {
+      pred_dir->config.bimod.table[cnt] = flipflop;
+      flipflop = 3 - flipflop;
+    }
+
+    break;
+
+  case BPred1bit:
+    if (!l1size || (l1size & (l1size-1)) != 0)
+      fatal("1bit table size, `%d', must be non-zero and a power of two", l1size);
+    pred_dir->config.bimod.size = l1size;
+    if (!(pred_dir->config.bimod.table = calloc(l1size, sizeof(unsigned char))))
+      fatal("cannot allocate 1bit storage");
+    /* initialize counters to this-or-that */
+    flipflop = 1;
+    for (cnt = 0; cnt < l1size; cnt++) {
+      pred_dir->config.bimod.table[cnt] = flipflop;
+      flipflop = 1 - flipflop;
+    }
 
     break;
 
@@ -280,6 +302,11 @@ bpred_dir_config(
 
   case BPred2bit:
     fprintf(stream, "pred_dir: %s: 2-bit: %d entries, direct-mapped\n",
+      name, pred_dir->config.bimod.size);
+    break;
+
+  case BPred1bit:
+    fprintf(stream, "pred_dir: %s: 1-bit: %d entries, direct-mapped\n",
       name, pred_dir->config.bimod.size);
     break;
 
@@ -320,6 +347,13 @@ bpred_config(struct bpred_t *pred,      /* branch predictor instance */
 
   case BPred2bit:
     bpred_dir_config (pred->dirpred.bimod, "bimod", stream);
+    fprintf(stream, "btb: %d sets x %d associativity", 
+            pred->btb.sets, pred->btb.assoc);
+    fprintf(stream, "ret_stack: %d entries", pred->retstack.size);
+    break;
+
+  case BPred1bit:
+    bpred_dir_config (pred->dirpred.bimod, "1bit", stream);
     fprintf(stream, "btb: %d sets x %d associativity", 
             pred->btb.sets, pred->btb.assoc);
     fprintf(stream, "ret_stack: %d entries", pred->retstack.size);
@@ -366,6 +400,9 @@ bpred_reg_stats(struct bpred_t *pred,   /* branch predictor instance */
       break;
     case BPred2bit:
       name = "bpred_bimod";
+      break;
+    case BPred1bit:
+      name = "bpred_1bit";
       break;
     case BPredTaken:
       name = "bpred_taken";
@@ -503,27 +540,20 @@ bpred_dir_lookup(struct bpred_dir_t *pred_dir,  /* branch dir predictor inst */
         /* traverse 2-level tables */
         l1index = (baddr >> MD_BR_SHIFT) & (pred_dir->config.two.l1size - 1);
         l2index = pred_dir->config.two.shiftregs[l1index];
-        if (pred_dir->config.two.xor)
-          {
+        if (pred_dir->config.two.xor) {
 #if 1
             /* this L2 index computation is more "compatible" to McFarling's
                verison of it, i.e., if the PC xor address component is only
                part of the index, take the lower order address bits for the
                other part of the index, rather than the higher order ones */
-            l2index = (((l2index ^ (baddr >> MD_BR_SHIFT))
-                        & ((1 << pred_dir->config.two.shift_width) - 1))
-                       | ((baddr >> MD_BR_SHIFT)
-                          << pred_dir->config.two.shift_width));
+            l2index = (((l2index ^ (baddr >> MD_BR_SHIFT)) & ((1 << pred_dir->config.two.shift_width) - 1)) | ((baddr >> MD_BR_SHIFT) << pred_dir->config.two.shift_width));
 #else
             l2index = l2index ^ (baddr >> MD_BR_SHIFT);
 #endif
-          }
-        else
-          {
-            l2index =
-              l2index
-                | ((baddr >> MD_BR_SHIFT) << pred_dir->config.two.shift_width);
-          }
+        }
+        else {
+            l2index = l2index | ((baddr >> MD_BR_SHIFT) << pred_dir->config.two.shift_width);
+        }
         l2index = l2index & (pred_dir->config.two.l2size - 1);
 
         /* get a pointer to prediction state information */
@@ -531,6 +561,9 @@ bpred_dir_lookup(struct bpred_dir_t *pred_dir,  /* branch dir predictor inst */
       }
       break;
     case BPred2bit:
+      p = &pred_dir->config.bimod.table[BIMOD_HASH(pred_dir, baddr)];
+      break;
+    case BPred1bit:
       p = &pred_dir->config.bimod.table[BIMOD_HASH(pred_dir, baddr)];
       break;
     case BPredTaken:
@@ -605,15 +638,19 @@ bpred_lookup(struct bpred_t *pred,      /* branch predictor instance */
     case BPred2Level:
       if ((MD_OP_FLAGS(op) & (F_CTRL|F_UNCOND)) != (F_CTRL|F_UNCOND))
         {
-          dir_update_ptr->pdir1 =
-            bpred_dir_lookup (pred->dirpred.twolev, baddr);
+          dir_update_ptr->pdir1 = bpred_dir_lookup (pred->dirpred.twolev, baddr);
         }
       break;
     case BPred2bit:
       if ((MD_OP_FLAGS(op) & (F_CTRL|F_UNCOND)) != (F_CTRL|F_UNCOND))
         {
-          dir_update_ptr->pdir1 =
-            bpred_dir_lookup (pred->dirpred.bimod, baddr);
+          dir_update_ptr->pdir1 = bpred_dir_lookup (pred->dirpred.bimod, baddr);
+        }
+      break;
+    case BPred1bit:
+      if ((MD_OP_FLAGS(op) & (F_CTRL|F_UNCOND)) != (F_CTRL|F_UNCOND))
+        {
+          dir_update_ptr->pdir1 = bpred_dir_lookup (pred->dirpred.bimod, baddr);
         }
       break;
     case BPredTaken:
@@ -699,18 +736,30 @@ bpred_lookup(struct bpred_t *pred,      /* branch predictor instance */
       return (pbtb ? pbtb->target : 1);
     }
 
+  unsigned int threshold;
+  switch (pred->class) {
+    case BPredComb:
+    case BPred2Level:
+    case BPred2bit:
+      threshold = 2;
+      break;
+    case BPred1bit:
+      threshold = 1;
+      break;
+  }
+
   /* otherwise we have a conditional branch */
   if (pbtb == NULL)
     {
       /* BTB miss -- just return a predicted direction */
-      return ((*(dir_update_ptr->pdir1) >= 2)
+      return ((*(dir_update_ptr->pdir1) >= threshold)
               ? /* taken */ 1
               : /* not taken */ 0);
     }
   else
     {
       /* BTB hit, so return target if it's a predicted-taken branch */
-      return ((*(dir_update_ptr->pdir1) >= 2)
+      return ((*(dir_update_ptr->pdir1) >= threshold)
               ? /* taken */ pbtb->target
               : /* not taken */ 0);
     }
@@ -832,12 +881,9 @@ bpred_update(struct bpred_t *pred,      /* branch predictor instance */
       int l1index, shift_reg;
       
       /* also update appropriate L1 history register */
-      l1index =
-        (baddr >> MD_BR_SHIFT) & (pred->dirpred.twolev->config.two.l1size - 1);
-      shift_reg =
-        (pred->dirpred.twolev->config.two.shiftregs[l1index] << 1) | (!!taken);
-      pred->dirpred.twolev->config.two.shiftregs[l1index] =
-        shift_reg & ((1 << pred->dirpred.twolev->config.two.shift_width) - 1);
+      l1index = (baddr >> MD_BR_SHIFT) & (pred->dirpred.twolev->config.two.l1size - 1);
+      shift_reg = (pred->dirpred.twolev->config.two.shiftregs[l1index] << 1) | (!!taken);
+      pred->dirpred.twolev->config.two.shiftregs[l1index] = shift_reg & ((1 << pred->dirpred.twolev->config.two.shift_width) - 1);
     }
 
   /* find BTB entry if it's a taken branch (don't allocate for non-taken) */
@@ -911,12 +957,24 @@ bpred_update(struct bpred_t *pred,      /* branch predictor instance */
    * matched-on entry or a victim which was LRU in its set)
    */
 
+  unsigned int saturation;
+  switch (pred->class) {
+    case BPredComb:
+    case BPred2Level:
+    case BPred2bit:
+      saturation = 3;
+      break;
+    case BPred1bit:
+      saturation = 1;
+      break;
+  }
+
   /* update state (but not for jumps) */
   if (dir_update_ptr->pdir1)
     {
       if (taken)
         {
-          if (*dir_update_ptr->pdir1 < 3)
+          if (*dir_update_ptr->pdir1 < saturation)
             ++*dir_update_ptr->pdir1;
         }
       else
@@ -932,7 +990,7 @@ bpred_update(struct bpred_t *pred,      /* branch predictor instance */
     {
       if (taken)
         {
-          if (*dir_update_ptr->pdir2 < 3)
+          if (*dir_update_ptr->pdir2 < saturation)
             ++*dir_update_ptr->pdir2;
         }
       else
@@ -951,13 +1009,13 @@ bpred_update(struct bpred_t *pred,      /* branch predictor instance */
           if (dir_update_ptr->dir.twolev == (unsigned int)taken)
             {
               /* 2-level predictor was correct */
-              if (*dir_update_ptr->pmeta < 3)
+              if (*dir_update_ptr->pmeta < saturation)
                 ++*dir_update_ptr->pmeta;
             }
           else
             {
               /* bimodal predictor was correct */
-              if (*dir_update_ptr->pmeta > 0)
+              if (*dir_update_ptr->pmeta > saturation)
                 --*dir_update_ptr->pmeta;
             }
         }

@@ -8,7 +8,7 @@ of SimpleScalar, LLC (info@simplescalar.com).
 warning: section `.comment' ignored...
 sim: command line: ./../sim-outorder -bpred bimod anagram.alpha words 
 
-sim: simulation started @ Sun Nov 29 14:30:13 2015, options follow:
+sim: simulation started @ Sun Nov 29 14:41:46 2015, options follow:
 
 sim-outorder: This simulator implements a very detailed out-of-order issue
 superscalar processor with a two-level memory system and speculative
@@ -33,7 +33,7 @@ latency of all pipeline operations.
 -fetch:ifqsize              4 # instruction fetch queue size (in insts)
 -fetch:mplat                3 # extra branch mis-prediction latency
 -fetch:speed                1 # speed of front-end of machine relative to execution core
--bpred                  bimod # branch predictor type {nottaken|taken|perfect|bimod|2lev|comb|1bit|3bit}
+-bpred                  bimod # branch predictor type {nottaken|taken|perfect|bimod|2lev|comb|1bit|3bit|4bit}
 -bpred:bimod     2048 # bimodal predictor config (<table size>)
 -bpred:2lev      1 1024 8 0 # 2-level predictor config (<l1size> <l2size> <hist_size> <xor>)
 -bpred:comb      1024 # combining predictor config (<meta_table_size>)
@@ -706,8 +706,8 @@ sim_num_refs                9033578 # total number of loads and stores committed
 sim_num_loads               6491607 # total number of loads committed
 sim_num_stores         2541971.0000 # total number of stores committed
 sim_num_branches            3778381 # total number of branches committed
-sim_elapsed_time                 23 # total simulation time in seconds
-sim_inst_rate          1112938.2174 # simulation speed (in insts/sec)
+sim_elapsed_time                 21 # total simulation time in seconds
+sim_inst_rate          1218932.3333 # simulation speed (in insts/sec)
 sim_total_insn             27005039 # total number of instructions executed
 sim_total_refs              9476327 # total number of loads and stores executed
 sim_total_loads             6795179 # total number of loads executed

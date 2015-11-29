@@ -107,6 +107,7 @@ enum bpred_class {
   BPred1bit,                    /* 1-bit saturating counter predictor */
   BPred3bit,                    /* 3-bit saturating counter predictor */
   BPred4bit,                    /* 4-bit saturating counter predictor */
+  BPred5bit,                    /* 5-bit saturating counter predictor */
   BPred_NUM
 };
 

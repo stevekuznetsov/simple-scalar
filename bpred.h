@@ -105,6 +105,7 @@ enum bpred_class {
   BPredTaken,                   /* static predict taken */
   BPredNotTaken,                /* static predict not taken */
   BPred1bit,                    /* 1-bit saturating counter predictor */
+  BPred3bit,                    /* 3-bit saturating counter predictor */
   BPred_NUM
 };
 

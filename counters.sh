@@ -39,8 +39,8 @@ rm -rf ${output_dir}/*
 benchmark_names=('anagram') 
 benchmarks=('anagram.alpha words < anagram.in')
 
-names=('perfect' 'two-bit' 'one-bit')
-args=('-bpred perfect' '-bpred bimod' '-bpred 1bit')
+names=('perfect' 'three-bit' 'two-bit' 'one-bit')
+args=('-bpred perfect' '-bpred 3bit' '-bpred bimod' '-bpred 1bit')
 
 # run all combinations of benchmarks and arguments
 for (( i=0; i<${#benchmarks[@]}; i++ )); do
@@ -48,7 +48,7 @@ for (( i=0; i<${#benchmarks[@]}; i++ )); do
     output_file="${benchmark_names[$i]}_${names[$j]}.txt"
     echo "Executing: 'sim-outorder ${args[$j]} ${benchmarks[$i]}' and storing the output at ${output_dir}/${output_file}"
     # hard-code anagram benchmark for now
-    time ./../sim-outorder ${args[$j]} anagram.alpha words < anagram.in > ${output_dir}/${output_file} 2>&1
+    ./../sim-outorder ${args[$j]} anagram.alpha words < anagram.in > ${output_dir}/${output_file} 2>&1
 
     # extract useful metrics
     ipc=$(cat ${output_dir}/${output_file} | grep -Po "[0-9]+\.[0-9]+(?= # instructions per cycle)")
@@ -57,6 +57,7 @@ for (( i=0; i<${#benchmarks[@]}; i++ )); do
     echo "Address Prediction Rate:   ${addr_pred_rate:-1.0000}"
     dir_pred_rate=$(cat ${output_dir}/${output_file} | grep -Po "[0-9]+\.[0-9]+(?= # branch direction-prediction rate)") || true
     echo "Direction Prediction Rate: ${dir_pred_rate:-1.0000}"
+    echo
   done
 done
 

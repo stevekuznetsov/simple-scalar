@@ -97,6 +97,11 @@
  *
  */
 
+/* we do need to add new types to this enum
+   a "quick-and-dirty" hack for us could be to
+   switch on the class when the bpred is called 
+   to determine behavior at runtime instead of
+   trying to make an abstraction layer  */
 /* branch predictor types */
 enum bpred_class {
   BPredComb,                    /* combined predictor (McFarling) */

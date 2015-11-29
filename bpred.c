@@ -104,6 +104,7 @@ bpred_create(enum bpred_class class,    /* type of predictor to create */
 
     break;
 
+  case BPred6bit:
   case BPred5bit:
   case BPred4bit:
   case BPred3bit:
@@ -127,6 +128,7 @@ bpred_create(enum bpred_class class,    /* type of predictor to create */
   switch (class) {
   case BPredComb:
   case BPred2Level:
+  case BPred6bit:
   case BPred5bit:
   case BPred4bit:
   case BPred3bit:
@@ -314,7 +316,22 @@ bpred_dir_create (
     flipflop = 15;
     for (cnt = 0; cnt < l1size; cnt++) {
       pred_dir->config.bimod.table[cnt] = flipflop;
-      flipflop = 32 - flipflop;
+      flipflop = 31 - flipflop;
+    }
+
+    break;
+
+  case BPred6bit:
+    if (!l1size || (l1size & (l1size-1)) != 0)
+      fatal("6bit table size, `%d', must be non-zero and a power of two", l1size);
+    pred_dir->config.bimod.size = l1size;
+    if (!(pred_dir->config.bimod.table = calloc(l1size, sizeof(unsigned char))))
+      fatal("cannot allocate 6bit storage");
+    /* initialize counters to weakly this-or-that */
+    flipflop = 31;
+    for (cnt = 0; cnt < l1size; cnt++) {
+      pred_dir->config.bimod.table[cnt] = flipflop;
+      flipflop = 63 - flipflop;
     }
 
     break;
@@ -344,6 +361,11 @@ bpred_dir_config(
       "pred_dir: %s: 2-lvl: %d l1-sz, %d bits/ent, %s xor, %d l2-sz, direct-mapped\n",
       name, pred_dir->config.two.l1size, pred_dir->config.two.shift_width,
       pred_dir->config.two.xor ? "" : "no", pred_dir->config.two.l2size);
+    break;
+
+  case BPred6bit:
+    fprintf(stream, "pred_dir: %s: 6-bit: %d entries, direct-mapped\n",
+      name, pred_dir->config.bimod.size);
     break;
 
   case BPred5bit:
@@ -401,6 +423,13 @@ bpred_config(struct bpred_t *pred,      /* branch predictor instance */
 
   case BPred2Level:
     bpred_dir_config (pred->dirpred.twolev, "2lev", stream);
+    fprintf(stream, "btb: %d sets x %d associativity", 
+            pred->btb.sets, pred->btb.assoc);
+    fprintf(stream, "ret_stack: %d entries", pred->retstack.size);
+    break;
+
+  case BPred6bit:
+    bpred_dir_config (pred->dirpred.bimod, "6bit", stream);
     fprintf(stream, "btb: %d sets x %d associativity", 
             pred->btb.sets, pred->btb.assoc);
     fprintf(stream, "ret_stack: %d entries", pred->retstack.size);
@@ -479,6 +508,9 @@ bpred_reg_stats(struct bpred_t *pred,   /* branch predictor instance */
       break;
     case BPred2Level:
       name = "bpred_2lev";
+      break;
+    case BPred6bit:
+      name = "bpred_6bit";
       break;
     case BPred5bit:
       name = "bpred_5bit";
@@ -651,6 +683,7 @@ bpred_dir_lookup(struct bpred_dir_t *pred_dir,  /* branch dir predictor inst */
         p = &pred_dir->config.two.l2table[l2index];
       }
       break;
+    case BPred6bit:
     case BPred5bit:
     case BPred4bit:
     case BPred3bit:
@@ -733,6 +766,7 @@ bpred_lookup(struct bpred_t *pred,      /* branch predictor instance */
           dir_update_ptr->pdir1 = bpred_dir_lookup (pred->dirpred.twolev, baddr);
         }
       break;
+    case BPred6bit:
     case BPred5bit:
     case BPred4bit:
     case BPred3bit:
@@ -828,6 +862,9 @@ bpred_lookup(struct bpred_t *pred,      /* branch predictor instance */
 
   unsigned int threshold;
   switch (pred->class) {
+    case BPred6bit:
+      threshold = 32;
+      break;
     case BPred5bit:
       threshold = 16;
       break;
@@ -1058,6 +1095,9 @@ bpred_update(struct bpred_t *pred,      /* branch predictor instance */
 
   unsigned int saturation;
   switch (pred->class) {
+    case BPred6bit:
+      saturation = 63;
+      break;
     case BPred5bit:
       saturation = 31;
       break;

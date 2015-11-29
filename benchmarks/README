@@ -1,0 +1,25 @@
+TO RUN THE BENCHMARKS: replace <target> with the target of the machine
+simulated, either "alpha" for Alpha OSF, or "pisa-big" for PISA big
+endian.
+
+
+GCC:
+
+  to run:               sim-safe cc1.<target> -O 1stmt.i
+  to test output:       diff 1stmt.s 1stmt.s.ref
+
+ANAGRAM:
+
+  to run:               sim-safe anagram.<target> words < anagram.in > OUT
+  to test output:       diff OUT anagram.out
+
+COMPRESS95:
+
+  to run:               sim-safe compress95.<target> < compress95.in > OUT
+  to test output:       diff OUT compress95.out
+
+GO:
+
+  to run:               sim-safe go.<target> 50 9 2stone9.in > OUT
+  to test output:       diff OUT go.out
+

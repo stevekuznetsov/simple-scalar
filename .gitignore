@@ -1,3 +1,5 @@
 sim-outorder
 *.gddoc
 Proposal/
+
+.DS_Store

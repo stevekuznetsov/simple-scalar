@@ -104,7 +104,7 @@ bpred_create(enum bpred_class class,    /* type of predictor to create */
 
     break;
 
-  case BPredPercept:
+  case BPredPercept: // Maybe you'd prefer BPredPerceptRonWeasley?
     pred->dirpred.percept = bpred_dir_create(class, l1size, l2size, shift_width, xor); /* (class, bhtsize, percepttablesize, hist_width, xor) */
     // pred->dirpred.percept->config.percept.weight_width = pred->dirpred.percept->config.percept.hist_width + 1;
 
@@ -763,7 +763,7 @@ bpred_dir_lookup(struct bpred_dir_t *pred_dir,  /* branch dir predictor inst */
     case BPred3bit:
     case BPred2bit:
     case BPred1bit:
-      p = pred_dir->config.bimod.table[BIMOD_HASH(pred_dir, baddr)];
+      p = &pred_dir->config.bimod.table[BIMOD_HASH(pred_dir, baddr)];
       break;
     case BPredTaken:
     case BPredNotTaken:
@@ -809,6 +809,7 @@ bpred_lookup(struct bpred_t *pred,      /* branch predictor instance */
   dir_update_ptr->pdir1 = NULL;
   dir_update_ptr->pdir2 = NULL;
   dir_update_ptr->pmeta = NULL;
+  dir_update_ptr->input_snapshot = NULL;
   /* Except for jumps, get a pointer to direction-prediction bits */
   switch (pred->class) {
     case BPredComb:
@@ -844,6 +845,12 @@ bpred_lookup(struct bpred_t *pred,      /* branch predictor instance */
       if ((MD_OP_FLAGS(op) & (F_CTRL|F_UNCOND)) != (F_CTRL|F_UNCOND))
         {
           dir_update_ptr->pdir1 = bpred_dir_lookup (pred->dirpred.percept, baddr);
+
+          int bhtindex, bhr_entry, input;
+          bhtindex = (baddr >> MD_BR_SHIFT) & (pred->dirpred.percept->config.percept.bhtsize - 1);
+          bhr_entry = pred->dirpred.percept->config.percept.histregs[bhtindex];
+          input = (bhr_entry << 1) | 1;
+          dir_update_ptr->input_snapshot = &input;
         }
       break;
     case BPred6bit:
@@ -942,8 +949,8 @@ bpred_lookup(struct bpred_t *pred,      /* branch predictor instance */
 
   unsigned int threshold;
   switch (pred->class) {
-    case BPredPercept: /* theta = (1.93h +14) */
-      threshold = 30; // temporary
+    case BPredPercept:
+      threshold = 0;
       break;
     case BPred6bit:
       threshold = 32;
@@ -967,35 +974,62 @@ bpred_lookup(struct bpred_t *pred,      /* branch predictor instance */
       break;
   }
 
+  /* perceptron prediction for conditional branch */
+  if (pred->class == BPredPercept) {
+    int weight_width, hist_width, bhtindex, bhr_entry, input, temp_bit;
+    signed char *pweights = (signed char *)(dir_update_ptr->pdir1);
+    weight_width = pred->dirpred.percept->config.percept.weight_width;
+
+    // hist_width = pred->dirpred.percept->config.percept.hist_width;
+    bhtindex = (baddr >> MD_BR_SHIFT) & (pred->dirpred.percept->config.percept.bhtsize - 1);
+    bhr_entry = pred->dirpred.percept->config.percept.histregs[bhtindex];
+
+    input = (bhr_entry << 1) | 1; // First input is used for bias weighting and always set to 1
+    int input_arr[weight_width];
+    int sum = 0;
+    int i;
+
+    for(i = 0; i < weight_width; ++i, input >>= 1) {
+      temp_bit = input & 1;
+      if (temp_bit == 0) {
+        input_arr[i] = -1;
+      }
+      else {
+        input_arr[i] = 1;
+      }
+    }
+
+    for(i = 0; i < weight_width; ++i) {
+      sum += (input_arr[i] * (int)pweights[i]);
+    }
+    if (pbtb == NULL) {
+      return ((sum >= threshold)
+              ? /* taken */ 1
+              : /* not taken */ 0);
+    }
+    else {
+      return ((sum >= threshold)
+              ? /* taken */ pbtb->target
+              : /* not taken */ 0);
+    }
+
+  }
+
+
   /* otherwise we have a conditional branch */
   if (pbtb == NULL)
     {
-      if (pred->class == BPredPercept) {
-        signed char *pweights = (signed char *)(dir_update_ptr->pdir1);
-        int weight_width = pred->dirpred.percept->config.percept.weight_width;
-        int *input;
-        int sum = 0;
-        int i;
-
-      }
-      else {
-        /* BTB miss -- just return a predicted direction */
-        return ((*(dir_update_ptr->pdir1) >= threshold)
-                ? /* taken */ 1
-                : /* not taken */ 0);
-      }
+      /* BTB miss -- just return a predicted direction */
+      return ((*(dir_update_ptr->pdir1) >= threshold)
+              ? /* taken */ 1
+              : /* not taken */ 0);
     }
   else
     {
-      if (pred->class == BPredPercept) {
-
-      }
-      else {
-        /* BTB hit, so return target if it's a predicted-taken branch */
-        return ((*(dir_update_ptr->pdir1) >= threshold)
-                ? /* taken */ pbtb->target
-                : /* not taken */ 0);
-      }
+      /* BTB hit, so return target if it's a predicted-taken branch */
+      return ((*(dir_update_ptr->pdir1) >= threshold)
+              ? /* taken */ pbtb->target
+              : /* not taken */ 0);
     }
 }
 
@@ -1193,6 +1227,9 @@ bpred_update(struct bpred_t *pred,      /* branch predictor instance */
 
   unsigned int saturation;
   switch (pred->class) {
+    case BPredPercept:
+      saturation = (pred->dirpred.percept->config.percept.hist_width)*2 + 14; /* theta = (1.93h +14), where h is the history register width */
+      break;
     case BPred6bit:
       saturation = 63;
       break;
@@ -1218,16 +1255,58 @@ bpred_update(struct bpred_t *pred,      /* branch predictor instance */
   /* update state (but not for jumps) */
   if (dir_update_ptr->pdir1)
     {
-      if (taken)
-        {
-          if (*dir_update_ptr->pdir1 < saturation)
-            ++*dir_update_ptr->pdir1;
+      if ((pred->class == BPredPercept) && dir_update_ptr->input_snapshot) {
+        int input_snapshot, weight_width, temp_bit, adj_taken, i;
+        signed char *pweights = (signed char *)(dir_update_ptr->pdir1);
+        input_snapshot = *(dir_update_ptr->input_snapshot);
+        weight_width = pred->dirpred.percept->config.percept.weight_width;
+
+        int input_arr[weight_width];
+        for(i = 0; i < weight_width; ++i, input_snapshot >>= 1) {
+          temp_bit = input_snapshot & 1;
+          if (temp_bit == 0) {
+            input_arr[i] = -1;
+          }
+          else {
+            input_arr[i] = 1;
+          }
         }
-      else
-        { /* not taken */
-          if (*dir_update_ptr->pdir1 > 0)
-            --*dir_update_ptr->pdir1;
+
+        int sum = 0;
+        for(i = 0; i < weight_width; ++i) {
+          sum += (input_arr[i] * (int)pweights[i]);
         }
+
+        if (taken) {
+          adj_taken = 1;
+        }
+        else {
+          adj_taken = -1;
+        }
+        if ((sum <= saturation) || (correct == 0)) {
+          /* train the perceptron by updating weights */
+          for(i = 0; i < weight_width; ++i) {
+            if (adj_taken == input_arr[i]) {
+              pweights[i] += 1; // We use 1 instead of ++ since the training speed should be adjustable if needed
+            }
+            else {
+              pweights[i] -= 1;
+            }
+          }
+        }
+      }
+      else {
+        if (taken)
+          {
+            if (*dir_update_ptr->pdir1 < saturation)
+              ++*dir_update_ptr->pdir1;
+          }
+        else
+          { /* not taken */
+            if (*dir_update_ptr->pdir1 > 0)
+              --*dir_update_ptr->pdir1;
+          }
+      }
     }
 
   /* combining predictor also updates second predictor and meta predictor */

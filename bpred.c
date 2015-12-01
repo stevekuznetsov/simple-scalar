@@ -276,11 +276,11 @@ bpred_dir_create (
       int rows = l2size;
       int cols = shift_width + 1;
       int i, j, count;
-      pred_dir->config.percept.percepttable = (signed char **)calloc(rows * sizeof(signed char *));
+      pred_dir->config.percept.percepttable = (signed char **)calloc(rows, sizeof(signed char *));
       if (!pred_dir->config.percept.percepttable)
         fatal("cannot allocate second level perceptron table");
       for (i=0; i<rows; i++) {
-        pred_dir->config.percept.percepttable[i] = (signed char *)calloc(cols * sizeof(signed char));
+        pred_dir->config.percept.percepttable[i] = (signed char *)calloc(cols, sizeof(signed char));
         if (!pred_dir->config.percept.percepttable[i])
           fatal("cannot allocate second level perceptron table entry");
       }

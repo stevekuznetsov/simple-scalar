@@ -109,6 +109,7 @@ enum bpred_class {
   BPred4bit,                    /* 4-bit saturating counter predictor */
   BPred5bit,                    /* 5-bit saturating counter predictor */
   BPred6bit,                    /* 6-bit saturating counter predictor */
+  BPredPercept,                 /* perceptron predictor */
   BPred_NUM
 };
 
@@ -136,6 +137,15 @@ struct bpred_dir_t {
       int *shiftregs;           /* level-1 history table */
       unsigned char *l2table;   /* level-2 prediction state table */
     } two;
+    struct {
+      int bhtsize;              /* size of the branch history table, number of history regs */
+      int percepttablesize;     /* size of table of perceptrons, number of weight regs */
+      int hist_width;           /* amount of history in BHR shift regs */
+      int weight_width;         /* width of perceptron weight coefficicents (should be hist_width + 1) */
+      int xor;                  /* history xor address flag */
+      int *histregs;            /* branch history regs table */
+      signed char **percepttable;       /* perceptron table */
+    } percept;
   } config;
 };
 
@@ -146,6 +156,7 @@ struct bpred_t {
     struct bpred_dir_t *bimod;    /* first direction predictor */
     struct bpred_dir_t *twolev;   /* second direction predictor */
     struct bpred_dir_t *meta;     /* meta predictor */
+    struct bpred_dir_t *percept;  /* perceptron predictor */
   } dirpred;
 
   struct {
@@ -188,6 +199,7 @@ struct bpred_update_t {
     unsigned int bimod  : 1;    /* bimodal predictor */
     unsigned int twolev : 1;    /* 2-level predictor */
     unsigned int meta   : 1;    /* meta predictor (0..bimod / 1..2lev) */
+    unsigned int percept : 1;   /* perceptron predictor */
   } dir;
 };
 

@@ -110,7 +110,7 @@ static int ruu_branch_penalty;
 /* speed of front-end of machine relative to execution core */
 static int fetch_speed;
 
-/* branch predictor type {nottaken|taken|perfect|bimod|2lev|1bit|3bit|4bit|5bit|6bit} */
+/* branch predictor type {nottaken|taken|perfect|bimod|2lev|1bit|3bit|4bit|5bit|6bit|percept} */
 static char *pred_type;
 
 /* bimodal predictor config (<table_size>) */
@@ -650,7 +650,7 @@ sim_reg_options(struct opt_odb_t *odb)
                );
 
   opt_reg_string(odb, "-bpred",
-                 "branch predictor type {nottaken|taken|perfect|bimod|2lev|comb|1bit|3bit|4bit|5bit|6bit}",
+                 "branch predictor type {nottaken|taken|perfect|bimod|2lev|comb|1bit|3bit|4bit|5bit|6bit|percept}",
                  &pred_type, /* default */"bimod",
                  /* print */TRUE, /* format */NULL);
 

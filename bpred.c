@@ -104,6 +104,12 @@ bpred_create(enum bpred_class class,    /* type of predictor to create */
 
     break;
 
+  case BPredPercept:
+    pred->dirpred.percept = bpred_dir_create(class, l1size, l2size, shift_width, xor); /* (class, bhtsize, percepttablesize, hist_width, xor) */
+    // pred->dirpred.percept->config.percept.weight_width = pred->dirpred.percept->config.percept.hist_width + 1;
+
+    break;
+
   case BPred6bit:
   case BPred5bit:
   case BPred4bit:
@@ -126,6 +132,7 @@ bpred_create(enum bpred_class class,    /* type of predictor to create */
 
   /* allocate ret-addr stack */
   switch (class) {
+  case BPredPercept:
   case BPredComb:
   case BPred2Level:
   case BPred6bit:
@@ -240,6 +247,48 @@ bpred_dir_create (
         {
           pred_dir->config.two.l2table[cnt] = flipflop;
           flipflop = 3 - flipflop;
+        }
+
+      break;
+    }
+
+  case BPredPercept:
+    {
+      if (!l1size || (l1size & (l1size-1)) != 0)
+        fatal("level-1 history table size, `%d', must be non-zero and a power of two", l1size);
+      pred_dir->config.percept.bhtsize = l1size;
+
+      if (!l2size || (l2size & (l2size-1)) != 0)
+        fatal("level-2 perceptron table size, `%d', must be non-zero and a power of two", l2size);
+      pred_dir->config.percept.percepttablesize = l2size;
+
+      if (!shift_width || shift_width > 200)
+        fatal("shift history register width, `%d', must be non-zero and positive", shift_width);
+      pred_dir->config.percept.hist_width = shift_width;
+      pred_dir->config.percept.weight_width = shift_width + 1;
+
+      pred_dir->config.percept.xor = xor;
+
+      pred_dir->config.percept.histregs = calloc(l1size, sizeof(int));
+      if (!pred_dir->config.two.shiftregs)
+        fatal("cannot allocate shift register history table");
+
+      int rows = l2size;
+      int cols = shift_width + 1;
+      int i, j, count;
+      pred_dir->config.percept.percepttable = (signed char **)calloc(rows * sizeof(signed char *));
+      if (!pred_dir->config.percept.percepttable)
+        fatal("cannot allocate second level perceptron table");
+      for (i=0; i<rows; i++) {
+        pred_dir->config.percept.percepttable[i] = (signed char *)calloc(cols * sizeof(signed char));
+        if (!pred_dir->config.percept.percepttable[i])
+          fatal("cannot allocate second level perceptron table entry");
+      }
+
+      /* initialize perceptron weights to 0 */
+      for (i = 0; i < rows; i++)
+        for (j = 0; j < cols; j++) {
+          pred_dir->config.percept.percepttable[i][j] = 0;
         }
 
       break;
@@ -363,6 +412,13 @@ bpred_dir_config(
       pred_dir->config.two.xor ? "" : "no", pred_dir->config.two.l2size);
     break;
 
+  case BPredPercept:
+    fprintf(stream,
+      "pred_dir: %s: perceptron: %d bht-sz, %d hist-bits/ent, %s xor, %d percept-table-sz, direct-mapped\n",
+      name, pred_dir->config.percept.bhtsize, pred_dir->config.percept.hist_width,
+      pred_dir->config.percept.xor ? "" : "no", pred_dir->config.percept.percepttablesize);
+    break;
+
   case BPred6bit:
     fprintf(stream, "pred_dir: %s: 6-bit: %d entries, direct-mapped\n",
       name, pred_dir->config.bimod.size);
@@ -416,6 +472,13 @@ bpred_config(struct bpred_t *pred,      /* branch predictor instance */
     bpred_dir_config (pred->dirpred.bimod, "bimod", stream);
     bpred_dir_config (pred->dirpred.twolev, "2lev", stream);
     bpred_dir_config (pred->dirpred.meta, "meta", stream);
+    fprintf(stream, "btb: %d sets x %d associativity", 
+            pred->btb.sets, pred->btb.assoc);
+    fprintf(stream, "ret_stack: %d entries", pred->retstack.size);
+    break;
+
+  case BPredPercept:
+    bpred_dir_config (pred->dirpred.percept, "percept", stream);
     fprintf(stream, "btb: %d sets x %d associativity", 
             pred->btb.sets, pred->btb.assoc);
     fprintf(stream, "ret_stack: %d entries", pred->retstack.size);
@@ -505,6 +568,9 @@ bpred_reg_stats(struct bpred_t *pred,   /* branch predictor instance */
     {
     case BPredComb:
       name = "bpred_comb";
+      break;
+    case BPredPercept:
+      name = "bpred_percept";
       break;
     case BPred2Level:
       name = "bpred_2lev";
@@ -647,12 +713,16 @@ bpred_after_priming(struct bpred_t *bpred)
   ((((ADDR) >> 19) ^ ((ADDR) >> MD_BR_SHIFT)) & ((PRED)->config.bimod.size-1))
     /* was: ((baddr >> 16) ^ baddr) & (pred->dirpred.bimod.size-1) */
 
+#define PERCEPT_HASH(PRED, ADDR)                                          \
+  ((((ADDR) >> 19) ^ ((ADDR) >> MD_BR_SHIFT)) & ((PRED)->config.percept.percepttablesize-1))
+
 /* predicts a branch direction */
 char *                                          /* pointer to counter */
 bpred_dir_lookup(struct bpred_dir_t *pred_dir,  /* branch dir predictor inst */
                  md_addr_t baddr)               /* branch address */
 {
   unsigned char *p = NULL;
+  signed char *p2 = NULL;
 
   /* Except for jumps, get a pointer to direction-prediction bits */
   switch (pred_dir->class) {
@@ -683,13 +753,17 @@ bpred_dir_lookup(struct bpred_dir_t *pred_dir,  /* branch dir predictor inst */
         p = &pred_dir->config.two.l2table[l2index];
       }
       break;
+    case BPredPercept:
+      p2 = pred_dir->config.percept.percepttable[PERCEPT_HASH(pred_dir, baddr)];
+      return (char *)p2;
+      break;
     case BPred6bit:
     case BPred5bit:
     case BPred4bit:
     case BPred3bit:
     case BPred2bit:
     case BPred1bit:
-      p = &pred_dir->config.bimod.table[BIMOD_HASH(pred_dir, baddr)];
+      p = pred_dir->config.bimod.table[BIMOD_HASH(pred_dir, baddr)];
       break;
     case BPredTaken:
     case BPredNotTaken:
@@ -764,6 +838,12 @@ bpred_lookup(struct bpred_t *pred,      /* branch predictor instance */
       if ((MD_OP_FLAGS(op) & (F_CTRL|F_UNCOND)) != (F_CTRL|F_UNCOND))
         {
           dir_update_ptr->pdir1 = bpred_dir_lookup (pred->dirpred.twolev, baddr);
+        }
+      break;
+    case BPredPercept:
+      if ((MD_OP_FLAGS(op) & (F_CTRL|F_UNCOND)) != (F_CTRL|F_UNCOND))
+        {
+          dir_update_ptr->pdir1 = bpred_dir_lookup (pred->dirpred.percept, baddr);
         }
       break;
     case BPred6bit:
@@ -862,6 +942,9 @@ bpred_lookup(struct bpred_t *pred,      /* branch predictor instance */
 
   unsigned int threshold;
   switch (pred->class) {
+    case BPredPercept: /* theta = (1.93h +14) */
+      threshold = 30; // temporary
+      break;
     case BPred6bit:
       threshold = 32;
       break;
@@ -887,17 +970,32 @@ bpred_lookup(struct bpred_t *pred,      /* branch predictor instance */
   /* otherwise we have a conditional branch */
   if (pbtb == NULL)
     {
-      /* BTB miss -- just return a predicted direction */
-      return ((*(dir_update_ptr->pdir1) >= threshold)
-              ? /* taken */ 1
-              : /* not taken */ 0);
+      if (pred->class == BPredPercept) {
+        signed char *pweights = (signed char *)(dir_update_ptr->pdir1);
+        int weight_width = pred->dirpred.percept->config.percept.weight_width;
+        int *input;
+        int sum = 0;
+        int i;
+
+      }
+      else {
+        /* BTB miss -- just return a predicted direction */
+        return ((*(dir_update_ptr->pdir1) >= threshold)
+                ? /* taken */ 1
+                : /* not taken */ 0);
+      }
     }
   else
     {
-      /* BTB hit, so return target if it's a predicted-taken branch */
-      return ((*(dir_update_ptr->pdir1) >= threshold)
-              ? /* taken */ pbtb->target
-              : /* not taken */ 0);
+      if (pred->class == BPredPercept) {
+
+      }
+      else {
+        /* BTB hit, so return target if it's a predicted-taken branch */
+        return ((*(dir_update_ptr->pdir1) >= threshold)
+                ? /* taken */ pbtb->target
+                : /* not taken */ 0);
+      }
     }
 }
 
@@ -1163,7 +1261,7 @@ bpred_update(struct bpred_t *pred,      /* branch predictor instance */
           else
             {
               /* bimodal predictor was correct */
-              if (*dir_update_ptr->pmeta > saturation)
+              if (*dir_update_ptr->pmeta > 0)
                 --*dir_update_ptr->pmeta;
             }
         }

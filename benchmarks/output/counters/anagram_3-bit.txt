@@ -8,7 +8,7 @@ of SimpleScalar, LLC (info@simplescalar.com).
 warning: section `.comment' ignored...
 sim: command line: ./../sim-outorder -bpred 3bit anagram.alpha words 
 
-sim: simulation started @ Tue Dec  1 09:06:31 2015, options follow:
+sim: simulation started @ Sun Nov 29 21:20:57 2015, options follow:
 
 sim-outorder: This simulator implements a very detailed out-of-order issue
 superscalar processor with a two-level memory system and speculative

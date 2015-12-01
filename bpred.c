@@ -1276,6 +1276,7 @@ bpred_update(struct bpred_t *pred,      /* branch predictor instance */
         for(i = 0; i < weight_width; ++i) {
           sum += (input_arr[i] * (int)pweights[i]);
         }
+        sum = abs(sum); // we only use the sum as a check against theta (saturation) to prevent overtraining
 
         if (taken) {
           adj_taken = 1;

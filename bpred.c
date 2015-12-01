@@ -270,7 +270,7 @@ bpred_dir_create (
       pred_dir->config.percept.xor = xor;
 
       pred_dir->config.percept.histregs = calloc(l1size, sizeof(int));
-      if (!pred_dir->config.two.shiftregs)
+      if (!pred_dir->config.percept.histregs)
         fatal("cannot allocate shift register history table");
 
       int rows = l2size;

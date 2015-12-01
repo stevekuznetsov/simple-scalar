@@ -33,7 +33,7 @@ latency of all pipeline operations.
 -fetch:ifqsize              4 # instruction fetch queue size (in insts)
 -fetch:mplat                3 # extra branch mis-prediction latency
 -fetch:speed                1 # speed of front-end of machine relative to execution core
--bpred                perfect # branch predictor type {nottaken|taken|perfect|bimod|2lev|comb|1bit|3bit|4bit|5bit|6bit}
+-bpred                perfect # branch predictor type {nottaken|taken|perfect|bimod|2lev|comb|1bit|3bit|4bit|5bit|6bit|percept}
 -bpred:bimod     2048 # bimodal predictor config (<table size>)
 -bpred:2lev      1 1024 8 0 # 2-level predictor config (<l1size> <l2size> <hist_size> <xor>)
 -bpred:comb      1024 # combining predictor config (<meta_table_size>)

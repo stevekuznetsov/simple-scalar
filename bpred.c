@@ -275,7 +275,7 @@ bpred_dir_create (
 
       int rows = l2size;
       int cols = shift_width + 1;
-      int i, j, count;
+      int i, j;
       pred_dir->config.percept.percepttable = (signed char **)calloc(rows, sizeof(signed char *));
       if (!pred_dir->config.percept.percepttable)
         fatal("cannot allocate second level perceptron table");
@@ -948,9 +948,9 @@ bpred_lookup(struct bpred_t *pred,      /* branch predictor instance */
     }
 
   unsigned int threshold;
+  int percept_threshold = 0;
   switch (pred->class) {
     case BPredPercept:
-      threshold = 0;
       break;
     case BPred6bit:
       threshold = 32;
@@ -976,7 +976,7 @@ bpred_lookup(struct bpred_t *pred,      /* branch predictor instance */
 
   /* perceptron prediction for conditional branch */
   if (pred->class == BPredPercept) {
-    int weight_width, hist_width, bhtindex, bhr_entry, input, temp_bit;
+    int weight_width, bhtindex, bhr_entry, input, temp_bit;
     signed char *pweights = (signed char *)(dir_update_ptr->pdir1);
     weight_width = pred->dirpred.percept->config.percept.weight_width;
 
@@ -1003,12 +1003,13 @@ bpred_lookup(struct bpred_t *pred,      /* branch predictor instance */
       sum += (input_arr[i] * (int)pweights[i]);
     }
     if (pbtb == NULL) {
-      return ((sum >= threshold)
+      // printf("%d ", sum);
+      return ((sum >= percept_threshold)
               ? /* taken */ 1
               : /* not taken */ 0);
     }
     else {
-      return ((sum >= threshold)
+      return ((sum >= percept_threshold)
               ? /* taken */ pbtb->target
               : /* not taken */ 0);
     }
@@ -1152,6 +1153,16 @@ bpred_update(struct bpred_t *pred,      /* branch predictor instance */
       l1index = (baddr >> MD_BR_SHIFT) & (pred->dirpred.twolev->config.two.l1size - 1);
       shift_reg = (pred->dirpred.twolev->config.two.shiftregs[l1index] << 1) | (!!taken);
       pred->dirpred.twolev->config.two.shiftregs[l1index] = shift_reg & ((1 << pred->dirpred.twolev->config.two.shift_width) - 1);
+    }
+  if ((MD_OP_FLAGS(op) & (F_CTRL|F_UNCOND)) != (F_CTRL|F_UNCOND) &&
+      (pred->class == BPredPercept))
+    {
+      int l1index, shift_reg;
+      
+      /* also update appropriate L1 history register */
+      l1index = (baddr >> MD_BR_SHIFT) & (pred->dirpred.percept->config.percept.bhtsize - 1);
+      shift_reg = (pred->dirpred.percept->config.percept.histregs[l1index] << 1) | (!!taken);
+      pred->dirpred.percept->config.percept.histregs[l1index] = shift_reg & ((1 << pred->dirpred.percept->config.percept.hist_width) - 1);
     }
 
   /* find BTB entry if it's a taken branch (don't allocate for non-taken) */

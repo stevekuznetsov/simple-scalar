@@ -104,6 +104,12 @@ bpred_create(enum bpred_class class,    /* type of predictor to create */
 
     break;
 
+  case BPredPercept: // Maybe you'd prefer BPredPerceptRonWeasley?
+    pred->dirpred.percept = bpred_dir_create(class, l1size, l2size, shift_width, xor); /* (class, bhtsize, percepttablesize, hist_width, xor) */
+    // pred->dirpred.percept->config.percept.weight_width = pred->dirpred.percept->config.percept.hist_width + 1;
+
+    break;
+
   case BPred6bit:
   case BPred5bit:
   case BPred4bit:
@@ -126,6 +132,7 @@ bpred_create(enum bpred_class class,    /* type of predictor to create */
 
   /* allocate ret-addr stack */
   switch (class) {
+  case BPredPercept:
   case BPredComb:
   case BPred2Level:
   case BPred6bit:
@@ -240,6 +247,48 @@ bpred_dir_create (
         {
           pred_dir->config.two.l2table[cnt] = flipflop;
           flipflop = 3 - flipflop;
+        }
+
+      break;
+    }
+
+  case BPredPercept:
+    {
+      if (!l1size || (l1size & (l1size-1)) != 0)
+        fatal("level-1 history table size, `%d', must be non-zero and a power of two", l1size);
+      pred_dir->config.percept.bhtsize = l1size;
+
+      if (!l2size || (l2size & (l2size-1)) != 0)
+        fatal("level-2 perceptron table size, `%d', must be non-zero and a power of two", l2size);
+      pred_dir->config.percept.percepttablesize = l2size;
+
+      if (!shift_width || shift_width > 200)
+        fatal("shift history register width, `%d', must be non-zero and positive", shift_width);
+      pred_dir->config.percept.hist_width = shift_width;
+      pred_dir->config.percept.weight_width = shift_width + 1;
+
+      pred_dir->config.percept.xor = xor;
+
+      pred_dir->config.percept.histregs = calloc(l1size, sizeof(int));
+      if (!pred_dir->config.percept.histregs)
+        fatal("cannot allocate shift register history table");
+
+      int rows = l2size;
+      int cols = shift_width + 1;
+      int i, j;
+      pred_dir->config.percept.percepttable = (signed char **)calloc(rows, sizeof(signed char *));
+      if (!pred_dir->config.percept.percepttable)
+        fatal("cannot allocate second level perceptron table");
+      for (i=0; i<rows; i++) {
+        pred_dir->config.percept.percepttable[i] = (signed char *)calloc(cols, sizeof(signed char));
+        if (!pred_dir->config.percept.percepttable[i])
+          fatal("cannot allocate second level perceptron table entry");
+      }
+
+      /* initialize perceptron weights to 0 */
+      for (i = 0; i < rows; i++)
+        for (j = 0; j < cols; j++) {
+          pred_dir->config.percept.percepttable[i][j] = 0;
         }
 
       break;
@@ -363,6 +412,13 @@ bpred_dir_config(
       pred_dir->config.two.xor ? "" : "no", pred_dir->config.two.l2size);
     break;
 
+  case BPredPercept:
+    fprintf(stream,
+      "pred_dir: %s: perceptron: %d bht-sz, %d hist-bits/ent, %s xor, %d percept-table-sz, direct-mapped\n",
+      name, pred_dir->config.percept.bhtsize, pred_dir->config.percept.hist_width,
+      pred_dir->config.percept.xor ? "" : "no", pred_dir->config.percept.percepttablesize);
+    break;
+
   case BPred6bit:
     fprintf(stream, "pred_dir: %s: 6-bit: %d entries, direct-mapped\n",
       name, pred_dir->config.bimod.size);
@@ -416,6 +472,13 @@ bpred_config(struct bpred_t *pred,      /* branch predictor instance */
     bpred_dir_config (pred->dirpred.bimod, "bimod", stream);
     bpred_dir_config (pred->dirpred.twolev, "2lev", stream);
     bpred_dir_config (pred->dirpred.meta, "meta", stream);
+    fprintf(stream, "btb: %d sets x %d associativity", 
+            pred->btb.sets, pred->btb.assoc);
+    fprintf(stream, "ret_stack: %d entries", pred->retstack.size);
+    break;
+
+  case BPredPercept:
+    bpred_dir_config (pred->dirpred.percept, "percept", stream);
     fprintf(stream, "btb: %d sets x %d associativity", 
             pred->btb.sets, pred->btb.assoc);
     fprintf(stream, "ret_stack: %d entries", pred->retstack.size);
@@ -505,6 +568,9 @@ bpred_reg_stats(struct bpred_t *pred,   /* branch predictor instance */
     {
     case BPredComb:
       name = "bpred_comb";
+      break;
+    case BPredPercept:
+      name = "bpred_percept";
       break;
     case BPred2Level:
       name = "bpred_2lev";
@@ -647,12 +713,16 @@ bpred_after_priming(struct bpred_t *bpred)
   ((((ADDR) >> 19) ^ ((ADDR) >> MD_BR_SHIFT)) & ((PRED)->config.bimod.size-1))
     /* was: ((baddr >> 16) ^ baddr) & (pred->dirpred.bimod.size-1) */
 
+#define PERCEPT_HASH(PRED, ADDR)                                          \
+  ((((ADDR) >> 19) ^ ((ADDR) >> MD_BR_SHIFT)) & ((PRED)->config.percept.percepttablesize-1))
+
 /* predicts a branch direction */
 char *                                          /* pointer to counter */
 bpred_dir_lookup(struct bpred_dir_t *pred_dir,  /* branch dir predictor inst */
                  md_addr_t baddr)               /* branch address */
 {
   unsigned char *p = NULL;
+  signed char *p2 = NULL;
 
   /* Except for jumps, get a pointer to direction-prediction bits */
   switch (pred_dir->class) {
@@ -682,6 +752,10 @@ bpred_dir_lookup(struct bpred_dir_t *pred_dir,  /* branch dir predictor inst */
         /* get a pointer to prediction state information */
         p = &pred_dir->config.two.l2table[l2index];
       }
+      break;
+    case BPredPercept:
+      p2 = pred_dir->config.percept.percepttable[PERCEPT_HASH(pred_dir, baddr)];
+      return (char *)p2;
       break;
     case BPred6bit:
     case BPred5bit:
@@ -735,6 +809,7 @@ bpred_lookup(struct bpred_t *pred,      /* branch predictor instance */
   dir_update_ptr->pdir1 = NULL;
   dir_update_ptr->pdir2 = NULL;
   dir_update_ptr->pmeta = NULL;
+  dir_update_ptr->input_snapshot = NULL;
   /* Except for jumps, get a pointer to direction-prediction bits */
   switch (pred->class) {
     case BPredComb:
@@ -764,6 +839,18 @@ bpred_lookup(struct bpred_t *pred,      /* branch predictor instance */
       if ((MD_OP_FLAGS(op) & (F_CTRL|F_UNCOND)) != (F_CTRL|F_UNCOND))
         {
           dir_update_ptr->pdir1 = bpred_dir_lookup (pred->dirpred.twolev, baddr);
+        }
+      break;
+    case BPredPercept:
+      if ((MD_OP_FLAGS(op) & (F_CTRL|F_UNCOND)) != (F_CTRL|F_UNCOND))
+        {
+          dir_update_ptr->pdir1 = bpred_dir_lookup (pred->dirpred.percept, baddr);
+
+          int bhtindex, bhr_entry, input;
+          bhtindex = (baddr >> MD_BR_SHIFT) & (pred->dirpred.percept->config.percept.bhtsize - 1);
+          bhr_entry = pred->dirpred.percept->config.percept.histregs[bhtindex];
+          input = (bhr_entry << 1) | 1;
+          dir_update_ptr->input_snapshot = &input;
         }
       break;
     case BPred6bit:
@@ -861,7 +948,10 @@ bpred_lookup(struct bpred_t *pred,      /* branch predictor instance */
     }
 
   unsigned int threshold;
+  int percept_threshold = 0;
   switch (pred->class) {
+    case BPredPercept:
+      break;
     case BPred6bit:
       threshold = 32;
       break;
@@ -883,6 +973,49 @@ bpred_lookup(struct bpred_t *pred,      /* branch predictor instance */
       threshold = 1;
       break;
   }
+
+  /* perceptron prediction for conditional branch */
+  if (pred->class == BPredPercept) {
+    int weight_width, bhtindex, bhr_entry, input, temp_bit;
+    signed char *pweights = (signed char *)(dir_update_ptr->pdir1);
+    weight_width = pred->dirpred.percept->config.percept.weight_width;
+
+    // hist_width = pred->dirpred.percept->config.percept.hist_width;
+    bhtindex = (baddr >> MD_BR_SHIFT) & (pred->dirpred.percept->config.percept.bhtsize - 1);
+    bhr_entry = pred->dirpred.percept->config.percept.histregs[bhtindex];
+
+    input = (bhr_entry << 1) | 1; // First input is used for bias weighting and always set to 1
+    int input_arr[weight_width];
+    int sum = 0;
+    int i;
+
+    for(i = 0; i < weight_width; ++i, input >>= 1) {
+      temp_bit = input & 1;
+      if (temp_bit == 0) {
+        input_arr[i] = -1;
+      }
+      else {
+        input_arr[i] = 1;
+      }
+    }
+
+    for(i = 0; i < weight_width; ++i) {
+      sum += (input_arr[i] * (int)pweights[i]);
+    }
+    if (pbtb == NULL) {
+      // printf("%d ", sum);
+      return ((sum >= percept_threshold)
+              ? /* taken */ 1
+              : /* not taken */ 0);
+    }
+    else {
+      return ((sum >= percept_threshold)
+              ? /* taken */ pbtb->target
+              : /* not taken */ 0);
+    }
+
+  }
+
 
   /* otherwise we have a conditional branch */
   if (pbtb == NULL)
@@ -1021,6 +1154,16 @@ bpred_update(struct bpred_t *pred,      /* branch predictor instance */
       shift_reg = (pred->dirpred.twolev->config.two.shiftregs[l1index] << 1) | (!!taken);
       pred->dirpred.twolev->config.two.shiftregs[l1index] = shift_reg & ((1 << pred->dirpred.twolev->config.two.shift_width) - 1);
     }
+  if ((MD_OP_FLAGS(op) & (F_CTRL|F_UNCOND)) != (F_CTRL|F_UNCOND) &&
+      (pred->class == BPredPercept))
+    {
+      int l1index, shift_reg;
+      
+      /* also update appropriate L1 history register */
+      l1index = (baddr >> MD_BR_SHIFT) & (pred->dirpred.percept->config.percept.bhtsize - 1);
+      shift_reg = (pred->dirpred.percept->config.percept.histregs[l1index] << 1) | (!!taken);
+      pred->dirpred.percept->config.percept.histregs[l1index] = shift_reg & ((1 << pred->dirpred.percept->config.percept.hist_width) - 1);
+    }
 
   /* find BTB entry if it's a taken branch (don't allocate for non-taken) */
   if (taken)
@@ -1095,6 +1238,9 @@ bpred_update(struct bpred_t *pred,      /* branch predictor instance */
 
   unsigned int saturation;
   switch (pred->class) {
+    case BPredPercept:
+      saturation = (pred->dirpred.percept->config.percept.hist_width)*2 + 14; /* theta = (1.93h +14), where h is the history register width */
+      break;
     case BPred6bit:
       saturation = 63;
       break;
@@ -1120,16 +1266,59 @@ bpred_update(struct bpred_t *pred,      /* branch predictor instance */
   /* update state (but not for jumps) */
   if (dir_update_ptr->pdir1)
     {
-      if (taken)
-        {
-          if (*dir_update_ptr->pdir1 < saturation)
-            ++*dir_update_ptr->pdir1;
+      if ((pred->class == BPredPercept) && dir_update_ptr->input_snapshot) {
+        int input_snapshot, weight_width, temp_bit, adj_taken, i;
+        signed char *pweights = (signed char *)(dir_update_ptr->pdir1);
+        input_snapshot = *(dir_update_ptr->input_snapshot);
+        weight_width = pred->dirpred.percept->config.percept.weight_width;
+
+        int input_arr[weight_width];
+        for(i = 0; i < weight_width; ++i, input_snapshot >>= 1) {
+          temp_bit = input_snapshot & 1;
+          if (temp_bit == 0) {
+            input_arr[i] = -1;
+          }
+          else {
+            input_arr[i] = 1;
+          }
         }
-      else
-        { /* not taken */
-          if (*dir_update_ptr->pdir1 > 0)
-            --*dir_update_ptr->pdir1;
+
+        int sum = 0;
+        for(i = 0; i < weight_width; ++i) {
+          sum += (input_arr[i] * (int)pweights[i]);
         }
+        sum = abs(sum); // we only use the sum as a check against theta (saturation) to prevent overtraining
+
+        if (taken) {
+          adj_taken = 1;
+        }
+        else {
+          adj_taken = -1;
+        }
+        if ((sum <= saturation) || (correct == 0)) {
+          /* train the perceptron by updating weights */
+          for(i = 0; i < weight_width; ++i) {
+            if (adj_taken == input_arr[i]) {
+              pweights[i] += 1; // We use 1 instead of ++ since the training speed should be adjustable if needed
+            }
+            else {
+              pweights[i] -= 1;
+            }
+          }
+        }
+      }
+      else {
+        if (taken)
+          {
+            if (*dir_update_ptr->pdir1 < saturation)
+              ++*dir_update_ptr->pdir1;
+          }
+        else
+          { /* not taken */
+            if (*dir_update_ptr->pdir1 > 0)
+              --*dir_update_ptr->pdir1;
+          }
+      }
     }
 
   /* combining predictor also updates second predictor and meta predictor */
@@ -1163,7 +1352,7 @@ bpred_update(struct bpred_t *pred,      /* branch predictor instance */
           else
             {
               /* bimodal predictor was correct */
-              if (*dir_update_ptr->pmeta > saturation)
+              if (*dir_update_ptr->pmeta > 0)
                 --*dir_update_ptr->pmeta;
             }
         }

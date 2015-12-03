@@ -1,0 +1,36 @@
+
+
+            _/_/_/_/_/_/  _/_/          _/_/       _/_/_/                   _/_/_/_/      _/_/_/_/_/_/ 
+           _/_/_/_/_/_/  _/_/_/      _/_/_/    _/_/_/_/_/_/             _/_/_/_/_/_/_/   _/_/_/_/_/_/-/
+          _/_/          _/_/_/_/  _/_/_/_/   _/_/      _/_/            _/_/       _/_/  _/_/       _/_/
+         _/_/          _/_/ _/_/_/_/ _/_/  _/_/        _/_/                      _/_/  _/_/        _/_/
+        _/_/_/_/_/    _/_/  _/_/_/  _/_/  _/_/        _/_/  _/_/_/_/        _/_/_/_/  _/_/        _/_/ 
+       _/_/_/_/_/    _/_/   _/_/   _/_/  _/_/_/_/_/_/_/_/  _/_/_/_/        _/_/_/_/  _/_/        _/_/  
+      _/_/          _/_/          _/_/  _/_/_/_/_/_/_/_/                      _/_/  _/_/        _/_/   
+     _/_/          _/_/          _/_/  _/_/        _/_/           _/_/       _/_/  _/_/       _/_/     
+    _/_/          _/_/          _/_/  _/_/        _/_/           _/_/_/_/_/_/_/   _/_/_/_/_/_/_/       
+   _/_/          _/_/          _/_/  _/_/        _/_/              _/_/_/_/      _/_/_/_/_/_/          
+
+     Version: SPEC CPU
+     Released: 
+
+ *** INFORMATION *** REPORT_ALLOCATION_EVENT.001.00
+ *** INFORMATION *** ALLOCATE Function Succeeded For Derived Type: INCLUDE_FILE
+ *** INFORMATION *** Number Of Items Allocated:      100
+
+ *** INFORMATION *** REPORT_ALLOCATION_EVENT.001.00
+ *** INFORMATION *** ALLOCATE Function Succeeded For Derived Type: VALUE
+ *** INFORMATION *** Number Of Items Allocated:        2
+  
+  Entered INIT_INCLUDE_FILE.
+  
+  
+  Entered SCAN_INCLUDED_FILES.
+  
+
+ *** WARNING MSG *** SCAN_INCLUDED_FILE.001.01
+ *** WARNING MSG *** Unable To Execute OPEN On: /home/stevekuznetsov/Documents/repositories/simple-scalar/benchmarks/SPEC2000/sp
+
+ *** FATAL ERROR *** SCAN_INCLUDED_FILES.004.00
+ *** FATAL ERROR *** Total Number Of INCLUDE Record Errors:       1
+ *** FATAL ERROR *** Execution Terminated By Program.

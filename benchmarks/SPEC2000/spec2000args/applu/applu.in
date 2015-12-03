@@ -1,0 +1,26 @@
+c
+c***unit number for output data: iout
+                                  6
+c
+c***controls printing of the progress of iterations: ipr   inorm 
+                                                      1     1
+c
+c***the maximum no. of pseudo-time steps to be performed: itmax
+                                                           350
+c
+c***magnitude of the time step: dt
+                              1.5e-03
+c
+c***the method for solving the linearized system: invert
+                                                    2
+c
+c***relaxation factor for SSOR iterations: omega
+                                           1.2
+c
+c***tolerance levels for steady-state residuals: tolrsd(m),m=1,5
+                             1.0e-12   1.0e-12   1.0e-12  1.0e-12  1.0e-12
+c
+c***number of grid points in xi and eta and zeta directions: nx   ny   nz
+                                                             60   60   60
+c
+

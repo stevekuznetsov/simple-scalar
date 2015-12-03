@@ -7,6 +7,8 @@
 #  - compress95 : sim-outorder ${arguments} compress95.alpha < compress95.in
 #  - gcc        : sim-outorder ${arguments} cc1.alpha -O 1stmt.i
 #  - go         : sim-outorder ${arguments} go.alpha 50 9 2stone9.in
+# If the SPEC2000 flag is set, the script will run all of the SPEC benchmarks with an
+# initial window of 20M ignored instructions and a benchmark window of 50M instructions.
 
 set -e errexit  # force script to exit if any command fails
 set -e pipefail # force script to exit if any part of a pipe fails
@@ -63,7 +65,6 @@ function run_benchmarks() {
     for (( j=0; j<${#test_args[@]}; j++ )); do
       output_file="${benchmark_names[$i]}_${test_names[$j]}.txt"
       echo "Executing: 'sim-outorder ${test_args[$j]} ${benchmarks[$i]}' and storing the output at ${output_dir}/${output_file}"
-      # hard-code anagram benchmark for now
       eval "./../sim-outorder ${test_args[$j]} ${benchmarks[$i]}" > ${output_dir}/${output_file} 2>&1
 
       # extract useful metrics
@@ -83,6 +84,25 @@ function run_benchmarks() {
     done
   done
 
+  if [[ -n "${SPEC2000}" ]]; then
+    output_dir="output/spec2000/${suite_name}"
+    mkdir -p "${output_dir}"
+    rm -rf "${output_dir}/*"
+
+    benchmarks=( $(ls -d SPEC2000/spec2000args/* | grep -Po "(?<=spec2000args/).*") )
+    for benchmark in "${benchmarks[@]}"; do
+      pushd SPEC2000/spec2000args/${benchmark} > /dev/null
+      for (( i=0; i<${#test_args[@]}; i++ )); do
+        binary="./../../spec2000binaries/${benchmark}00.peak.ev6"
+        run="./RUN${benchmark}"
+
+        echo "Running ${run} './../../../../sim-outorder ${test_args[$i]}' ${binary} -fastfwd 20000000 -max:inst 50000000 > ./../../../${output_dir}/${benchmark}_${test_names[$i]}.txt 2>&1"
+        eval time "${run} './../../../../sim-outorder ${test_args[$i]}' ${binary} -fastfwd 20000000 -max:inst 50000000" > ./../../../${output_dir}/${benchmark}_${test_names[$i]}.txt 2>&1
+      done
+      popd > /dev/null
+    done
+  fi
   # return to previous location
   popd > /dev/null
 }
+

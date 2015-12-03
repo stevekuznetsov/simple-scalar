@@ -1,0 +1,14 @@
+#!/bin/sh -f
+#
+# $1 is simplescalar simulator
+# $2 is the simplescalar binary for this benchmark
+SIM=$1;
+BIN=$2;
+shift 2;
+
+#echo THIS DOES NOT YET WORK FOR PISA
+$SIM $* $BIN -l ./gap.input/ -m 100M < gap.ref.in
+
+
+
+

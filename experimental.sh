@@ -3,4 +3,4 @@
 
 source benchmarks.sh
 
-run_benchmarks 'experimental' '' # TODO: add perceptron and O-GHEL here
+run_benchmarks 'experimental' 'percept=-bpred percept' #'-bpred oghel'

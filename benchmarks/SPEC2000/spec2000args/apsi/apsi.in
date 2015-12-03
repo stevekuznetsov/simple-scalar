@@ -1,0 +1,118 @@
+------------------------------------------------!                       00001000
+  ***  D A T A   F O R   M E S O - R U N  ***   !                       00002000
+------------------------------------------------!                       00003000
+              INTEGER CONSTANTS                 !                       00004000
+------------------------------------------------!                       00005000
+     L E G E N T             !   V A L U E      !                       00006000
+------------------------------------------------!                       00007000
+GRID POINTS IN x DIRECTION   !        112       !                       00008000
+GRID POINTS IN y DIRECTION   !        112       !                       00009000
+GRID POINTS IN z DIRECTION   !        112	!                       00010000
+MOMENTUM SMOOTHING RATIO     !          2       !                       00011000
+SPECTRAL FILTERING (0=n,1=y) !          1       !                       00012000
+NUMBER OF TIME STEPS         !         70       !                       00013000
+EXCHANGE LEAP TO EULER FREQ  !          4       !                       00014000
+VERTICAL SCALE (0=reg,1=map) !          1       !                       00015000
+BIAS FOR HEATING FUNCTION    !          1       !                       00016000
+HORIZONTAL FILTERING STEP    !       2000       !                       00017000
+BATCH MODE RUN   (0=y,1=n)   !          0       !                       00018000
+VERTICAL SCHEME (0=Pade 1=CN)!          0       !                       00019000
+Z-SMOOTHING (1=YES,0=NO)     !          1       !                       00020000
+RERUN ->SAVED DATA (0=n,1=y) !          0       !                       00021000
+SALVAGE DATA PARAMETER STEP  !          1       !                       00022000
+SAVE GRAPH DATA (0=N, 1=Y)   !          1       !                       00023000
+SAVE GRAPH DATA EVERY OTHER  !         70       !                       00024000
+NUMBER OF C SOURCES/SINKS    !          2       !                       00025000
+NUMBER OF INITIAL CONDITIONS !          0       !                       00026000
+SOURCE #1 (1=Gauss, 0=Delta) !          1       !                       00027000
+I.C.   #1 (1=Gauss, 0=Delta) !          1       !                       00028000
+SOURCE #2 (1=Gauss, 0=Delta) !          1       !                       00029000
+I.C.   #2 (1=Gauss, 0=Delta) !          1       !                       00030000
+x-LOCATION OF SOURCE 1 (I)   !         16       !                       00031000
+x-LOCATION OF IN CON 1 (I)   !          8       !                       00032000
+x-LOCATION OF SOURCE 2 (I)   !         45       !                       00033000
+x-LOCATION OF IN CON 2 (I)   !         27       !                       00034000
+y-LOCATION OF SOURCE 1 (J)   !         16       !                       00035000
+y-LOCATION OF IN CON 1 (J)   !          8       !                       00036000
+y-LOCATION OF SOURCE 2 (J)   !         45       !                       00037000
+y-LOCATION OF IN CON 2 (J)   !         27       !                       00038000
+z-LOCATION OF SOURCE 1 (K)   !          2       !                       00039000
+z-LOCATION OF IN CON 1 (K)   !          5       !                       00040000
+z-LOCATION OF SOURCE 2 (K)   !          3       !                       00041000
+z-LOCATION OF IN CON 2 (K)   !         13       !                       00042000
+STRENGTH  OF SOURCE 1        !          1       !                       00043000
+STRENGTH  OF IN CON 1        !       5000       !                       00044000
+STRENGTH  OF SOURCE 2        !          2       !                       00045000
+STRENGTH  OF IN CON 2        !       2000       !                       00046000
+x-SPREAD  OF SOURCE 1  (I-GP)!          1       !                       00047000
+x-SPREAD  OF IN CON 1  (I-GP)!          2       !                       00048000
+x-SPREAD  OF SOURCE 2  (I-GP)!          1       !                       00049000
+x-SPREAD  OF IN CON 2  (I-GP)!          0       !                       00050000
+y-SPREAD  OF SOURCE 1  (J-GP)!          1       !                       00051000
+y-SPREAD  OF IN CON 1  (J-GP)!          2       !                       00052000
+y-SPREAD  OF SOURCE 2  (J-GP)!          1       !                       00053000
+y-SPREAD  OF IN CON 2  (J-GP)!          1       !                       00054000
+z-SPREAD  OF SOURCE 1  (K-GP)!          1       !                       00055000
+z-SPREAD  OF IN CON 1  (K-GP)!          4       !                       00056000
+z-SPREAD  OF SOURCE 2  (K-GP)!          1       !                       00057000
+z-SPREAD  OF IN CON 2  (K-GP)!          0       !                       00058000
+VARIANCE  Sxy OF SOURCE 1    !         20       !                       00059000
+VARIANCE  Sxy OF IN CON 1    !         20       !                       00060000
+VARIANCE  Sxy OF SOURCE 2    !         20       !                       00061000
+VARIANCE  Sxy OF IN CON 2    !         20       !                       00062000
+STORE AS A FIRST  z-LEVEL    !          1       !                       00063000
+STORE AS A SECOND z-LEVEL    !          3       !                       00064000
+STORE AS A THIRD  z-LEVEL    !          5       !                       00065000
+STORE AS A FOURTH z-LEVEL    !         30       !                       00066000
+HOMOGENIOUS y (0=2-D, 1=3-D) !          1       !                       00067000
+MEAN FIELD RECALCULATE STEPS !      10000       !                       00068000
+UG RATE OF CHANGE (cm/hour)  !         10       !                       00069000
+VG RATE OF CHANGE (cm/hour)  !         10       !                       00070000
+T0 RATE OF CHANGE (K/10hour) !         10       !                       00071000
+TN RATE OF CHANGE (K/10hour) !         10       !                       00072000
+CPU INFORMATION FREQUENCY    !       1000       !                       00073000
+------------------------------------------------!                       00074000
+             REAL CONSTANTS                     !                       00075000
+------------------------------------------------!                       00076000
+     L E G E N T             !   V A L U E      !                       00077000
+------------------------------------------------!                       00078000
+STARTING TIME (sec)          !          0.0     !                       00079000
+DELTA t  (TIME-STEP) (sec)   !        100.0     !                       00080000
+STARTING x    (m)            !          0.0     !                       00081000
+DELTA x  (x-STEP)  (m)       !       8000.0     !                       00082000
+DIFFUSSIVITY  Kx (m*m/sec)   !       7000.0     !                       00083000
+STARTING y    (m)            !          0.0     !                       00084000
+DELTA y  (y-STEP)  (m)       !       5000.0     !                       00085000
+DIFFUSSIVITY  Ky (m*m/sec)   !       1000.0     !                       00086000
+STARTING z    (m)            !          0.0     !                       00087000
+DELTA z  (z-STEP)  (m)       !        100.0     !                       00088000
+MIN DIFFUSSIVITY  Kz(m*m/sec)!          0.1     !                       00089000
+SPREAD OF STRECHED VARIABLE a!          0.3     !                       00090000
+AMPLITUDE OF STRECHED VBL  b !        120.0     !                       00091000
+HEIGHT H OF OBSERVED DATA (m)!       1000.0     !                       00092000
+Ug(H) GEOSTROPHIC WIND (m/s) !          7.0     !                       00093000
+Vg(H) GEOSTROPHIC WIND (m/s) !          0.0     !                       00094000
+POTENTIAL TEMPERATURE AT z=0 !        290.0     !                       00095000
+POTENTIAL TEMPERATURE AT z=H !        295.0     !                       00096000
+STEP FOR WIND ITERATION delt !         60.0     !                       00097000
+TOLLERANCE FOR ITERATION     !       2000.00002 !                       00098000
+UPWINDING FOR CRANK-NICOLSON !          0.5     !                       00099000
+x-SYMMETRY OF LAKE           !          2.8     !                       00100000
+x-SPREAD OF LAKE             !      45000.0     !                       00101000
+y-SYMMETRY OF LAKE           !          2.0     !                       00102000
+y-SPREAD OF LAKE             !      20000.0     !                       00103000
+URBAN ROUGHNESS LENGTH       !          0.02    !                       00104000
+HEAT AMPLITUDE IN DEGREES (K)!         11.00    !                       00105000
+HEAT LAG FACTOR IN SECONDS   !      50400.00    !                       00106000
+CENTRAL LATITUDE IN DEGREES  !         40.00    !                       00107000
+IMPLICIT HOR SMOOTHING LAMDA !          0.5     !                       00108000
+X-SYMMETRY OF SPECTRAL FILTER!          2.0     !                       00109000
+Y-SYMMETRY OF SPECTRAL FILTER!          2.0     !                       00110000
+X-SPREAD OF SPECTRAL FILTER  !      85000.0     !                       00111000
+Y-SPREAD OF SPECTRAL FILTER  !      50000.0     !                       00112000
+FILTER BASE NUMBER           !           .1     !                       00113000
+SURFACE LAYER FRACTION OF BL !           .05    !                       00114000
+INITIAL MIXED LAYER HEGHT (m)!        200.0     !                       00115000
+INITIAL ROUGHNES OVER WATER  !           .01    !                       00116000
+ROUGHNES LENGTH OVER LAND (m)!           .1     !                       00117000
+-------------------------------------------------                       00118000

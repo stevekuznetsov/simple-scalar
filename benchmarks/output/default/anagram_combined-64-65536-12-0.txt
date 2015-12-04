@@ -1,0 +1,827 @@
+sim-outorder: SimpleScalar/Alpha Tool Set version 3.0 of August, 2003.
+Copyright (c) 1994-2003 by Todd M. Austin, Ph.D. and SimpleScalar, LLC.
+All Rights Reserved. This version of SimpleScalar is licensed for academic
+non-commercial use.  No portion of this work may be used by any commercial
+entity, or for any commercial purpose, without the prior written permission
+of SimpleScalar, LLC (info@simplescalar.com).
+
+warning: section `.comment' ignored...
+sim: command line: ./../sim-outorder -bpred comb -bpred:2lev 64 65536 12 0 anagram.alpha words 
+
+sim: simulation started @ Fri Dec  4 03:36:05 2015, options follow:
+
+sim-outorder: This simulator implements a very detailed out-of-order issue
+superscalar processor with a two-level memory system and speculative
+execution support.  This simulator is a performance simulator, tracking the
+latency of all pipeline operations.
+
+# -config                     # load configuration from a file
+# -dumpconfig                 # dump configuration to a file
+# -h                    false # print help message    
+# -v                    false # verbose operation     
+# -d                    false # enable debug message  
+# -i                    false # start in Dlite debugger
+-seed                       1 # random number generator seed (0 for timer seed)
+# -q                    false # initialize and terminate immediately
+# -chkpt               <null> # restore EIO trace execution from <fname>
+# -redir:sim           <null> # redirect simulator output to file (non-interactive only)
+# -redir:prog          <null> # redirect simulated program output to file
+-nice                       0 # simulator scheduling priority
+-max:inst                   0 # maximum number of inst's to execute
+-fastfwd                    0 # number of insts skipped before timing starts
+# -ptrace              <null> # generate pipetrace, i.e., <fname|stdout|stderr> <range>
+-fetch:ifqsize              4 # instruction fetch queue size (in insts)
+-fetch:mplat                3 # extra branch mis-prediction latency
+-fetch:speed                1 # speed of front-end of machine relative to execution core
+-bpred                   comb # branch predictor type {nottaken|taken|perfect|bimod|2lev|comb|1bit|3bit|4bit|5bit|6bit|percept|oghel}
+-bpred:bimod     2048 # bimodal predictor config (<table size>)
+-bpred:oghel     8 5 2 256 5 # O-GHEL predictor config (<num_tables> <counter_size> <first_history_length> <last_history_length> <theta>)
+-bpred:2lev      64 65536 12 0 # 2-level predictor config (<l1size> <l2size> <hist_size> <xor>)
+-bpred:comb      1024 # combining predictor config (<meta_table_size>)
+-bpred:ras                  8 # return address stack size (0 for no return stack)
+-bpred:btb       512 4 # BTB config (<num_sets> <associativity>)
+# -bpred:spec_update       <null> # speculative predictors update in {ID|WB} (default non-spec)
+-decode:width               4 # instruction decode B/W (insts/cycle)
+-issue:width                4 # instruction issue B/W (insts/cycle)
+-issue:inorder          false # run pipeline with in-order issue
+-issue:wrongpath         true # issue instructions down wrong execution paths
+-commit:width               4 # instruction commit B/W (insts/cycle)
+-ruu:size                  16 # register update unit (RUU) size
+-lsq:size                   8 # load/store queue (LSQ) size
+-cache:dl1       dl1:128:32:4:l # l1 data cache config, i.e., {<config>|none}
+-cache:dl1lat               1 # l1 data cache hit latency (in cycles)
+-cache:dl2       ul2:1024:64:4:l # l2 data cache config, i.e., {<config>|none}
+-cache:dl2lat               6 # l2 data cache hit latency (in cycles)
+-cache:il1       il1:512:32:1:l # l1 inst cache config, i.e., {<config>|dl1|dl2|none}
+-cache:il1lat               1 # l1 instruction cache hit latency (in cycles)
+-cache:il2                dl2 # l2 instruction cache config, i.e., {<config>|dl2|none}
+-cache:il2lat               6 # l2 instruction cache hit latency (in cycles)
+-cache:flush            false # flush caches on system calls
+-cache:icompress        false # convert 64-bit inst addresses to 32-bit inst equivalents
+-mem:lat         18 2 # memory access latency (<first_chunk> <inter_chunk>)
+-mem:width                  8 # memory access bus width (in bytes)
+-tlb:itlb        itlb:16:4096:4:l # instruction TLB config, i.e., {<config>|none}
+-tlb:dtlb        dtlb:32:4096:4:l # data TLB config, i.e., {<config>|none}
+-tlb:lat                   30 # inst/data TLB miss latency (in cycles)
+-res:ialu                   4 # total number of integer ALU's available
+-res:imult                  1 # total number of integer multiplier/dividers available
+-res:memport                2 # total number of memory system ports available (to CPU)
+-res:fpalu                  4 # total number of floating point ALU's available
+-res:fpmult                 1 # total number of floating point multiplier/dividers available
+# -pcstat              <null> # profile stat(s) against text addr's (mult uses ok)
+-bugcompat              false # operate in backward-compatible bugs mode (for testing only)
+
+  Pipetrace range arguments are formatted as follows:
+
+    {{@|#}<start>}:{{@|#|+}<end>}
+
+  Both ends of the range are optional, if neither are specified, the entire
+  execution is traced.  Ranges that start with a `@' designate an address
+  range to be traced, those that start with an `#' designate a cycle count
+  range.  All other range values represent an instruction count range.  The
+  second argument, if specified with a `+', indicates a value relative
+  to the first argument, e.g., 1000:+100 == 1000:1100.  Program symbols may
+  be used in all contexts.
+
+    Examples:   -ptrace FOO.trc #0:#1000
+                -ptrace BAR.trc @2000:
+                -ptrace BLAH.trc :1500
+                -ptrace UXXE.trc :
+                -ptrace FOOBAR.trc @main:+278
+
+  Branch predictor configuration examples for 2-level predictor:
+    Configurations:   N, M, W, X
+      N   # entries in first level (# of shift register(s))
+      W   width of shift register(s)
+      M   # entries in 2nd level (# of counters, or other FSM)
+      X   (yes-1/no-0) xor history and address for 2nd level index
+    Sample predictors:
+      GAg     : 1, W, 2^W, 0
+      GAp     : 1, W, M (M > 2^W), 0
+      PAg     : N, W, 2^W, 0
+      PAp     : N, W, M (M == 2^(N+W)), 0
+      gshare  : 1, W, 2^W, 1
+  Predictor `comb' combines a bimodal and a 2-level predictor.
+
+  The cache config parameter <config> has the following format:
+
+    <name>:<nsets>:<bsize>:<assoc>:<repl>
+
+    <name>   - name of the cache being defined
+    <nsets>  - number of sets in the cache
+    <bsize>  - block size of the cache
+    <assoc>  - associativity of the cache
+    <repl>   - block replacement strategy, 'l'-LRU, 'f'-FIFO, 'r'-random
+
+    Examples:   -cache:dl1 dl1:4096:32:1:l
+                -dtlb dtlb:128:4096:32:r
+
+  Cache levels can be unified by pointing a level of the instruction cache
+  hierarchy at the data cache hiearchy using the "dl1" and "dl2" cache
+  configuration arguments.  Most sensible combinations are supported, e.g.,
+
+    A unified l2 cache (il2 is pointed at dl2):
+      -cache:il1 il1:128:64:1:l -cache:il2 dl2
+      -cache:dl1 dl1:256:32:1:l -cache:dl2 ul2:1024:64:2:l
+
+    Or, a fully unified cache hierarchy (il1 pointed at dl1):
+      -cache:il1 dl1
+      -cache:dl1 ul1:256:32:1:l -cache:dl2 ul2:1024:64:2:l
+
+
+
+sim: ** starting performance simulation **
+main dictionary has 24475 entries
+3048 bytes wasted
+warning: partially supported sigprocmask() call...
+136 candidates
+Order of search will be uoisdantjklmfephqzrcgbvwxy
+USN Dido tat 
+USN Dido AT&T 
+USN toad tid 
+USN toad it'd 
+taut DOD sin 
+taut don Dis 
+taut nod Dis 
+taut odd sin 
+taut sod din 
+taut son did 
+tau DOD isn't 
+tau DOD NTIS 
+tau don't Dis 
+tau odd isn't 
+tau odd NTIS 
+tau sod dint 
+tau Todd sin 
+USIA DOD TNT 
+USIA odd TNT 
+sun Dido AT&T 
+sun Dido tat 
+sun toad it'd 
+sun toad tid 
+suit DOD Nat 
+suit DOD tan 
+suit DOD ant 
+suit don tad 
+suit dot DNA 
+suit dot and 
+suit dot Dan 
+suit nod tad 
+suit not add 
+suit not dad 
+suit odd tan 
+suit odd Nat 
+suit odd ant 
+suit ton add 
+suit ton dad 
+Sudan ditto 
+sud ado tint 
+sud dot anti 
+sud dot ain't 
+sud into tad 
+sud NATO tid 
+sud NATO it'd 
+sud oat dint 
+sud Odin tat 
+sud Odin AT&T 
+sud oint tad 
+sud toad nit 
+sud toad tin 
+sud tao dint 
+sud Toni tad 
+anus DOD ITT 
+anus DOD tit 
+anus DOD IT&T 
+anus dot tid 
+anus dot it'd 
+anus odd ITT 
+anus odd tit 
+anus odd IT&T 
+anus Ott did 
+anus tot did 
+astound it'd 
+astound tid 
+USDA don IT&T 
+USDA don tit 
+USDA don ITT 
+USDA dot tin 
+USDA dot nit 
+USDA nod IT&T 
+USDA nod tit 
+USDA nod ITT 
+USDA not it'd 
+USDA not tid 
+USDA Ott din 
+USDA tot din 
+USDA ton it'd 
+USDA ton tid 
+aunt DOD sit 
+aunt dot Dis 
+aunt odd sit 
+aunt sod it'd 
+aunt sod tid 
+Austin Todd 
+USA Dido TNT 
+USA DOD tint 
+USA don't tid 
+USA don't it'd 
+USA dot dint 
+USA odd tint 
+USA Todd tin 
+USA Todd nit 
+stun ado tid 
+stun ado it'd 
+stun dot aid 
+stun dot Ida 
+stun Ito dad 
+stun Ito add 
+stun oat did 
+stun tao did 
+unit DOD sat 
+unit dot sad 
+unit odd sat 
+unit sod tad 
+stud ado nit 
+stud ado tin 
+stud dot ani 
+stud ion tad 
+stud Ito Dan 
+stud Ito and 
+stud Ito DNA 
+stud not Ida 
+stud not aid 
+stud oat din 
+stud tao din 
+stud ton Ida 
+stud ton aid 
+sou tint add 
+sou tint dad 
+sou dint tad 
+situ DOD Nat 
+situ DOD tan 
+situ DOD ant 
+situ don tad 
+situ dot and 
+situ dot DNA 
+situ dot Dan 
+situ nod tad 
+situ not dad 
+situ not add 
+situ odd Nat 
+situ odd tan 
+situ odd ant 
+situ ton dad 
+situ ton add 
+Saud don ITT 
+Saud don IT&T 
+Saud don tit 
+Saud dot nit 
+Saud dot tin 
+Saud nod ITT 
+Saud nod IT&T 
+Saud nod tit 
+Saud not tid 
+Saud not it'd 
+Saud Ott din 
+Saud tot din 
+Saud ton tid 
+Saud ton it'd 
+out it'd sand 
+out NTIS add 
+out NTIS dad 
+out isn't add 
+out isn't dad 
+out did Stan 
+out dint sad 
+out tid sand 
+oust it'd DNA 
+oust it'd and 
+oust it'd Dan 
+oust did ant 
+oust did tan 
+oust did Nat 
+oust nit add 
+oust nit dad 
+oust din tad 
+oust tin add 
+oust tin dad 
+oust tid DNA 
+oust tid and 
+oust tid Dan 
+onus it'd tad 
+onus ITT dad 
+onus ITT add 
+onus IT&T dad 
+onus IT&T add 
+onus tit dad 
+onus tit add 
+onus did tat 
+onus did AT&T 
+onus tid tad 
+nut Dido sat 
+nut Otis add 
+nut Otis dad 
+nut dot said 
+nut dot dais 
+nut soda tid 
+nut soda it'd 
+nut toad Dis 
+nut Taos did 
+dud into sat 
+dud Ito Stan 
+dud NATO sit 
+dud oat NTIS 
+dud oat isn't 
+dud oint sat 
+dud Otis Nat 
+dud Otis tan 
+dud Otis ant 
+dud Ott Sian 
+dud Ott ANSI 
+dud Sao tint 
+dud tot Sian 
+dud tot ANSI 
+dud tao isn't 
+dud tao NTIS 
+dud Taos nit 
+dud Taos tin 
+dud Toni sat 
+dun Otis tad 
+dun Ott dais 
+dun Ott said 
+dun soda tit 
+dun soda IT&T 
+dun soda ITT 
+dun tot said 
+dun tot dais 
+dun toad sit 
+dun Taos tid 
+dun Taos it'd 
+dust ion tad 
+dust Ito and 
+dust Ito DNA 
+dust Ito Dan 
+dust not aid 
+dust not Ida 
+dust oat din 
+dust dot ani 
+dust tao din 
+dust ton aid 
+dust ton Ida 
+dust ado tin 
+dust ado nit 
+Dutton said 
+Dutton dais 
+tout din sad 
+tout did San 
+tout Dis and 
+tout Dis DNA 
+tout Dis Dan 
+tout sin add 
+tout sin dad 
+tun Dido sat 
+tun Otis dad 
+tun Otis add 
+tun dot dais 
+tun dot said 
+tun soda tid 
+tun soda it'd 
+tun toad Dis 
+tun Taos did 
+tuna odd sit 
+tuna DOD sit 
+tuna dot Dis 
+tuna sod tid 
+tuna sod it'd 
+313 candidates
+Order of search will be bhscoreatklmdnzgpqfijuvwxy
+abc chest rot 
+abc chest tor 
+abc torch EST 
+abc torch set 
+abc etch sort 
+abc ethos CRT 
+abc her Scott 
+abc hot crest 
+abc those CRT 
+abc Thor sect 
+abc tech sort 
+abc Roth sect 
+abc Seth ROTC 
+abc short etc 
+abet cosh CRT 
+Abo chest CRT 
+tab chert cos 
+tab chose CRT 
+tab torch sec 
+tab hoc crest 
+tab retch cos 
+strobe catch 
+stab crochet 
+stab echo CRT 
+sorb chat etc 
+sorb etch cat 
+sorb etch act 
+sorb tech cat 
+sorb tech act 
+sob catch ret 
+sob chart etc 
+sob cheat CRT 
+sob chert cat 
+sob chert act 
+sob etch cart 
+sob tech cart 
+sob retch cat 
+sob retch act 
+sob teach CRT 
+scab etch rot 
+scab etch tor 
+scab Thor etc 
+scab the ROTC 
+scab tech rot 
+scab tech tor 
+scab Roth etc 
+rob catch set 
+rob catch EST 
+rob chat sect 
+rob chest cat 
+rob chest act 
+rob etch scat 
+rob etch Acts 
+rob etch cast 
+rob tech scat 
+rob tech Acts 
+rob tech cast 
+reb chat cost 
+reb chat Scot 
+reb cosh tact 
+orb catch EST 
+orb catch set 
+orb chat sect 
+orb chest act 
+orb chest cat 
+orb etch scat 
+orb etch Acts 
+orb etch cast 
+orb tech scat 
+orb tech Acts 
+orb tech cast 
+hob crest act 
+hob crest cat 
+hob sec tract 
+hob sect cart 
+hob caste CRT 
+herb cos tact 
+herb Scot act 
+herb Scot cat 
+herb cost act 
+herb cost cat 
+herb cast Oct 
+herb cast cot 
+herb Acts Oct 
+herb Acts cot 
+herb scat Oct 
+herb scat cot 
+throb sec cat 
+throb sec act 
+throb sac etc 
+crab hoc test 
+crab host etc 
+crab hot sect 
+crab the Scot 
+crab the cost 
+crab Seth Oct 
+crab Seth cot 
+crab shot etc 
+Corbett cash 
+CBS char tote 
+CBS chart toe 
+CBS chat tore 
+CBS cheat tor 
+CBS cheat rot 
+CBS chert oat 
+CBS chert tao 
+CBS chore AT&T 
+CBS chore tat 
+CBS ache tort 
+CBS ache trot 
+CBS torch eta 
+CBS torch ate 
+CBS torch eat 
+CBS torch tea 
+CBS torah etc 
+CBS each tort 
+CBS each trot 
+CBS earth cot 
+CBS earth Oct 
+CBS echo tart 
+CBS hate ROTC 
+CBS hater cot 
+CBS hater Oct 
+CBS heart cot 
+CBS heart Oct 
+CBS heat ROTC 
+CBS her cotta 
+CBS hero tact 
+CBS hoc tater 
+CBS hoc treat 
+CBS hoe tract 
+CBS hot cater 
+CBS hot carte 
+CBS hot caret 
+CBS hot crate 
+CBS hot trace 
+CBS other cat 
+CBS other act 
+CBS Thea ROTC 
+CBS the actor 
+CBS reach tot 
+CBS reach Ott 
+CBS that core 
+CBS retch oat 
+CBS retch tao 
+CBS teach tor 
+CBS teach rot 
+CBS arch tote 
+CBS Tahoe CRT 
+Cabot she CRT 
+Bach sort etc 
+Bach cost ret 
+Bach Scot ret 
+Bach rest Oct 
+Bach rest cot 
+Bach sect tor 
+Bach sect rot 
+Bach sec tort 
+Bach sec trot 
+Bach set ROTC 
+Bach EST ROTC 
+bah coset CRT 
+bah crest cot 
+bah crest Oct 
+bah sect ROTC 
+bar chest cot 
+bar chest Oct 
+bar etch Scot 
+bar etch cost 
+bar tech Scot 
+bar tech cost 
+Barth sec cot 
+Barth sec Oct 
+Barth cos etc 
+bash ROTC etc 
+baste crotch 
+baste hoc CRT 
+bat chert cos 
+bat chose CRT 
+bat torch sec 
+bat hoc crest 
+bat retch cos 
+batch sector 
+batch escort 
+batch sec rot 
+batch sec tor 
+batch cos ret 
+bate cosh CRT 
+bater scotch 
+Bates crotch 
+Bates hoc CRT 
+bath sec ROTC 
+bathe cos CRT 
+beast crotch 
+beast hoc CRT 
+beat cosh CRT 
+Bert cash Oct 
+Bert cash cot 
+Bert chat cos 
+Bert cosh act 
+Bert cosh cat 
+Bert hoc scat 
+Bert hoc Acts 
+Bert hoc cast 
+berth sac Oct 
+berth sac cot 
+berth accost 
+berth cos cat 
+berth cos act 
+best Chao CRT 
+best char cot 
+best char Oct 
+best hoc cart 
+best arch Oct 
+best arch cot 
+bet cash ROTC 
+bet chaos CRT 
+bet char Scot 
+bet char cost 
+bet chart cos 
+bet cosh cart 
+bet crash cot 
+bet crash Oct 
+bet torch sac 
+bet arch Scot 
+bet arch cost 
+beta cosh CRT 
+beth sac ROTC 
+beth cost RCA 
+beth cost arc 
+beth cost car 
+beth cos cart 
+beth scar cot 
+beth scar Oct 
+beth Scot RCA 
+beth Scot arc 
+beth Scot car 
+boa chest CRT 
+Boca stretch 
+Boca Seth CRT 
+Bohr sec tact 
+Bohr sect cat 
+Bohr sect act 
+Bohr scat etc 
+Bohr Acts etc 
+Bohr cast etc 
+Bosch CRT tea 
+Bosch CRT eta 
+Bosch CRT ate 
+Bosch CRT eat 
+Bosch cat ret 
+Bosch act ret 
+Bosch etc rat 
+Bosch etc art 
+Bosch etc tar 
+Bose chat CRT 
+botch sac ret 
+botch set arc 
+botch set RCA 
+botch set car 
+botch EST arc 
+botch EST RCA 
+botch EST car 
+botch sea CRT 
+botch sec tar 
+botch sec art 
+botch sec rat 
+both case CRT 
+both sec cart 
+both sect arc 
+both sect RCA 
+both sect car 
+both scar etc 
+bract hoc set 
+bract hoc EST 
+bract hot sec 
+bract the cos 
+bract she Oct 
+bract she cot 
+brash etc Oct 
+brash etc cot 
+breach Scott 
+Brest hoc act 
+Brest hoc cat 
+Brett hoc sac 
+broth sec cat 
+broth sec act 
+broth sac etc 
+cab chest rot 
+cab chest tor 
+cab torch EST 
+cab torch set 
+cab etch sort 
+cab ethos CRT 
+cab her Scott 
+cab hot crest 
+cab those CRT 
+cab Thor sect 
+cab tech sort 
+cab Roth sect 
+cab Seth ROTC 
+cab short etc 
+29 candidates
+Order of search will be ogiurhsbjklmanzepqfdtcvwxy
+Hugo iris 
+
+sim: ** simulation statistics **
+sim_num_insn               25597558 # total number of instructions committed
+sim_num_refs                9033571 # total number of loads and stores committed
+sim_num_loads               6491600 # total number of loads committed
+sim_num_stores         2541971.0000 # total number of stores committed
+sim_num_branches            3778374 # total number of branches committed
+sim_elapsed_time                 11 # total simulation time in seconds
+sim_inst_rate          2327050.7273 # simulation speed (in insts/sec)
+sim_total_insn             26774776 # total number of instructions executed
+sim_total_refs              9395047 # total number of loads and stores executed
+sim_total_loads             6711805 # total number of loads executed
+sim_total_stores       2683242.0000 # total number of stores executed
+sim_total_branches          3968064 # total number of branches executed
+sim_cycle                  11534915 # total simulation time in cycles
+sim_IPC                      2.2191 # instructions per cycle
+sim_CPI                      0.4506 # cycles per instruction
+sim_exec_BW                  2.3212 # total instructions (mis-spec + committed) per cycle
+sim_IPB                      6.7748 # instruction per branch
+IFQ_count                  41377126 # cumulative IFQ occupancy
+IFQ_fcount                  9352797 # cumulative IFQ full count
+ifq_occupancy                3.5871 # avg IFQ occupancy (insn's)
+ifq_rate                     2.3212 # avg IFQ dispatch rate (insn/cycle)
+ifq_latency                  1.5454 # avg IFQ occupant latency (cycle's)
+ifq_full                     0.8108 # fraction of time (cycle's) IFQ was full
+RUU_count                 159358590 # cumulative RUU occupancy
+RUU_fcount                  6836201 # cumulative RUU full count
+ruu_occupancy               13.8153 # avg RUU occupancy (insn's)
+ruu_rate                     2.3212 # avg RUU dispatch rate (insn/cycle)
+ruu_latency                  5.9518 # avg RUU occupant latency (cycle's)
+ruu_full                     0.5927 # fraction of time (cycle's) RUU was full
+LSQ_count                  54272607 # cumulative LSQ occupancy
+LSQ_fcount                  1225015 # cumulative LSQ full count
+lsq_occupancy                4.7051 # avg LSQ occupancy (insn's)
+lsq_rate                     2.3212 # avg LSQ dispatch rate (insn/cycle)
+lsq_latency                  2.0270 # avg LSQ occupant latency (cycle's)
+lsq_full                     0.1062 # fraction of time (cycle's) LSQ was full
+sim_slip                  244943202 # total number of slip cycles
+avg_sim_slip                 9.5690 # the average slip between issue and retirement
+bpred_comb.lookups          4042754 # total number of bpred lookups
+bpred_comb.updates          3778374 # total number of updates
+bpred_comb.addr_hits        3651927 # total number of address-predicted hits
+bpred_comb.dir_hits         3652360 # total number of direction-predicted hits (includes addr-hits)
+bpred_comb.used_bimod       2023325 # total number of bimodal predictions used
+bpred_comb.used_2lev         612823 # total number of 2-level predictions used
+bpred_comb.misses            126014 # total number of misses
+bpred_comb.jr_hits           325043 # total number of address-predicted hits for JR's
+bpred_comb.jr_seen           325214 # total number of JR's seen
+bpred_comb.jr_non_ras_hits.PP         6282 # total number of address-predicted hits for non-RAS JR's
+bpred_comb.jr_non_ras_seen.PP         6324 # total number of non-RAS JR's seen
+bpred_comb.bpred_addr_rate    0.9665 # branch address-prediction rate (i.e., addr-hits/updates)
+bpred_comb.bpred_dir_rate    0.9666 # branch direction-prediction rate (i.e., all-hits/updates)
+bpred_comb.bpred_jr_rate    0.9995 # JR address-prediction rate (i.e., JR addr-hits/JRs seen)
+bpred_comb.bpred_jr_non_ras_rate.PP    0.9934 # non-RAS JR addr-pred rate (ie, non-RAS JR hits/JRs seen)
+bpred_comb.retstack_pushes       336110 # total number of address pushed onto ret-addr stack
+bpred_comb.retstack_pops       321428 # total number of address popped off of ret-addr stack
+bpred_comb.used_ras.PP       318890 # total number of RAS predictions used
+bpred_comb.ras_hits.PP       318761 # total number of RAS hits
+bpred_comb.ras_rate.PP    0.9996 # RAS prediction rate (i.e., RAS hits/used RAS)
+il1.accesses               27240353 # total number of accesses
+il1.hits                   27220994 # total number of hits
+il1.misses                    19359 # total number of misses
+il1.replacements              18882 # total number of replacements
+il1.writebacks                    0 # total number of writebacks
+il1.invalidations                 0 # total number of invalidations
+il1.miss_rate                0.0007 # miss rate (i.e., misses/ref)
+il1.repl_rate                0.0007 # replacement rate (i.e., repls/ref)
+il1.wb_rate                  0.0000 # writeback rate (i.e., wrbks/ref)
+il1.inv_rate                 0.0000 # invalidation rate (i.e., invs/ref)
+dl1.accesses                9041839 # total number of accesses
+dl1.hits                    8999477 # total number of hits
+dl1.misses                    42362 # total number of misses
+dl1.replacements              41850 # total number of replacements
+dl1.writebacks                10711 # total number of writebacks
+dl1.invalidations                 0 # total number of invalidations
+dl1.miss_rate                0.0047 # miss rate (i.e., misses/ref)
+dl1.repl_rate                0.0046 # replacement rate (i.e., repls/ref)
+dl1.wb_rate                  0.0012 # writeback rate (i.e., wrbks/ref)
+dl1.inv_rate                 0.0000 # invalidation rate (i.e., invs/ref)
+ul2.accesses                  72432 # total number of accesses
+ul2.hits                      62748 # total number of hits
+ul2.misses                     9684 # total number of misses
+ul2.replacements               5595 # total number of replacements
+ul2.writebacks                 2621 # total number of writebacks
+ul2.invalidations                 0 # total number of invalidations
+ul2.miss_rate                0.1337 # miss rate (i.e., misses/ref)
+ul2.repl_rate                0.0772 # replacement rate (i.e., repls/ref)
+ul2.wb_rate                  0.0362 # writeback rate (i.e., wrbks/ref)
+ul2.inv_rate                 0.0000 # invalidation rate (i.e., invs/ref)
+itlb.accesses              27240353 # total number of accesses
+itlb.hits                  27240333 # total number of hits
+itlb.misses                      20 # total number of misses
+itlb.replacements                 0 # total number of replacements
+itlb.writebacks                   0 # total number of writebacks
+itlb.invalidations                0 # total number of invalidations
+itlb.miss_rate               0.0000 # miss rate (i.e., misses/ref)
+itlb.repl_rate               0.0000 # replacement rate (i.e., repls/ref)
+itlb.wb_rate                 0.0000 # writeback rate (i.e., wrbks/ref)
+itlb.inv_rate                0.0000 # invalidation rate (i.e., invs/ref)
+dtlb.accesses               9075203 # total number of accesses
+dtlb.hits                   9075119 # total number of hits
+dtlb.misses                      84 # total number of misses
+dtlb.replacements                 0 # total number of replacements
+dtlb.writebacks                   0 # total number of writebacks
+dtlb.invalidations                0 # total number of invalidations
+dtlb.miss_rate               0.0000 # miss rate (i.e., misses/ref)
+dtlb.repl_rate               0.0000 # replacement rate (i.e., repls/ref)
+dtlb.wb_rate                 0.0000 # writeback rate (i.e., wrbks/ref)
+dtlb.inv_rate                0.0000 # invalidation rate (i.e., invs/ref)
+sim_invalid_addrs                 0 # total non-speculative bogus addresses seen (debug var)
+ld_text_base           0x0120000000 # program text (code) segment base
+ld_text_size                 106496 # program text (code) size in bytes
+ld_data_base           0x0140000000 # program initialized data segment base
+ld_data_size                  71264 # program init'ed `.data' and uninit'ed `.bss' size in bytes
+ld_stack_base          0x011ff9b000 # program stack segment base (highest address in stack)
+ld_stack_size                 16384 # program initial stack size
+ld_prog_entry          0x01200059c0 # program entry point (initial PC)
+ld_environ_base        0x011ff97000 # program environment base address address
+ld_target_big_endian              0 # target executable endian-ness, non-zero if big endian
+mem.page_count                   55 # total number of pages allocated
+mem.page_mem                   440k # total size of memory pages allocated
+mem.ptab_misses              454304 # total first level page table misses
+mem.ptab_accesses         189073202 # total page table accesses
+mem.ptab_miss_rate           0.0024 # first level page table miss rate
+

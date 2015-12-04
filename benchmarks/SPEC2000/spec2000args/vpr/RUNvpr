@@ -1,0 +1,14 @@
+#!/bin/sh -f
+#
+# $1 is simplescalar simulator
+# $2 is the simplescalar binary for this benchmark
+SIM=$1;
+BIN=$2;
+shift 2;
+flags1="vpr.lgred.net vpr.small.arch.in vpr.place.out vpr.dum.out " 
+flags2="-nodisp -place_only -init_t 5 -exit_t 0.005 -alpha_t 0.9412 -inner_num 2 "
+flags="$flags1$flags2"
+
+$SIM $* $BIN $flags
+
+

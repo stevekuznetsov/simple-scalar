@@ -1,0 +1,16 @@
+#!/bin/sh -f
+#
+# $1 is simplescalar simulator
+# $2 is the simplescalar binary for this benchmark
+SIM=$1;
+BIN=$2;
+shift 2;
+flags1="chair.control.cook.ref chair.camera chair.surfaces "
+flags2="chair.cook.ppm ppm pixels_out.cook "
+flags="$flags1$flags2"
+
+$SIM $* $BIN $flags
+
+
+
+

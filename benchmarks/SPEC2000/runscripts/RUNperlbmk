@@ -1,0 +1,14 @@
+#!/bin/sh -f
+#
+# $1 is simplescalar simulator
+# $2 is the simplescalar binary for this benchmark
+SIM=$1;
+BIN=$2;
+shift 2;
+
+#$SIM $* $BIN -I./perl.lib perlbmk.lgred.makerand.pl
+#$SIM $* -max:inst 2010000000 $BIN -I./perl.lib perlbmk.lgred.makerand.pl
+$SIM $* $BIN -I./perl.lib perlbmk.lgred.makerand.pl
+
+
+

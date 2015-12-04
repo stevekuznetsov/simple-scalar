@@ -1,0 +1,75 @@
+
+TimberWolfSC version:v4.3a date:Mon Jan 25 18:50:36 EST 1988
+Standard Cell Placement and Global Routing Program
+Authors: Carl Sechen, Bill Swartz
+          Yale University
+
+
+NOTE: Restart file .rs2 not used
+
+TimberWolf will perform a global route step
+rowSep: 1.000000
+feedThruWidth: 4
+
+******************
+BLOCK DATA
+block:1 desire:2038
+block:2 desire:2038
+block:3 desire:2038
+block:4 desire:2038
+Total Desired Length: 8152
+total cell length: 8150
+total block length: 8148
+block x-span:2037  block y-span:525
+implicit feed thru range: -2037
+Using default value of bin.penalty.control:1.000000
+numBins automatically set to:20
+binWidth = average_cell_width + 0 sigma= 102
+average_cell_width is:101
+standard deviation of cell length is:68.6913
+TimberWolfSC starting from the beginning
+
+
+
+THIS IS THE ROUTE COST OF THE ORIGINAL PLACEMENT: 64120
+The number of nets with 1 pin is 32
+The number of nets with 2 pin is 66
+The number of nets with 3 pin is 24
+The number of nets with 4 pin is 6
+The number of nets with 5 pin is 2
+The number of nets with 6 pin is 1
+The number of nets with 7 pin is 2
+The number of nets with 8 pin is 1
+The number of nets with 9 pin is 1
+The number of nets with 10 pin or more is 0
+
+New Cost Function: Initial Horizontal Cost:56045
+New Cost Function: FEEDS:49   MISSING_ROWS:-463
+
+bdxlen:2060  bdylen:600
+l:0  t:562  r:2060  b:-38
+
+
+
+THIS IS THE ROUTE COST OF THE CURRENT PLACEMENT: 64120
+
+
+
+THIS IS THE PENALTY OF THE CURRENT PLACEMENT: 600
+
+The rand generator seed was at utemp() : 1
+
+
+  tempfile[0][0] = 0.982500    tempfile[0][1] = 90.000000
+  tempfile[1][0] = 0.915000    tempfile[1][1] = 20.000000
+  tempfile[2][0] = 0.700000    tempfile[2][1] = 10.000000
+  tempfile[3][0] = 0.100000    tempfile[3][1] = 0.000000
+
+  I   T  fds     Wire Penalty P_lim Epct binC rowC  acc  s/p early  FDs    MRs
+  1 500    0    60420    8648  1010  8.5  1.0  3.0 48.5 20.4  0.0    37    468
+  2 491    0    57468    4084  1704  0.0  0.5  2.3 48.2 14.3  0.0    50    481
+  3 482    0    65893    4486  1019  0.0  0.5  1.5 54.7 14.4  0.0    49    474
+  4 474    0    54837    3900  1037  0.0  0.5  0.8 50.9 18.1  0.0    46    478
+  5 465    0    54421    3864   981  0.0  0.5  0.5 50.9 15.5  0.0    34    472
+  6 457    0    53154    4100   980  0.0  0.5  0.5 50.3 13.4  0.0    42    473
+  7 449    0    52187    4180   953  0.0  0.5  0.5 49.7 16.2  0.0    42    483

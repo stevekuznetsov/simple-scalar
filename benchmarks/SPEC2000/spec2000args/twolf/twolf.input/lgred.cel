@@ -1,0 +1,1371 @@
+
+cell    13 C13
+left -100  right  100  bottom  -75  top   75
+pin name   1   signal S339     -85    75
+equiv name   2     -85   -75
+pin name   3   signal S357     -45    75
+equiv name   4     -45   -75
+pin name   5   signal S358      -5    75
+equiv name   6      -5   -75
+pin name   7   signal S131      55    75
+equiv name   8      55   -75
+pin name   9   signal S342      75    75
+equiv name  10      75   -75
+pin name  11   signal TW_PASS_THRU     -95    75
+equiv name  12     -95   -75
+pin name  13   signal TW_PASS_THRU     -65    75
+equiv name  14     -65   -75
+pin name  15   signal TW_PASS_THRU     -35    75
+equiv name  16     -35   -75
+pin name  17   signal TW_PASS_THRU     -15    75
+equiv name  18     -15   -75
+pin name  19   signal TW_PASS_THRU      15    75
+equiv name  20      15   -75
+pin name  21   signal TW_PASS_THRU      35    75
+equiv name  22      35   -75
+pin name  23   signal TW_PASS_THRU      95    75
+equiv name  24      95   -75
+
+cell    14 C14
+left -100  right  100  bottom  -75  top   75
+pin name   1   signal S339     -85    75
+equiv name   2     -85   -75
+pin name   3   signal S359     -45    75
+equiv name   4     -45   -75
+pin name   5   signal S358      -5    75
+equiv name   6      -5   -75
+pin name   7   signal S132      55    75
+equiv name   8      55   -75
+pin name   9   signal S360      75    75
+equiv name  10      75   -75
+pin name  11   signal TW_PASS_THRU     -95    75
+equiv name  12     -95   -75
+pin name  13   signal TW_PASS_THRU     -65    75
+equiv name  14     -65   -75
+pin name  15   signal TW_PASS_THRU     -35    75
+equiv name  16     -35   -75
+pin name  17   signal TW_PASS_THRU     -15    75
+equiv name  18     -15   -75
+pin name  19   signal TW_PASS_THRU      15    75
+equiv name  20      15   -75
+pin name  21   signal TW_PASS_THRU      35    75
+equiv name  22      35   -75
+pin name  23   signal TW_PASS_THRU      95    75
+equiv name  24      95   -75
+
+cell    15 C15
+left -100  right  100  bottom  -75  top   75
+pin name   1   signal S339     -85    75
+equiv name   2     -85   -75
+pin name   3   signal S361     -45    75
+equiv name   4     -45   -75
+pin name   5   signal S358      -5    75
+equiv name   6      -5   -75
+pin name   7   signal S133      55    75
+equiv name   8      55   -75
+pin name   9   signal S343      75    75
+equiv name  10      75   -75
+pin name  11   signal TW_PASS_THRU     -95    75
+equiv name  12     -95   -75
+pin name  13   signal TW_PASS_THRU     -65    75
+equiv name  14     -65   -75
+pin name  15   signal TW_PASS_THRU     -35    75
+equiv name  16     -35   -75
+pin name  17   signal TW_PASS_THRU     -15    75
+equiv name  18     -15   -75
+pin name  19   signal TW_PASS_THRU      15    75
+equiv name  20      15   -75
+pin name  21   signal TW_PASS_THRU      35    75
+equiv name  22      35   -75
+pin name  23   signal TW_PASS_THRU      95    75
+equiv name  24      95   -75
+
+cell    16 C16
+left -100  right  100  bottom  -75  top   75
+pin name   1   signal S339     -85    75
+equiv name   2     -85   -75
+pin name   3   signal S362     -45    75
+equiv name   4     -45   -75
+pin name   5   signal S111      -5    75
+equiv name   6      -5   -75
+pin name   7   signal S149      55    75
+equiv name   8      55   -75
+pin name   9   signal TW_PASS_THRU     -95    75
+equiv name  10     -95   -75
+pin name  11   signal TW_PASS_THRU     -65    75
+equiv name  12     -65   -75
+pin name  13   signal TW_PASS_THRU     -35    75
+equiv name  14     -35   -75
+pin name  15   signal TW_PASS_THRU     -15    75
+equiv name  16     -15   -75
+pin name  17   signal TW_PASS_THRU      15    75
+equiv name  18      15   -75
+pin name  19   signal TW_PASS_THRU      35    75
+equiv name  20      35   -75
+pin name  21   signal TW_PASS_THRU      95    75
+equiv name  22      95   -75
+
+cell    17 C17
+left  -35  right   35  bottom  -75  top   75
+pin name   1   signal S342     -30    75
+equiv name   2     -30   -75
+pin name   3   signal S364     -20    75
+equiv name   4     -20   -75
+pin name   5   signal S104       0    75
+equiv name   6       0   -75
+pin name   7   signal S105      10    75
+equiv name   8      10   -75
+pin name   9   signal S357      20    75
+equiv name  10      20   -75
+pin name  11   signal TW_PASS_THRU      30    75
+equiv name  12      30   -75
+
+cell    18 C18
+left  -35  right   35  bottom  -75  top   75
+pin name   1   signal S360     -30    75
+equiv name   2     -30   -75
+pin name   3   signal S365     -20    75
+equiv name   4     -20   -75
+pin name   5   signal S104       0    75
+equiv name   6       0   -75
+pin name   7   signal S106      10    75
+equiv name   8      10   -75
+pin name   9   signal S359      20    75
+equiv name  10      20   -75
+pin name  11   signal TW_PASS_THRU      30    75
+equiv name  12      30   -75
+
+cell    19 C19
+left  -35  right   35  bottom  -75  top   75
+pin name   1   signal S104     -30    75
+equiv name   2     -30   -75
+pin name   3   signal S107     -20    75
+equiv name   4     -20   -75
+pin name   5   signal S366       0    75
+equiv name   6       0   -75
+pin name   7   signal S343      10    75
+equiv name   8      10   -75
+pin name   9   signal S361      20    75
+equiv name  10      20   -75
+pin name  11   signal TW_PASS_THRU      30    75
+equiv name  12      30   -75
+
+cell    20 C20
+left  -35  right   35  bottom  -75  top   75
+pin name   1   signal S134     -30    75
+equiv name   2     -30   -75
+pin name   3   signal S338     -20    75
+equiv name   4     -20   -75
+pin name   5   signal S108       0    75
+equiv name   6       0   -75
+pin name   7   signal S109      10    75
+equiv name   8      10   -75
+pin name   9   signal S367      20    75
+equiv name  10      20   -75
+pin name  11   signal TW_PASS_THRU      30    75
+equiv name  12      30   -75
+
+cell    21 C21
+left  -35  right   35  bottom  -75  top   75
+pin name   1   signal S342     -30    75
+equiv name   2     -30   -75
+pin name   3   signal S368     -20    75
+equiv name   4     -20   -75
+pin name   5   signal S107       0    75
+equiv name   6       0   -75
+pin name   7   signal S369      10    75
+equiv name   8      10   -75
+pin name   9   signal S346      20    75
+equiv name  10      20   -75
+pin name  11   signal TW_PASS_THRU      30    75
+equiv name  12      30   -75
+
+cell    22 C22
+left  -30  right   30  bottom  -75  top   75
+pin name   1   signal S370     -25    75
+equiv name   2     -25   -75
+pin name   3   signal S346     -15    75
+equiv name   4     -15   -75
+pin name   5   signal S367       5    75
+equiv name   6       5   -75
+pin name   7   signal S362      15    75
+equiv name   8      15   -75
+pin name   9   signal TW_PASS_THRU      25    75
+equiv name  10      25   -75
+
+cell    23 C23
+left  -30  right   30  bottom  -75  top   75
+pin name   1   signal S360     -25    75
+equiv name   2     -25   -75
+pin name   3   signal S103     -15    75
+equiv name   4     -15   -75
+pin name   5   signal S344       5    75
+equiv name   6       5   -75
+pin name   7   signal S371      15    75
+equiv name   8      15   -75
+pin name   9   signal TW_PASS_THRU      25    75
+equiv name  10      25   -75
+
+cell    24 C24
+left  -30  right   30  bottom  -75  top   75
+pin name   1   signal S132     -25    75
+equiv name   2     -25   -75
+pin name   3   signal S102     -15    75
+equiv name   4     -15   -75
+pin name   5   signal S371       5    75
+equiv name   6       5   -75
+pin name   7   signal S368      15    75
+equiv name   8      15   -75
+pin name   9   signal TW_PASS_THRU      25    75
+equiv name  10      25   -75
+
+cell    25 C25
+left  -30  right   30  bottom  -75  top   75
+pin name   1   signal S368     -25    75
+equiv name   2     -25   -75
+pin name   3   signal S338     -15    75
+equiv name   4     -15   -75
+pin name   5   signal S372       5    75
+equiv name   6       5   -75
+pin name   7   signal S366      15    75
+equiv name   8      15   -75
+pin name   9   signal TW_PASS_THRU      25    75
+equiv name  10      25   -75
+
+cell    26 C26
+left -100  right  100  bottom  -75  top   75
+pin name   1   signal S109     -85    75
+equiv name   2     -85   -75
+pin name   3   signal S373      -5    75
+equiv name   4      -5   -75
+pin name   5   signal S369      55    75
+equiv name   6      55   -75
+pin name   7   signal S344      75    75
+equiv name   8      75   -75
+pin name   9   signal TW_PASS_THRU     -95    75
+equiv name  10     -95   -75
+pin name  11   signal TW_PASS_THRU     -65    75
+equiv name  12     -65   -75
+pin name  13   signal TW_PASS_THRU     -35    75
+equiv name  14     -35   -75
+pin name  15   signal TW_PASS_THRU     -15    75
+equiv name  16     -15   -75
+pin name  17   signal TW_PASS_THRU      15    75
+equiv name  18      15   -75
+pin name  19   signal TW_PASS_THRU      35    75
+equiv name  20      35   -75
+pin name  21   signal TW_PASS_THRU      95    75
+equiv name  22      95   -75
+
+cell    27 C27
+left  -15  right   15  bottom  -75  top   75
+pin name   1   signal S345     -10    75
+equiv name   2     -10   -75
+pin name   3   signal S372       0    75
+equiv name   4       0   -75
+pin name   5   signal TW_PASS_THRU      10    75
+equiv name   6      10   -75
+
+cell    28 C28
+left  -30  right   30  bottom  -75  top   75
+pin name   1   signal S112     -25    75
+equiv name   2     -25   -75
+pin name   3   signal S128     -15    75
+equiv name   4     -15   -75
+pin name   5   signal S338       5    75
+equiv name   6       5   -75
+pin name   7   signal S373      15    75
+equiv name   8      15   -75
+pin name   9   signal TW_PASS_THRU      25    75
+equiv name  10      25   -75
+
+cell    29 C29
+left  -30  right   30  bottom  -75  top   75
+pin name   1   signal S368     -25    75
+equiv name   2     -25   -75
+pin name   3   signal S337     -15    75
+equiv name   4     -15   -75
+pin name   5   signal S342       5    75
+equiv name   6       5   -75
+pin name   7   signal S374      15    75
+equiv name   8      15   -75
+pin name   9   signal TW_PASS_THRU      25    75
+equiv name  10      25   -75
+
+cell    30 C30
+left  -30  right   30  bottom  -75  top   75
+pin name   1   signal S133     -25    75
+equiv name   2     -25   -75
+pin name   3   signal S135     -15    75
+equiv name   4     -15   -75
+pin name   5   signal S340       5    75
+equiv name   6       5   -75
+pin name   7   signal S365      15    75
+equiv name   8      15   -75
+pin name   9   signal TW_PASS_THRU      25    75
+equiv name  10      25   -75
+
+cell    31 C31
+left  -30  right   30  bottom  -75  top   75
+pin name   1   signal S110     -25    75
+equiv name   2     -25   -75
+pin name   3   signal S341     -15    75
+equiv name   4     -15   -75
+pin name   5   signal S123       5    75
+equiv name   6       5   -75
+pin name   7   signal S370      15    75
+equiv name   8      15   -75
+pin name   9   signal TW_PASS_THRU      25    75
+equiv name  10      25   -75
+
+cell    32 C32
+left  -30  right   30  bottom  -75  top   75
+pin name   1   signal S123     -25    75
+equiv name   2     -25   -75
+pin name   3   signal S114     -15    75
+equiv name   4     -15   -75
+pin name   5   signal S115       5    75
+equiv name   6       5   -75
+pin name   7   signal S345      15    75
+equiv name   8      15   -75
+pin name   9   signal TW_PASS_THRU      25    75
+equiv name  10      25   -75
+
+cell    33 C33
+left  -15  right   15  bottom  -75  top   75
+pin name   1   signal S135     -10    75
+equiv name   2     -10   -75
+pin name   3   signal S134       0    75
+equiv name   4       0   -75
+pin name   5   signal TW_PASS_THRU      10    75
+equiv name   6      10   -75
+
+cell    34 C34
+left  -25  right   25  bottom  -75  top   75
+pin name   1   signal S343     -20    75
+equiv name   2     -20   -75
+pin name   3   signal S342       0    75
+equiv name   4       0   -75
+pin name   5   signal S146      10    75
+equiv name   6      10   -75
+pin name   7   signal TW_PASS_THRU     -10    75
+equiv name   8     -10   -75
+pin name   9   signal TW_PASS_THRU      20    75
+equiv name  10      20   -75
+
+cell    35 C35
+left  -25  right   25  bottom  -75  top   75
+pin name   1   signal S149     -20    75
+equiv name   2     -20   -75
+pin name   3   signal S122       0    75
+equiv name   4       0   -75
+pin name   5   signal S135      10    75
+equiv name   6      10   -75
+pin name   7   signal TW_PASS_THRU     -10    75
+equiv name   8     -10   -75
+pin name   9   signal TW_PASS_THRU      20    75
+equiv name  10      20   -75
+
+cell    36 C36
+left  -25  right   25  bottom  -75  top   75
+pin name   1   signal S113     -20    75
+equiv name   2     -20   -75
+pin name   3   signal S374       0    75
+equiv name   4       0   -75
+pin name   5   signal S364      10    75
+equiv name   6      10   -75
+pin name   7   signal TW_PASS_THRU     -10    75
+equiv name   8     -10   -75
+pin name   9   signal TW_PASS_THRU      20    75
+equiv name  10      20   -75
+
+cell    37 C37
+left  -15  right   15  bottom  -75  top   75
+pin name   1   signal S111     -10    75
+equiv name   2     -10   -75
+pin name   3   signal S358       0    75
+equiv name   4       0   -75
+pin name   5   signal TW_PASS_THRU      10    75
+equiv name   6      10   -75
+
+cell    38 C38
+left -100  right  100  bottom  -75  top   75
+pin name   1   signal S375     -85    75
+equiv name   2     -85   -75
+pin name   3   signal S418     -45    75
+equiv name   4     -45   -75
+pin name   5   signal S419      -5    75
+equiv name   6      -5   -75
+pin name   7   signal S377      55    75
+equiv name   8      55   -75
+pin name   9   signal S418      75    75
+equiv name  10      75   -75
+pin name  11   signal TW_PASS_THRU     -95    75
+equiv name  12     -95   -75
+pin name  13   signal TW_PASS_THRU     -65    75
+equiv name  14     -65   -75
+pin name  15   signal TW_PASS_THRU     -35    75
+equiv name  16     -35   -75
+pin name  17   signal TW_PASS_THRU     -15    75
+equiv name  18     -15   -75
+pin name  19   signal TW_PASS_THRU      15    75
+equiv name  20      15   -75
+pin name  21   signal TW_PASS_THRU      35    75
+equiv name  22      35   -75
+pin name  23   signal TW_PASS_THRU      95    75
+equiv name  24      95   -75
+
+cell    39 C39
+left -100  right  100  bottom  -75  top   75
+pin name   1   signal S418     -85    75
+equiv name   2     -85   -75
+pin name   3   signal S420     -45    75
+equiv name   4     -45   -75
+pin name   5   signal S419      -5    75
+equiv name   6      -5   -75
+pin name   7   signal S378      55    75
+equiv name   8      55   -75
+pin name   9   signal S420      75    75
+equiv name  10      75   -75
+pin name  11   signal TW_PASS_THRU     -95    75
+equiv name  12     -95   -75
+pin name  13   signal TW_PASS_THRU     -65    75
+equiv name  14     -65   -75
+pin name  15   signal TW_PASS_THRU     -35    75
+equiv name  16     -35   -75
+pin name  17   signal TW_PASS_THRU     -15    75
+equiv name  18     -15   -75
+pin name  19   signal TW_PASS_THRU      15    75
+equiv name  20      15   -75
+pin name  21   signal TW_PASS_THRU      35    75
+equiv name  22      35   -75
+pin name  23   signal TW_PASS_THRU      95    75
+equiv name  24      95   -75
+
+cell    40 C40
+left -100  right  100  bottom  -75  top   75
+pin name   1   signal S420     -85    75
+equiv name   2     -85   -75
+pin name   3   signal S421     -45    75
+equiv name   4     -45   -75
+pin name   5   signal S419      -5    75
+equiv name   6      -5   -75
+pin name   7   signal S337      55    75
+equiv name   8      55   -75
+pin name   9   signal S421      75    75
+equiv name  10      75   -75
+pin name  11   signal TW_PASS_THRU     -95    75
+equiv name  12     -95   -75
+pin name  13   signal TW_PASS_THRU     -65    75
+equiv name  14     -65   -75
+pin name  15   signal TW_PASS_THRU     -35    75
+equiv name  16     -35   -75
+pin name  17   signal TW_PASS_THRU     -15    75
+equiv name  18     -15   -75
+pin name  19   signal TW_PASS_THRU      15    75
+equiv name  20      15   -75
+pin name  21   signal TW_PASS_THRU      35    75
+equiv name  22      35   -75
+pin name  23   signal TW_PASS_THRU      95    75
+equiv name  24      95   -75
+
+cell    41 C41
+left -100  right  100  bottom  -75  top   75
+pin name   1   signal S421     -85    75
+equiv name   2     -85   -75
+pin name   3   signal S422     -45    75
+equiv name   4     -45   -75
+pin name   5   signal S419      -5    75
+equiv name   6      -5   -75
+pin name   7   signal S379      55    75
+equiv name   8      55   -75
+pin name   9   signal S422      75    75
+equiv name  10      75   -75
+pin name  11   signal TW_PASS_THRU     -95    75
+equiv name  12     -95   -75
+pin name  13   signal TW_PASS_THRU     -65    75
+equiv name  14     -65   -75
+pin name  15   signal TW_PASS_THRU     -35    75
+equiv name  16     -35   -75
+pin name  17   signal TW_PASS_THRU     -15    75
+equiv name  18     -15   -75
+pin name  19   signal TW_PASS_THRU      15    75
+equiv name  20      15   -75
+pin name  21   signal TW_PASS_THRU      35    75
+equiv name  22      35   -75
+pin name  23   signal TW_PASS_THRU      95    75
+equiv name  24      95   -75
+
+cell    42 C42
+left -100  right  100  bottom  -75  top   75
+pin name   1   signal S422     -85    75
+equiv name   2     -85   -75
+pin name   3   signal S423     -45    75
+equiv name   4     -45   -75
+pin name   5   signal S419      -5    75
+equiv name   6      -5   -75
+pin name   7   signal S380      55    75
+equiv name   8      55   -75
+pin name   9   signal S423      75    75
+equiv name  10      75   -75
+pin name  11   signal TW_PASS_THRU     -95    75
+equiv name  12     -95   -75
+pin name  13   signal TW_PASS_THRU     -65    75
+equiv name  14     -65   -75
+pin name  15   signal TW_PASS_THRU     -35    75
+equiv name  16     -35   -75
+pin name  17   signal TW_PASS_THRU     -15    75
+equiv name  18     -15   -75
+pin name  19   signal TW_PASS_THRU      15    75
+equiv name  20      15   -75
+pin name  21   signal TW_PASS_THRU      35    75
+equiv name  22      35   -75
+pin name  23   signal TW_PASS_THRU      95    75
+equiv name  24      95   -75
+
+cell    43 C43
+left -100  right  100  bottom  -75  top   75
+pin name   1   signal S423     -85    75
+equiv name   2     -85   -75
+pin name   3   signal S424     -45    75
+equiv name   4     -45   -75
+pin name   5   signal S419      -5    75
+equiv name   6      -5   -75
+pin name   7   signal S381      55    75
+equiv name   8      55   -75
+pin name   9   signal S424      75    75
+equiv name  10      75   -75
+pin name  11   signal TW_PASS_THRU     -95    75
+equiv name  12     -95   -75
+pin name  13   signal TW_PASS_THRU     -65    75
+equiv name  14     -65   -75
+pin name  15   signal TW_PASS_THRU     -35    75
+equiv name  16     -35   -75
+pin name  17   signal TW_PASS_THRU     -15    75
+equiv name  18     -15   -75
+pin name  19   signal TW_PASS_THRU      15    75
+equiv name  20      15   -75
+pin name  21   signal TW_PASS_THRU      35    75
+equiv name  22      35   -75
+pin name  23   signal TW_PASS_THRU      95    75
+equiv name  24      95   -75
+
+cell    44 C44
+left  -30  right   30  bottom  -75  top   75
+pin name   1   signal S376     -25    75
+equiv name   2     -25   -75
+pin name   3   signal S419      15    75
+equiv name   4      15   -75
+pin name   5   signal TW_PASS_THRU     -15    75
+equiv name   6     -15   -75
+pin name   7   signal TW_PASS_THRU      25    75
+equiv name   8      25   -75
+
+cell    45 C45
+left -100  right  100  bottom  -75  top   75
+pin name   1   signal S98     -85    75
+equiv name   2     -85   -75
+pin name   3   signal S342     -45    75
+equiv name   4     -45   -75
+pin name   5   signal S382      -5    75
+equiv name   6      -5   -75
+pin name   7   signal S383      55    75
+equiv name   8      55   -75
+pin name   9   signal TW_PASS_THRU     -95    75
+equiv name  10     -95   -75
+pin name  11   signal TW_PASS_THRU     -65    75
+equiv name  12     -65   -75
+pin name  13   signal TW_PASS_THRU     -35    75
+equiv name  14     -35   -75
+pin name  15   signal TW_PASS_THRU     -15    75
+equiv name  16     -15   -75
+pin name  17   signal TW_PASS_THRU      15    75
+equiv name  18      15   -75
+pin name  19   signal TW_PASS_THRU      35    75
+equiv name  20      35   -75
+pin name  21   signal TW_PASS_THRU      95    75
+equiv name  22      95   -75
+
+cell    46 C46
+left -100  right  100  bottom  -75  top   75
+pin name   1   signal S339     -85    75
+equiv name   2     -85   -75
+pin name   3   signal S383     -45    75
+equiv name   4     -45   -75
+pin name   5   signal S99      -5    75
+equiv name   6      -5   -75
+pin name   7   signal S385      55    75
+equiv name   8      55   -75
+pin name   9   signal S386      75    75
+equiv name  10      75   -75
+pin name  11   signal TW_PASS_THRU     -95    75
+equiv name  12     -95   -75
+pin name  13   signal TW_PASS_THRU     -65    75
+equiv name  14     -65   -75
+pin name  15   signal TW_PASS_THRU     -35    75
+equiv name  16     -35   -75
+pin name  17   signal TW_PASS_THRU     -15    75
+equiv name  18     -15   -75
+pin name  19   signal TW_PASS_THRU      15    75
+equiv name  20      15   -75
+pin name  21   signal TW_PASS_THRU      35    75
+equiv name  22      35   -75
+pin name  23   signal TW_PASS_THRU      95    75
+equiv name  24      95   -75
+
+cell    47 C47
+left -100  right  100  bottom  -75  top   75
+pin name   1   signal S94     -85    75
+equiv name   2     -85   -75
+pin name   3   signal S387      -5    75
+equiv name   4      -5   -75
+pin name   5   signal S388      55    75
+equiv name   6      55   -75
+pin name   7   signal TW_PASS_THRU     -95    75
+equiv name   8     -95   -75
+pin name   9   signal TW_PASS_THRU     -65    75
+equiv name  10     -65   -75
+pin name  11   signal TW_PASS_THRU     -35    75
+equiv name  12     -35   -75
+pin name  13   signal TW_PASS_THRU     -15    75
+equiv name  14     -15   -75
+pin name  15   signal TW_PASS_THRU      15    75
+equiv name  16      15   -75
+pin name  17   signal TW_PASS_THRU      35    75
+equiv name  18      35   -75
+pin name  19   signal TW_PASS_THRU      95    75
+equiv name  20      95   -75
+
+cell    48 C48
+left -100  right  100  bottom  -75  top   75
+pin name   1   signal S95     -85    75
+equiv name   2     -85   -75
+pin name   3   signal S388     -45    75
+equiv name   4     -45   -75
+pin name   5   signal S390      -5    75
+equiv name   6      -5   -75
+pin name   7   signal S340      55    75
+equiv name   8      55   -75
+pin name   9   signal S391      75    75
+equiv name  10      75   -75
+pin name  11   signal TW_PASS_THRU     -95    75
+equiv name  12     -95   -75
+pin name  13   signal TW_PASS_THRU     -65    75
+equiv name  14     -65   -75
+pin name  15   signal TW_PASS_THRU     -35    75
+equiv name  16     -35   -75
+pin name  17   signal TW_PASS_THRU     -15    75
+equiv name  18     -15   -75
+pin name  19   signal TW_PASS_THRU      15    75
+equiv name  20      15   -75
+pin name  21   signal TW_PASS_THRU      35    75
+equiv name  22      35   -75
+pin name  23   signal TW_PASS_THRU      95    75
+equiv name  24      95   -75
+
+cell    49 C49
+left -100  right  100  bottom  -75  top   75
+pin name   1   signal S101     -85    75
+equiv name   2     -85   -75
+pin name   3   signal S342     -45    75
+equiv name   4     -45   -75
+pin name   5   signal S392      -5    75
+equiv name   6      -5   -75
+pin name   7   signal S393      55    75
+equiv name   8      55   -75
+pin name   9   signal S394      75    75
+equiv name  10      75   -75
+pin name  11   signal TW_PASS_THRU     -95    75
+equiv name  12     -95   -75
+pin name  13   signal TW_PASS_THRU     -65    75
+equiv name  14     -65   -75
+pin name  15   signal TW_PASS_THRU     -35    75
+equiv name  16     -35   -75
+pin name  17   signal TW_PASS_THRU     -15    75
+equiv name  18     -15   -75
+pin name  19   signal TW_PASS_THRU      15    75
+equiv name  20      15   -75
+pin name  21   signal TW_PASS_THRU      35    75
+equiv name  22      35   -75
+pin name  23   signal TW_PASS_THRU      95    75
+equiv name  24      95   -75
+
+cell    50 C50
+left -100  right  100  bottom  -75  top   75
+pin name   1   signal S395     -85    75
+equiv name   2     -85   -75
+pin name   3   signal S396     -45    75
+equiv name   4     -45   -75
+pin name   5   signal S390      -5    75
+equiv name   6      -5   -75
+pin name   7   signal S397      55    75
+equiv name   8      55   -75
+pin name   9   signal S398      75    75
+equiv name  10      75   -75
+pin name  11   signal TW_PASS_THRU     -95    75
+equiv name  12     -95   -75
+pin name  13   signal TW_PASS_THRU     -65    75
+equiv name  14     -65   -75
+pin name  15   signal TW_PASS_THRU     -35    75
+equiv name  16     -35   -75
+pin name  17   signal TW_PASS_THRU     -15    75
+equiv name  18     -15   -75
+pin name  19   signal TW_PASS_THRU      15    75
+equiv name  20      15   -75
+pin name  21   signal TW_PASS_THRU      35    75
+equiv name  22      35   -75
+pin name  23   signal TW_PASS_THRU      95    75
+equiv name  24      95   -75
+
+cell    51 C51
+left -100  right  100  bottom  -75  top   75
+pin name   1   signal S339     -85    75
+equiv name   2     -85   -75
+pin name   3   signal S385     -45    75
+equiv name   4     -45   -75
+pin name   5   signal S390      -5    75
+equiv name   6      -5   -75
+pin name   7   signal S395      55    75
+equiv name   8      55   -75
+pin name   9   signal S399      75    75
+equiv name  10      75   -75
+pin name  11   signal TW_PASS_THRU     -95    75
+equiv name  12     -95   -75
+pin name  13   signal TW_PASS_THRU     -65    75
+equiv name  14     -65   -75
+pin name  15   signal TW_PASS_THRU     -35    75
+equiv name  16     -35   -75
+pin name  17   signal TW_PASS_THRU     -15    75
+equiv name  18     -15   -75
+pin name  19   signal TW_PASS_THRU      15    75
+equiv name  20      15   -75
+pin name  21   signal TW_PASS_THRU      35    75
+equiv name  22      35   -75
+pin name  23   signal TW_PASS_THRU      95    75
+equiv name  24      95   -75
+
+cell    52 C52
+left -100  right  100  bottom  -75  top   75
+pin name   1   signal S339     -85    75
+equiv name   2     -85   -75
+pin name   3   signal S400     -45    75
+equiv name   4     -45   -75
+pin name   5   signal S401      -5    75
+equiv name   6      -5   -75
+pin name   7   signal S400      75    75
+equiv name   8      75   -75
+pin name   9   signal TW_PASS_THRU     -95    75
+equiv name  10     -95   -75
+pin name  11   signal TW_PASS_THRU     -65    75
+equiv name  12     -65   -75
+pin name  13   signal TW_PASS_THRU     -35    75
+equiv name  14     -35   -75
+pin name  15   signal TW_PASS_THRU     -15    75
+equiv name  16     -15   -75
+pin name  17   signal TW_PASS_THRU      15    75
+equiv name  18      15   -75
+pin name  19   signal TW_PASS_THRU      35    75
+equiv name  20      35   -75
+pin name  21   signal TW_PASS_THRU      95    75
+equiv name  22      95   -75
+
+cell    53 C53
+left -100  right  100  bottom  -75  top   75
+pin name   1   signal S400     -85    75
+equiv name   2     -85   -75
+pin name   3   signal S403     -45    75
+equiv name   4     -45   -75
+pin name   5   signal S401      -5    75
+equiv name   6      -5   -75
+pin name   7   signal S403      75    75
+equiv name   8      75   -75
+pin name   9   signal TW_PASS_THRU     -95    75
+equiv name  10     -95   -75
+pin name  11   signal TW_PASS_THRU     -65    75
+equiv name  12     -65   -75
+pin name  13   signal TW_PASS_THRU     -35    75
+equiv name  14     -35   -75
+pin name  15   signal TW_PASS_THRU     -15    75
+equiv name  16     -15   -75
+pin name  17   signal TW_PASS_THRU      15    75
+equiv name  18      15   -75
+pin name  19   signal TW_PASS_THRU      35    75
+equiv name  20      35   -75
+pin name  21   signal TW_PASS_THRU      95    75
+equiv name  22      95   -75
+
+cell    54 C54
+left -100  right  100  bottom  -75  top   75
+pin name   1   signal S403     -85    75
+equiv name   2     -85   -75
+pin name   3   signal S401      -5    75
+equiv name   4      -5   -75
+pin name   5   signal S341      55    75
+equiv name   6      55   -75
+pin name   7   signal TW_PASS_THRU     -95    75
+equiv name   8     -95   -75
+pin name   9   signal TW_PASS_THRU     -65    75
+equiv name  10     -65   -75
+pin name  11   signal TW_PASS_THRU     -35    75
+equiv name  12     -35   -75
+pin name  13   signal TW_PASS_THRU     -15    75
+equiv name  14     -15   -75
+pin name  15   signal TW_PASS_THRU      15    75
+equiv name  16      15   -75
+pin name  17   signal TW_PASS_THRU      35    75
+equiv name  18      35   -75
+pin name  19   signal TW_PASS_THRU      95    75
+equiv name  20      95   -75
+
+cell    55 C55
+left  -25  right   25  bottom  -75  top   75
+pin name   1   signal S395     -20    75
+equiv name   2     -20   -75
+pin name   3   signal S390       0    75
+equiv name   4       0   -75
+pin name   5   signal S382      10    75
+equiv name   6      10   -75
+pin name   7   signal TW_PASS_THRU     -10    75
+equiv name   8     -10   -75
+pin name   9   signal TW_PASS_THRU      20    75
+equiv name  10      20   -75
+
+cell    56 C56
+left  -25  right   25  bottom  -75  top   75
+pin name   1   signal S340     -20    75
+equiv name   2     -20   -75
+pin name   3   signal S390       0    75
+equiv name   4       0   -75
+pin name   5   signal S387      10    75
+equiv name   6      10   -75
+pin name   7   signal TW_PASS_THRU     -10    75
+equiv name   8     -10   -75
+pin name   9   signal TW_PASS_THRU      20    75
+equiv name  10      20   -75
+
+cell    57 C57
+left  -25  right   25  bottom  -75  top   75
+pin name   1   signal S406     -20    75
+equiv name   2     -20   -75
+pin name   3   signal S390       0    75
+equiv name   4       0   -75
+pin name   5   signal S392      10    75
+equiv name   6      10   -75
+pin name   7   signal TW_PASS_THRU     -10    75
+equiv name   8     -10   -75
+pin name   9   signal TW_PASS_THRU      20    75
+equiv name  10      20   -75
+
+cell    58 C58
+left  -25  right   25  bottom  -75  top   75
+pin name   1   signal S341     -20    75
+equiv name   2     -20   -75
+pin name   3   signal S346       0    75
+equiv name   4       0   -75
+pin name   5   signal S407      10    75
+equiv name   6      10   -75
+pin name   7   signal TW_PASS_THRU     -10    75
+equiv name   8     -10   -75
+pin name   9   signal TW_PASS_THRU      20    75
+equiv name  10      20   -75
+
+cell    59 C59
+left  -25  right   25  bottom  -75  top   75
+pin name   1   signal S98     -20    75
+equiv name   2     -20   -75
+pin name   3   signal S407       0    75
+equiv name   4       0   -75
+pin name   5   signal S408      10    75
+equiv name   6      10   -75
+pin name   7   signal TW_PASS_THRU     -10    75
+equiv name   8     -10   -75
+pin name   9   signal TW_PASS_THRU      20    75
+equiv name  10      20   -75
+
+cell    60 C60
+left  -25  right   25  bottom  -75  top   75
+pin name   1   signal S101     -20    75
+equiv name   2     -20   -75
+pin name   3   signal S409       0    75
+equiv name   4       0   -75
+pin name   5   signal S406      10    75
+equiv name   6      10   -75
+pin name   7   signal TW_PASS_THRU     -10    75
+equiv name   8     -10   -75
+pin name   9   signal TW_PASS_THRU      20    75
+equiv name  10      20   -75
+
+cell    61 C61
+left  -25  right   25  bottom  -75  top   75
+pin name   1   signal S385     -20    75
+equiv name   2     -20   -75
+pin name   3   signal S394       0    75
+equiv name   4       0   -75
+pin name   5   signal S347      10    75
+equiv name   6      10   -75
+pin name   7   signal TW_PASS_THRU     -10    75
+equiv name   8     -10   -75
+pin name   9   signal TW_PASS_THRU      20    75
+equiv name  10      20   -75
+
+cell    62 C62
+left  -25  right   25  bottom  -75  top   75
+pin name   1   signal S342     -20    75
+equiv name   2     -20   -75
+pin name   3   signal S339       0    75
+equiv name   4       0   -75
+pin name   5   signal S375      10    75
+equiv name   6      10   -75
+pin name   7   signal TW_PASS_THRU     -10    75
+equiv name   8     -10   -75
+pin name   9   signal TW_PASS_THRU      20    75
+equiv name  10      20   -75
+
+cell    63 C63
+left  -25  right   25  bottom  -75  top   75
+pin name   1   signal S397     -20    75
+equiv name   2     -20   -75
+pin name   3   signal S393       0    75
+equiv name   4       0   -75
+pin name   5   signal S396      10    75
+equiv name   6      10   -75
+pin name   7   signal TW_PASS_THRU     -10    75
+equiv name   8     -10   -75
+pin name   9   signal TW_PASS_THRU      20    75
+equiv name  10      20   -75
+
+cell    64 C64
+left  -30  right   30  bottom  -75  top   75
+pin name   1   signal S340     -25    75
+equiv name   2     -25   -75
+pin name   3   signal S343     -15    75
+equiv name   4     -15   -75
+pin name   5   signal S347       5    75
+equiv name   6       5   -75
+pin name   7   signal S128      15    75
+equiv name   8      15   -75
+pin name   9   signal TW_PASS_THRU      25    75
+equiv name  10      25   -75
+
+cell    65 C65
+left  -35  right   35  bottom  -75  top   75
+pin name   1   signal S342     -30    75
+equiv name   2     -30   -75
+pin name   3   signal S96     -20    75
+equiv name   4     -20   -75
+pin name   5   signal S131       0    75
+equiv name   6       0   -75
+pin name   7   signal S95      10    75
+equiv name   8      10   -75
+pin name   9   signal S130      20    75
+equiv name  10      20   -75
+pin name  11   signal TW_PASS_THRU      30    75
+equiv name  12      30   -75
+
+cell    66 C66
+left  -35  right   35  bottom  -75  top   75
+pin name   1   signal S393     -30    75
+equiv name   2     -30   -75
+pin name   3   signal S344     -20    75
+equiv name   4     -20   -75
+pin name   5   signal S397       0    75
+equiv name   6       0   -75
+pin name   7   signal S394      10    75
+equiv name   8      10   -75
+pin name   9   signal S410      20    75
+equiv name  10      20   -75
+pin name  11   signal TW_PASS_THRU      30    75
+equiv name  12      30   -75
+
+cell    67 C67
+left  -30  right   30  bottom  -75  top   75
+pin name   1   signal S411     -25    75
+equiv name   2     -25   -75
+pin name   3   signal S399     -15    75
+equiv name   4     -15   -75
+pin name   5   signal S386       5    75
+equiv name   6       5   -75
+pin name   7   signal S376      15    75
+equiv name   8      15   -75
+pin name   9   signal TW_PASS_THRU      25    75
+equiv name  10      25   -75
+
+cell    68 C68
+left  -30  right   30  bottom  -75  top   75
+pin name   1   signal S381     -25    75
+equiv name   2     -25   -75
+pin name   3   signal S398     -15    75
+equiv name   4     -15   -75
+pin name   5   signal S412       5    75
+equiv name   6       5   -75
+pin name   7   signal S413      15    75
+equiv name   8      15   -75
+pin name   9   signal TW_PASS_THRU      25    75
+equiv name  10      25   -75
+
+cell    69 C69
+left  -30  right   30  bottom  -75  top   75
+pin name   1   signal S398     -25    75
+equiv name   2     -25   -75
+pin name   3   signal S393     -15    75
+equiv name   4     -15   -75
+pin name   5   signal S100       5    75
+equiv name   6       5   -75
+pin name   7   signal S414      15    75
+equiv name   8      15   -75
+pin name   9   signal TW_PASS_THRU      25    75
+equiv name  10      25   -75
+
+cell    70 C70
+left  -30  right   30  bottom  -75  top   75
+pin name   1   signal S415     -25    75
+equiv name   2     -25   -75
+pin name   3   signal S410     -15    75
+equiv name   4     -15   -75
+pin name   5   signal S408       5    75
+equiv name   6       5   -75
+pin name   7   signal S129      15    75
+equiv name   8      15   -75
+pin name   9   signal TW_PASS_THRU      25    75
+equiv name  10      25   -75
+
+cell    71 C71
+left  -30  right   30  bottom  -75  top   75
+pin name   1   signal S377     -25    75
+equiv name   2     -25   -75
+pin name   3   signal S378     -15    75
+equiv name   4     -15   -75
+pin name   5   signal S337       5    75
+equiv name   6       5   -75
+pin name   7   signal S412      15    75
+equiv name   8      15   -75
+pin name   9   signal TW_PASS_THRU      25    75
+equiv name  10      25   -75
+
+cell    72 C72
+left  -30  right   30  bottom  -75  top   75
+pin name   1   signal S416     -25    75
+equiv name   2     -25   -75
+pin name   3   signal S413     -15    75
+equiv name   4     -15   -75
+pin name   5   signal S414       5    75
+equiv name   6       5   -75
+pin name   7   signal S415      15    75
+equiv name   8      15   -75
+pin name   9   signal TW_PASS_THRU      25    75
+equiv name  10      25   -75
+
+cell    73 C73
+left  -30  right   30  bottom  -75  top   75
+pin name   1   signal S97     -25    75
+equiv name   2     -25   -75
+pin name   3   signal S390       5    75
+equiv name   4       5   -75
+pin name   5   signal S411      15    75
+equiv name   6      15   -75
+pin name   7   signal TW_PASS_THRU     -15    75
+equiv name   8     -15   -75
+pin name   9   signal TW_PASS_THRU      25    75
+equiv name  10      25   -75
+
+cell    74 C74
+left  -15  right   15  bottom  -75  top   75
+pin name   1   signal S340     -10    75
+equiv name   2     -10   -75
+pin name   3   signal S338       0    75
+equiv name   4       0   -75
+pin name   5   signal TW_PASS_THRU      10    75
+equiv name   6      10   -75
+
+cell    75 C75
+left  -35  right   35  bottom  -75  top   75
+pin name   1   signal S381     -30    75
+equiv name   2     -30   -75
+pin name   3   signal S379     -20    75
+equiv name   4     -20   -75
+pin name   5   signal S412       0    75
+equiv name   6       0   -75
+pin name   7   signal S96      10    75
+equiv name   8      10   -75
+pin name   9   signal S416      20    75
+equiv name  10      20   -75
+pin name  11   signal TW_PASS_THRU      30    75
+equiv name  12      30   -75
+
+cell    76 C76
+left  -15  right   15  bottom  -75  top   75
+pin name   1   signal S380     -10    75
+equiv name   2     -10   -75
+pin name   3   signal S409       0    75
+equiv name   4       0   -75
+pin name   5   signal TW_PASS_THRU      10    75
+equiv name   6      10   -75
+
+cell    77 C77
+left  -30  right   30  bottom  -75  top   75
+pin name   1   signal S376     -25    75
+equiv name   2     -25   -75
+pin name   3   signal S401      15    75
+equiv name   4      15   -75
+pin name   5   signal TW_PASS_THRU     -15    75
+equiv name   6     -15   -75
+pin name   7   signal TW_PASS_THRU      25    75
+equiv name   8      25   -75
+
+cell    78 C78
+left -100  right  100  bottom  -75  top   75
+pin name   1   signal S426     -85    75
+equiv name   2     -85   -75
+pin name   3   signal S427      -5    75
+equiv name   4      -5   -75
+pin name   5   signal S136      55    75
+equiv name   6      55   -75
+pin name   7   signal S428      75    75
+equiv name   8      75   -75
+pin name   9   signal TW_PASS_THRU     -95    75
+equiv name  10     -95   -75
+pin name  11   signal TW_PASS_THRU     -65    75
+equiv name  12     -65   -75
+pin name  13   signal TW_PASS_THRU     -35    75
+equiv name  14     -35   -75
+pin name  15   signal TW_PASS_THRU     -15    75
+equiv name  16     -15   -75
+pin name  17   signal TW_PASS_THRU      15    75
+equiv name  18      15   -75
+pin name  19   signal TW_PASS_THRU      35    75
+equiv name  20      35   -75
+pin name  21   signal TW_PASS_THRU      95    75
+equiv name  22      95   -75
+
+cell    79 C79
+left -100  right  100  bottom  -75  top   75
+pin name   1   signal S338     -85    75
+equiv name   2     -85   -75
+pin name   3   signal S429     -45    75
+equiv name   4     -45   -75
+pin name   5   signal S430      -5    75
+equiv name   6      -5   -75
+pin name   7   signal S431      55    75
+equiv name   8      55   -75
+pin name   9   signal S432      75    75
+equiv name  10      75   -75
+pin name  11   signal TW_PASS_THRU     -95    75
+equiv name  12     -95   -75
+pin name  13   signal TW_PASS_THRU     -65    75
+equiv name  14     -65   -75
+pin name  15   signal TW_PASS_THRU     -35    75
+equiv name  16     -35   -75
+pin name  17   signal TW_PASS_THRU     -15    75
+equiv name  18     -15   -75
+pin name  19   signal TW_PASS_THRU      15    75
+equiv name  20      15   -75
+pin name  21   signal TW_PASS_THRU      35    75
+equiv name  22      35   -75
+pin name  23   signal TW_PASS_THRU      95    75
+equiv name  24      95   -75
+
+cell    80 C80
+left -100  right  100  bottom  -75  top   75
+pin name   1   signal S121     -85    75
+equiv name   2     -85   -75
+pin name   3   signal S433     -45    75
+equiv name   4     -45   -75
+pin name   5   signal S434      -5    75
+equiv name   6      -5   -75
+pin name   7   signal S435      55    75
+equiv name   8      55   -75
+pin name   9   signal S436      75    75
+equiv name  10      75   -75
+pin name  11   signal TW_PASS_THRU     -95    75
+equiv name  12     -95   -75
+pin name  13   signal TW_PASS_THRU     -65    75
+equiv name  14     -65   -75
+pin name  15   signal TW_PASS_THRU     -35    75
+equiv name  16     -35   -75
+pin name  17   signal TW_PASS_THRU     -15    75
+equiv name  18     -15   -75
+pin name  19   signal TW_PASS_THRU      15    75
+equiv name  20      15   -75
+pin name  21   signal TW_PASS_THRU      35    75
+equiv name  22      35   -75
+pin name  23   signal TW_PASS_THRU      95    75
+equiv name  24      95   -75
+
+cell    81 C81
+left -100  right  100  bottom  -75  top   75
+pin name   1   signal S142     -85    75
+equiv name   2     -85   -75
+pin name   3   signal S437      -5    75
+equiv name   4      -5   -75
+pin name   5   signal S438      55    75
+equiv name   6      55   -75
+pin name   7   signal S439      75    75
+equiv name   8      75   -75
+pin name   9   signal TW_PASS_THRU     -95    75
+equiv name  10     -95   -75
+pin name  11   signal TW_PASS_THRU     -65    75
+equiv name  12     -65   -75
+pin name  13   signal TW_PASS_THRU     -35    75
+equiv name  14     -35   -75
+pin name  15   signal TW_PASS_THRU     -15    75
+equiv name  16     -15   -75
+pin name  17   signal TW_PASS_THRU      15    75
+equiv name  18      15   -75
+pin name  19   signal TW_PASS_THRU      35    75
+equiv name  20      35   -75
+pin name  21   signal TW_PASS_THRU      95    75
+equiv name  22      95   -75
+
+cell    82 C82
+left -100  right  100  bottom  -75  top   75
+pin name   1   signal S121     -85    75
+equiv name   2     -85   -75
+pin name   3   signal S440     -45    75
+equiv name   4     -45   -75
+pin name   5   signal S441      -5    75
+equiv name   6      -5   -75
+pin name   7   signal S442      55    75
+equiv name   8      55   -75
+pin name   9   signal S443      75    75
+equiv name  10      75   -75
+pin name  11   signal TW_PASS_THRU     -95    75
+equiv name  12     -95   -75
+pin name  13   signal TW_PASS_THRU     -65    75
+equiv name  14     -65   -75
+pin name  15   signal TW_PASS_THRU     -35    75
+equiv name  16     -35   -75
+pin name  17   signal TW_PASS_THRU     -15    75
+equiv name  18     -15   -75
+pin name  19   signal TW_PASS_THRU      15    75
+equiv name  20      15   -75
+pin name  21   signal TW_PASS_THRU      35    75
+equiv name  22      35   -75
+pin name  23   signal TW_PASS_THRU      95    75
+equiv name  24      95   -75
+
+cell    83 C83
+left  -30  right   30  bottom  -75  top   75
+pin name   1   signal S135     -25    75
+equiv name   2     -25   -75
+pin name   3   signal S428     -15    75
+equiv name   4     -15   -75
+pin name   5   signal S444       5    75
+equiv name   6       5   -75
+pin name   7   signal S138      15    75
+equiv name   8      15   -75
+pin name   9   signal TW_PASS_THRU      25    75
+equiv name  10      25   -75
+
+cell    84 C84
+left  -25  right   25  bottom  -75  top   75
+pin name   1   signal S135     -20    75
+equiv name   2     -20   -75
+pin name   3   signal S444       0    75
+equiv name   4       0   -75
+pin name   5   signal S426      10    75
+equiv name   6      10   -75
+pin name   7   signal TW_PASS_THRU     -10    75
+equiv name   8     -10   -75
+pin name   9   signal TW_PASS_THRU      20    75
+equiv name  10      20   -75
+
+cell    85 C85
+left  -15  right   15  bottom  -75  top   75
+pin name   1   signal S426     -10    75
+equiv name   2     -10   -75
+pin name   3   signal S445       0    75
+equiv name   4       0   -75
+pin name   5   signal TW_PASS_THRU      10    75
+equiv name   6      10   -75
+
+cell    86 C86
+left  -25  right   25  bottom  -75  top   75
+pin name   1   signal S338     -20    75
+equiv name   2     -20   -75
+pin name   3   signal S112       0    75
+equiv name   4       0   -75
+pin name   5   signal S427      10    75
+equiv name   6      10   -75
+pin name   7   signal TW_PASS_THRU     -10    75
+equiv name   8     -10   -75
+pin name   9   signal TW_PASS_THRU      20    75
+equiv name  10      20   -75
+
+cell    87 C87
+left  -25  right   25  bottom  -75  top   75
+pin name   1   signal S444     -20    75
+equiv name   2     -20   -75
+pin name   3   signal S112       0    75
+equiv name   4       0   -75
+pin name   5   signal S430      10    75
+equiv name   6      10   -75
+pin name   7   signal TW_PASS_THRU     -10    75
+equiv name   8     -10   -75
+pin name   9   signal TW_PASS_THRU      20    75
+equiv name  10      20   -75
+
+cell    88 C88
+left  -25  right   25  bottom  -75  top   75
+pin name   1   signal S112     -20    75
+equiv name   2     -20   -75
+pin name   3   signal S443       0    75
+equiv name   4       0   -75
+pin name   5   signal S437      10    75
+equiv name   6      10   -75
+pin name   7   signal TW_PASS_THRU     -10    75
+equiv name   8     -10   -75
+pin name   9   signal TW_PASS_THRU      20    75
+equiv name  10      20   -75
+
+cell    89 C89
+left  -25  right   25  bottom  -75  top   75
+pin name   1   signal S428     -20    75
+equiv name   2     -20   -75
+pin name   3   signal S94       0    75
+equiv name   4       0   -75
+pin name   5   signal S137      10    75
+equiv name   6      10   -75
+pin name   7   signal TW_PASS_THRU     -10    75
+equiv name   8     -10   -75
+pin name   9   signal TW_PASS_THRU      20    75
+equiv name  10      20   -75
+
+cell    90 C90
+left  -25  right   25  bottom  -75  top   75
+pin name   1   signal S117     -20    75
+equiv name   2     -20   -75
+pin name   3   signal S439       0    75
+equiv name   4       0   -75
+pin name   5   signal S440      10    75
+equiv name   6      10   -75
+pin name   7   signal TW_PASS_THRU     -10    75
+equiv name   8     -10   -75
+pin name   9   signal TW_PASS_THRU      20    75
+equiv name  10      20   -75
+
+cell    91 C91
+left  -30  right   30  bottom  -75  top   75
+pin name   1   signal S117     -25    75
+equiv name   2     -25   -75
+pin name   3   signal S432     -15    75
+equiv name   4     -15   -75
+pin name   5   signal S438       5    75
+equiv name   6       5   -75
+pin name   7   signal S433      15    75
+equiv name   8      15   -75
+pin name   9   signal TW_PASS_THRU      25    75
+equiv name  10      25   -75
+
+cell    92 C92
+left  -25  right   25  bottom  -75  top   75
+pin name   1   signal S446     -20    75
+equiv name   2     -20   -75
+pin name   3   signal S119       0    75
+equiv name   4       0   -75
+pin name   5   signal S145      10    75
+equiv name   6      10   -75
+pin name   7   signal TW_PASS_THRU     -10    75
+equiv name   8     -10   -75
+pin name   9   signal TW_PASS_THRU      20    75
+equiv name  10      20   -75
+

@@ -1,0 +1,10 @@
+#!/bin/sh -f
+#
+# $1 is simplescalar simulator
+# $2 is the simplescalar binary for this benchmark
+SIM=$1;
+BIN=$2;
+shift 2;
+
+$SIM $* $BIN -frames 1000 -meshfile mesa.in -ppmfile mesa.ppm
+

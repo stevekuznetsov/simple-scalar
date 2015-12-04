@@ -96,8 +96,8 @@ function run_benchmarks() {
         binary="./../../spec2000binaries/${benchmark}00.peak.ev6"
         run="./RUN${benchmark}"
 
-        echo "Running ${run} './../../../../sim-outorder ${test_args[$i]}' ${binary} -fastfwd 20000000 -max:inst 50000000 > ./../../../${output_dir}/${benchmark}_${test_names[$i]}.txt 2>&1"
-        eval time "${run} './../../../../sim-outorder ${test_args[$i]}' ${binary} -fastfwd 20000000 -max:inst 50000000" > ./../../../${output_dir}/${benchmark}_${test_names[$i]}.txt 2>&1
+        echo "Running ${run} './../../../../sim-outorder ${test_args[$i]}' ${binary} -fastfwd 20000000 -max:inst 200000000 > ./../../../${output_dir}/${benchmark}_${test_names[$i]}.txt 2>&1"
+        eval time "${run} './../../../../sim-outorder ${test_args[$i]}' ${binary} -fastfwd 20000000 -max:inst 200000000" > ./../../../${output_dir}/${benchmark}_${test_names[$i]}.txt 2>&1
       done
       popd > /dev/null
     done

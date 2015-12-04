@@ -6,9 +6,9 @@ entity, or for any commercial purpose, without the prior written permission
 of SimpleScalar, LLC (info@simplescalar.com).
 
 warning: section `.comment' ignored...
-sim: command line: ./../../../../sim-outorder -bpred 3bit -fastfwd 20000000 -max:inst 50000000 ./../../spec2000binaries/fma3d00.peak.ev6 
+sim: command line: ./../../../../sim-outorder -bpred 3bit -fastfwd 20000000 -max:inst 200000000 ./../../spec2000binaries/fma3d00.peak.ev6 
 
-sim: simulation started @ Thu Dec  3 09:16:24 2015, options follow:
+sim: simulation started @ Fri Dec  4 05:27:38 2015, options follow:
 
 sim-outorder: This simulator implements a very detailed out-of-order issue
 superscalar processor with a two-level memory system and speculative
@@ -27,7 +27,7 @@ latency of all pipeline operations.
 # -redir:sim           <null> # redirect simulator output to file (non-interactive only)
 # -redir:prog          <null> # redirect simulated program output to file
 -nice                       0 # simulator scheduling priority
--max:inst            50000000 # maximum number of inst's to execute
+-max:inst           200000000 # maximum number of inst's to execute
 -fastfwd             20000000 # number of insts skipped before timing starts
 # -ptrace              <null> # generate pipetrace, i.e., <fname|stdout|stderr> <range>
 -fetch:ifqsize              4 # instruction fetch queue size (in insts)
@@ -259,6 +259,6 @@ mem.ptab_accesses           5830680 # total page table accesses
 mem.ptab_miss_rate           0.0003 # first level page table miss rate
 
 
-real	0m0.039s
-user	0m0.035s
+real	0m0.046s
+user	0m0.043s
 sys	0m0.004s

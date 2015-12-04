@@ -8,7 +8,7 @@ of SimpleScalar, LLC (info@simplescalar.com).
 warning: section `.comment' ignored...
 sim: command line: ./../sim-outorder -bpred 1bit go.alpha 50 9 2stone9.in 
 
-sim: simulation started @ Thu Dec  3 08:35:04 2015, options follow:
+sim: simulation started @ Fri Dec  4 03:53:22 2015, options follow:
 
 sim-outorder: This simulator implements a very detailed out-of-order issue
 superscalar processor with a two-level memory system and speculative
@@ -196,8 +196,8 @@ sim_num_refs              211690428 # total number of loads and stores committed
 sim_num_loads             167116107 # total number of loads committed
 sim_num_stores         44574321.0000 # total number of stores committed
 sim_num_branches           73904302 # total number of branches committed
-sim_elapsed_time                340 # total simulation time in seconds
-sim_inst_rate          1605329.2118 # simulation speed (in insts/sec)
+sim_elapsed_time                366 # total simulation time in seconds
+sim_inst_rate          1491289.4317 # simulation speed (in insts/sec)
 sim_total_insn            734056820 # total number of instructions executed
 sim_total_refs            285557642 # total number of loads and stores executed
 sim_total_loads           229568227 # total number of loads executed

@@ -6,7 +6,7 @@ set -e nounset
 
 # we are at /benchmarks/output
 
-files=( $(find -name '*.txt' | sort -u) )
+files=( $(find -name '*.txt') )
 
 output_file='data.csv'
 name_header=$(printf '%40s' 'TEST NAME')
@@ -19,7 +19,13 @@ bpred_dir_rate_header=$(printf '%9s' 'DIR RATE')
 echo "$name_header, $sim_num_ins_header, $sim_num_branches_header, $sim_IPC_header, $sim_IPB_header, $bpred_addr_rate_header, $bpred_dir_rate_header" > $output_file
 
 for file in "${files[@]}"; do
+	echo $file
 	name=$(echo $file | grep -Po "(?<=/)[^/]+(?=.txt)")
+
+	if cat $file | grep -q "divide by zero"; then
+		# corrupted file
+		continue
+	fi
 
 	# metrics we want
 	sim_num_insn=''     # total number of instructions
@@ -29,17 +35,18 @@ for file in "${files[@]}"; do
 	bpred_addr_rate=''  # branch address prediction success rate
 	bpred_dir_rate=''   # branch direction prediction success rate
 
-	sim_num_insn=$(cat $file | grep -Po --text "[0-9]+(?= # total number of instructions committed)")
-	sim_num_branches=$(cat $file | grep -Po --text "[0-9]+(?= # total number of branches committed)")
-	sim_IPC=$(cat $file | grep -Po --text "[0-9]+\.[0-9]+(?= # instructions per cycle)")
-	sim_IPB=$(cat $file | grep -Po --text "[0-9]+\.[0-9]+(?= # instruction per branch)")
+	sim_num_insn=$(grep -Po --text "[0-9]+(?= # total number of instructions committed)" $file)
+	sim_num_branches=$(grep -Po --text "[0-9]+(?= # total number of branches committed)" $file)
+	sim_IPC=$(grep -Po --text "[0-9]+\.[0-9]+(?= # instructions per cycle)" $file)
+	# sim_IPB=$(grep -Po --text "[0-9]+\.[0-9]+(?= # instruction per branch)" $file)
+
 	if echo $name | grep -q perfect; then
 		# -bpred perfect isn't an actual branch predictor, so it doesn't contain the metrics we want
 		bpred_addr_rate='100.0000'
 		bpred_dir_rate='100.0000'
-	else
-		bpred_addr_rate=$(cat $file | grep -Po --text "[0-9]+\.[0-9]+(?= # branch address-prediction rate)")
-		bpred_dir_rate=$(cat $file | grep -Po --text "[0-9]+\.[0-9]+(?= # branch direction-prediction rate)")
+	# else
+	# 	bpred_addr_rate=$(grep -Po --text "[0-9]+\.[0-9]+(?= # branch address-prediction rate)" $file)
+	# 	bpred_dir_rate=$(grep -Po --text "[0-9]+\.[0-9]+(?= # branch direction-prediction rate)" $file)
 	fi
 
 	# format things nicely

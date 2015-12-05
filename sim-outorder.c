@@ -110,7 +110,7 @@ static int ruu_branch_penalty;
 /* speed of front-end of machine relative to execution core */
 static int fetch_speed;
 
-/* branch predictor type {nottaken|taken|perfect|bimod|2lev|1bit|3bit|4bit|5bit|6bit|percept} */
+/* branch predictor type {nottaken|taken|perfect|bimod|2lev|1bit|3bit|4bit|5bit|6bit|percept|gehl} */
 static char *pred_type;
 
 /* bimodal predictor config (<table_size>) */
@@ -650,7 +650,7 @@ sim_reg_options(struct opt_odb_t *odb)
                );
 
   opt_reg_string(odb, "-bpred",
-                 "branch predictor type {nottaken|taken|perfect|bimod|2lev|comb|1bit|3bit|4bit|5bit|6bit|percept}",
+                 "branch predictor type {nottaken|taken|perfect|bimod|2lev|comb|1bit|3bit|4bit|5bit|6bit|percept|gehl}",
                  &pred_type, /* default */"bimod",
                  /* print */TRUE, /* format */NULL);
 
@@ -1042,6 +1042,25 @@ sim_check_options(struct opt_odb_t *odb,        /* options database */
                           /* bimod table size */0,
                           /* percept l1 history table size */twolev_config[0],
                           /* percept l2 perceptron table size */twolev_config[1],
+                          /* meta table size */0,
+                          /* history reg size */twolev_config[2],
+                          /* history xor address */twolev_config[3],
+                          /* btb sets */btb_config[0],
+                          /* btb assoc */btb_config[1],
+                          /* ret-addr stack size */ras_size);
+    }
+  else if (!mystricmp(pred_type, "gehl"))
+    {
+      /* gehl predictor, bpred_create() checks args */
+      if (twolev_nelt != 4)
+        fatal("bad gehl pred config (<l1size> <l2size> <hist_size> <xor>)");
+      if (btb_nelt != 2)
+        fatal("bad btb config (<num_sets> <associativity>)");
+
+      pred = bpred_create(BPredGehl,
+                          /* bimod table size */0,
+                          /* gehl l1 history table size */twolev_config[0],
+                          /* gehl l2 table size */twolev_config[1],
                           /* meta table size */0,
                           /* history reg size */twolev_config[2],
                           /* history xor address */twolev_config[3],

@@ -44,9 +44,9 @@ for file in "${files[@]}"; do
 		# -bpred perfect isn't an actual branch predictor, so it doesn't contain the metrics we want
 		bpred_addr_rate='100.0000'
 		bpred_dir_rate='100.0000'
-	# else
-	# 	bpred_addr_rate=$(grep -Po --text "[0-9]+\.[0-9]+(?= # branch address-prediction rate)" $file)
-	# 	bpred_dir_rate=$(grep -Po --text "[0-9]+\.[0-9]+(?= # branch direction-prediction rate)" $file)
+	else
+		bpred_addr_rate=$(grep -Po --text "[0-9]+\.[0-9]+(?= # branch address-prediction rate)" $file)
+		bpred_dir_rate=$(grep -Po --text "[0-9]+\.[0-9]+(?= # branch direction-prediction rate)" $file)
 	fi
 
 	# format things nicely

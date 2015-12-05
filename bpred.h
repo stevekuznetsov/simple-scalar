@@ -110,6 +110,7 @@ enum bpred_class {
   BPred5bit,                    /* 5-bit saturating counter predictor */
   BPred6bit,                    /* 6-bit saturating counter predictor */
   BPredPercept,                 /* perceptron predictor */
+  BPredGehl,                    /* gehl predictor */
   BPred_NUM
 };
 
@@ -128,6 +129,7 @@ struct bpred_dir_t {
     struct {
       unsigned int size;        /* number of entries in direct-mapped table */
       unsigned char *table;     /* prediction state table */
+      signed char *gehl_table;  /* prediction state gehl table */
     } bimod;
     struct {
       int l1size;               /* level-1 size, number of history regs */
@@ -136,6 +138,8 @@ struct bpred_dir_t {
       int xor;                  /* history xor address flag */
       int *shiftregs;           /* level-1 history table */
       unsigned char *l2table;   /* level-2 prediction state table */
+      signed char *l2table_gehl;  /* level-2 prediction state table for gehl predictor */
+      int is_gehl;              /* flag marking if this predictor is part of a larger gehl predictor */
     } two;
     struct {
       int bhtsize;              /* size of the branch history table, number of history regs */
@@ -157,6 +161,14 @@ struct bpred_t {
     struct bpred_dir_t *twolev;   /* second direction predictor */
     struct bpred_dir_t *meta;     /* meta predictor */
     struct bpred_dir_t *percept;  /* perceptron predictor */
+    struct bpred_dir_t *gehl0;    /* gehl l1 history table L(0) (implemented as bimod predictor) */
+    struct bpred_dir_t *gehl1;    /* gehl l1 history table L(1) */
+    struct bpred_dir_t *gehl2;    /* gehl l1 history table L(2) */
+    struct bpred_dir_t *gehl3;    /* gehl l1 history table L(3) */
+    struct bpred_dir_t *gehl4;    /* gehl l1 history table L(4) */
+    struct bpred_dir_t *gehl5;    /* gehl l1 history table L(5) */
+    struct bpred_dir_t *gehl6;    /* gehl l1 history table L(6) */
+    struct bpred_dir_t *gehl7;    /* gehl l1 history table L(7) */
   } dirpred;
 
   struct {
@@ -195,6 +207,14 @@ struct bpred_update_t {
   char *pdir2;          /* direction-2 predictor counter */
   char *pmeta;          /* meta predictor counter */
   int  *input_snapshot;  /* snapshot of the history input at the time of the prediction for use in perceptron tratining */
+  char *pdirgehl0;          /* gehl-0 direction predictor counter */
+  char *pdirgehl1;          /* gehl-1 direction predictor counter */
+  char *pdirgehl2;          /* gehl-2 direction predictor counter */
+  char *pdirgehl3;          /* gehl-3 direction predictor counter */
+  char *pdirgehl4;          /* gehl-4 direction predictor counter */
+  char *pdirgehl5;          /* gehl-5 direction predictor counter */
+  char *pdirgehl6;          /* gehl-6 direction predictor counter */
+  char *pdirgehl7;          /* gehl-7 direction predictor counter */
   struct {              /* predicted directions */
     unsigned int ras    : 1;    /* RAS used */
     unsigned int bimod  : 1;    /* bimodal predictor */
@@ -224,7 +244,8 @@ bpred_dir_create (
   unsigned int l1size,          /* level-1 table size */
   unsigned int l2size,          /* level-2 table size (if relevant) */
   unsigned int shift_width,     /* history register width */
-  unsigned int xor);            /* history xor address flag */
+  unsigned int xor,            /* history xor address flag */
+  unsigned int flag_gehl);      /* gehl flag */
 
 /* print branch predictor configuration */
 void

@@ -81,31 +81,57 @@ bpred_create(enum bpred_class class,    /* type of predictor to create */
     fatal("out of virtual memory");
 
   pred->class = class;
+  // printf("class: %s\n", class);
 
   switch (class) {
   case BPredComb:
     /* bimodal component */
     pred->dirpred.bimod = 
-      bpred_dir_create(BPred2bit, bimod_size, 0, 0, 0);
+      bpred_dir_create(BPred2bit, bimod_size, 0, 0, 0, 0);
 
     /* 2-level component */
     pred->dirpred.twolev = 
-      bpred_dir_create(BPred2Level, l1size, l2size, shift_width, xor);
+      bpred_dir_create(BPred2Level, l1size, l2size, shift_width, xor, 0);
 
     /* metapredictor component */
     pred->dirpred.meta = 
-      bpred_dir_create(BPred2bit, meta_size, 0, 0, 0);
+      bpred_dir_create(BPred2bit, meta_size, 0, 0, 0, 0);
 
     break;
 
   case BPred2Level:
     pred->dirpred.twolev = 
-      bpred_dir_create(class, l1size, l2size, shift_width, xor);
+      bpred_dir_create(class, l1size, l2size, shift_width, xor, 0);
+
+    break;
+
+  case BPredGehl: /* should be/default to 1, 16384, <N/A>, 0 */
+    pred->dirpred.gehl0 = bpred_dir_create(BPred4bit, l1size, l2size, shift_width, xor, 1); // should be bimod instead of 2lev
+    // printf("ADDRESS 0: %d\n", pred->dirpred.gehl0);
+
+    pred->dirpred.gehl1 = bpred_dir_create(BPred2Level, l1size, l2size, 2, xor, 1);
+    // printf("ADDRESS 1: %d\n", pred->dirpred.gehl1);
+    pred->dirpred.gehl2 = bpred_dir_create(BPred2Level, l1size, l2size, 4, xor, 1);
+    // printf("ADDRESS 2: %d\n", pred->dirpred.gehl2);
+    pred->dirpred.gehl3 = bpred_dir_create(BPred2Level, l1size, l2size, 8, xor, 1);
+    // printf("ADDRESS 3: %d\n", pred->dirpred.gehl3);
+    pred->dirpred.gehl4 = bpred_dir_create(BPred2Level, l1size, l2size, 16, xor, 1);
+    pred->dirpred.gehl5 = bpred_dir_create(BPred2Level, l1size, l2size, 32, xor, 1);
+    pred->dirpred.gehl6 = bpred_dir_create(BPred2Level, l1size, l2size, 64, xor, 1);
+    pred->dirpred.gehl7 = bpred_dir_create(BPred2Level, l1size, l2size, 128, xor, 1);
+
+    pred->dirpred.gehl1->config.two.is_gehl = 1;
+    pred->dirpred.gehl2->config.two.is_gehl = 1;
+    pred->dirpred.gehl3->config.two.is_gehl = 1;
+    pred->dirpred.gehl4->config.two.is_gehl = 1;
+    pred->dirpred.gehl5->config.two.is_gehl = 1;
+    pred->dirpred.gehl6->config.two.is_gehl = 1;
+    pred->dirpred.gehl7->config.two.is_gehl = 1;
 
     break;
 
   case BPredPercept: // Maybe you'd prefer BPredPerceptRonWeasley?
-    pred->dirpred.percept = bpred_dir_create(class, l1size, l2size, shift_width, xor); /* (class, bhtsize, percepttablesize, hist_width, xor) */
+    pred->dirpred.percept = bpred_dir_create(class, l1size, l2size, shift_width, xor, 0); /* (class, bhtsize, percepttablesize, hist_width, xor) */
     // pred->dirpred.percept->config.percept.weight_width = pred->dirpred.percept->config.percept.hist_width + 1;
 
     break;
@@ -117,7 +143,7 @@ bpred_create(enum bpred_class class,    /* type of predictor to create */
   case BPred2bit:
   case BPred1bit:
     pred->dirpred.bimod = 
-      bpred_dir_create(class, bimod_size, 0, 0, 0);
+      bpred_dir_create(class, bimod_size, 0, 0, 0, 0);
 
       break;
 
@@ -132,6 +158,7 @@ bpred_create(enum bpred_class class,    /* type of predictor to create */
 
   /* allocate ret-addr stack */
   switch (class) {
+  case BPredGehl:
   case BPredPercept:
   case BPredComb:
   case BPred2Level:
@@ -202,7 +229,8 @@ bpred_dir_create (
   unsigned int l1size,          /* level-1 table size */
   unsigned int l2size,          /* level-2 table size (if relevant) */
   unsigned int shift_width,     /* history register width */
-  unsigned int xor)             /* history xor address flag */
+  unsigned int xor,             /* history xor address flag */
+  unsigned int flag_gehl)       /* gehl flag */
 {
   struct bpred_dir_t *pred_dir;
   unsigned int cnt;
@@ -227,7 +255,7 @@ bpred_dir_create (
               l2size);
       pred_dir->config.two.l2size = l2size;
       
-      if (!shift_width || shift_width > 30)
+      if (!shift_width || shift_width > 200)
         fatal("shift register width, `%d', must be non-zero and positive",
               shift_width);
       pred_dir->config.two.shift_width = shift_width;
@@ -240,6 +268,14 @@ bpred_dir_create (
       pred_dir->config.two.l2table = calloc(l2size, sizeof(unsigned char));
       if (!pred_dir->config.two.l2table)
         fatal("cannot allocate second level table");
+
+      if (flag_gehl == 1) {
+        // printf("111111111111\n");
+        pred_dir->config.two.l2table_gehl = calloc(l2size, sizeof(signed char));
+        if (!pred_dir->config.two.l2table_gehl)
+          fatal("cannot allocate second level gehl table");
+
+      }
 
       /* initialize counters to weakly this-or-that */
       flipflop = 1;
@@ -269,7 +305,7 @@ bpred_dir_create (
 
       pred_dir->config.percept.xor = xor;
 
-      pred_dir->config.percept.histregs = calloc(l1size, sizeof(int));
+      pred_dir->config.percept.histregs = calloc(l1size, sizeof(int)); /* times 5 for long history */
       if (!pred_dir->config.percept.histregs)
         fatal("cannot allocate shift register history table");
 
@@ -351,6 +387,12 @@ bpred_dir_create (
     for (cnt = 0; cnt < l1size; cnt++) {
       pred_dir->config.bimod.table[cnt] = flipflop;
       flipflop = 15 - flipflop;
+    }
+
+    if (pred_dir->config.two.is_gehl == 1) {
+      pred_dir->config.bimod.gehl_table = calloc(l1size, sizeof(signed char));
+      if (!pred_dir->config.bimod.gehl_table)
+        fatal("cannot allocate bimodal gehl table");
     }
 
     break;
@@ -491,6 +533,25 @@ bpred_config(struct bpred_t *pred,      /* branch predictor instance */
     fprintf(stream, "ret_stack: %d entries", pred->retstack.size);
     break;
 
+  case BPredGehl: // if (pred_dir->config.two.is_gehl == 1)
+    // printf("222222222222\n");
+    bpred_dir_config (pred->dirpred.gehl0, "4bit", stream); // CHANGE TO BIMOD
+    // printf("3333333333333\n");
+
+    bpred_dir_config (pred->dirpred.gehl1, "2lev_gehl", stream);
+    bpred_dir_config (pred->dirpred.gehl2, "2lev_gehl", stream);
+    bpred_dir_config (pred->dirpred.gehl3, "2lev_gehl", stream);
+    bpred_dir_config (pred->dirpred.gehl4, "2lev_gehl", stream);
+    bpred_dir_config (pred->dirpred.gehl5, "2lev_gehl", stream);
+    bpred_dir_config (pred->dirpred.gehl6, "2lev_gehl", stream);
+    bpred_dir_config (pred->dirpred.gehl7, "2lev_gehl", stream);
+    // printf("444444444444444\n");
+
+    fprintf(stream, "btb: %d sets x %d associativity", 
+            pred->btb.sets, pred->btb.assoc);
+    fprintf(stream, "ret_stack: %d entries", pred->retstack.size);
+    break;
+
   case BPred6bit:
     bpred_dir_config (pred->dirpred.bimod, "6bit", stream);
     fprintf(stream, "btb: %d sets x %d associativity", 
@@ -574,6 +635,9 @@ bpred_reg_stats(struct bpred_t *pred,   /* branch predictor instance */
       break;
     case BPred2Level:
       name = "bpred_2lev";
+      break;
+    case BPredGehl:
+      name = "bpred_gehl";
       break;
     case BPred6bit:
       name = "bpred_6bit";
@@ -750,6 +814,15 @@ bpred_dir_lookup(struct bpred_dir_t *pred_dir,  /* branch dir predictor inst */
         l2index = l2index & (pred_dir->config.two.l2size - 1);
 
         /* get a pointer to prediction state information */
+        if (pred_dir->config.two.is_gehl) {
+          p2 = &pred_dir->config.two.l2table_gehl[l2index];
+          // printf("L2TABLE IS: %d\n", pred_dir->config.two.l2table_gehl);
+          // printf("index: %d\n", l2index);
+          // printf("P2 IS: %d\n", p2);
+          // printf("P2 IS: %d\n", &p2);
+          return (char *)p2;
+          break;
+        }
         p = &pred_dir->config.two.l2table[l2index];
       }
       break;
@@ -760,6 +833,13 @@ bpred_dir_lookup(struct bpred_dir_t *pred_dir,  /* branch dir predictor inst */
     case BPred6bit:
     case BPred5bit:
     case BPred4bit:
+      if (pred_dir->config.two.is_gehl) {
+        // printf("555555555555555\n");
+        p2 = &pred_dir->config.bimod.gehl_table[BIMOD_HASH(pred_dir, baddr)];
+        // printf("6666666666666\n");
+        return (char *)p2;
+        break;
+      }
     case BPred3bit:
     case BPred2bit:
     case BPred1bit:
@@ -810,6 +890,15 @@ bpred_lookup(struct bpred_t *pred,      /* branch predictor instance */
   dir_update_ptr->pdir2 = NULL;
   dir_update_ptr->pmeta = NULL;
   dir_update_ptr->input_snapshot = NULL;
+
+  dir_update_ptr->pdirgehl0 = NULL;
+  dir_update_ptr->pdirgehl1 = NULL;
+  dir_update_ptr->pdirgehl2 = NULL;
+  dir_update_ptr->pdirgehl3 = NULL;
+  dir_update_ptr->pdirgehl4 = NULL;
+  dir_update_ptr->pdirgehl5 = NULL;
+  dir_update_ptr->pdirgehl6 = NULL;
+  dir_update_ptr->pdirgehl7 = NULL;
   /* Except for jumps, get a pointer to direction-prediction bits */
   switch (pred->class) {
     case BPredComb:
@@ -851,6 +940,21 @@ bpred_lookup(struct bpred_t *pred,      /* branch predictor instance */
           bhr_entry = pred->dirpred.percept->config.percept.histregs[bhtindex];
           input = (bhr_entry << 1) | 1;
           dir_update_ptr->input_snapshot = &input;
+        }
+      break;
+    case BPredGehl:
+      if ((MD_OP_FLAGS(op) & (F_CTRL|F_UNCOND)) != (F_CTRL|F_UNCOND))
+        {
+          // printf("7777777777777\n");
+          dir_update_ptr->pdirgehl0 = bpred_dir_lookup (pred->dirpred.gehl0, baddr); // BIMOD
+          dir_update_ptr->pdirgehl1 = bpred_dir_lookup (pred->dirpred.gehl1, baddr);
+          dir_update_ptr->pdirgehl2 = bpred_dir_lookup (pred->dirpred.gehl2, baddr);
+          dir_update_ptr->pdirgehl3 = bpred_dir_lookup (pred->dirpred.gehl3, baddr);
+          dir_update_ptr->pdirgehl4 = bpred_dir_lookup (pred->dirpred.gehl4, baddr);
+          dir_update_ptr->pdirgehl5 = bpred_dir_lookup (pred->dirpred.gehl5, baddr);
+          dir_update_ptr->pdirgehl6 = bpred_dir_lookup (pred->dirpred.gehl6, baddr);
+          dir_update_ptr->pdirgehl7 = bpred_dir_lookup (pred->dirpred.gehl7, baddr);
+          // printf("8888888888888888\n");
         }
       break;
     case BPred6bit:
@@ -949,8 +1053,11 @@ bpred_lookup(struct bpred_t *pred,      /* branch predictor instance */
 
   unsigned int threshold;
   int percept_threshold = 0;
+  int gehl_threshold = 0;
   switch (pred->class) {
     case BPredPercept:
+      break;
+    case BPredGehl:
       break;
     case BPred6bit:
       threshold = 32;
@@ -992,6 +1099,7 @@ bpred_lookup(struct bpred_t *pred,      /* branch predictor instance */
     for(i = 0; i < weight_width; ++i, input >>= 1) {
       temp_bit = input & 1;
       if (temp_bit == 0) {
+        // printf("i is: %d. ", i);
         input_arr[i] = -1;
       }
       else {
@@ -1014,6 +1122,40 @@ bpred_lookup(struct bpred_t *pred,      /* branch predictor instance */
               : /* not taken */ 0);
     }
 
+  }
+
+  if (pred->class == BPredGehl) {
+    // printf("99999999999\n");
+    int sum;
+    signed char c0 = *((signed char *)(dir_update_ptr->pdirgehl0));
+
+    // printf("HEREEEEE\n");
+    // printf("THIS: %d\n", *(dir_update_ptr->pdirgehl1));
+    signed char c1 = *((signed char *)(dir_update_ptr->pdirgehl1));
+    // printf("HEREEEEE\n");
+    signed char c2 = *((signed char *)(dir_update_ptr->pdirgehl2));
+    signed char c3 = *((signed char *)(dir_update_ptr->pdirgehl3));
+    signed char c4 = *((signed char *)(dir_update_ptr->pdirgehl4));
+    signed char c5 = *((signed char *)(dir_update_ptr->pdirgehl5));
+    signed char c6 = *((signed char *)(dir_update_ptr->pdirgehl6));
+    signed char c7 = *((signed char *)(dir_update_ptr->pdirgehl7));
+
+    sum = c0+c1+c2+c3+c4+c5+c6+c7;
+
+
+    // printf("10 10 10 10 10 10 10\n");
+
+    if (pbtb == NULL) {
+      // printf("%d ", sum);
+      return ((sum >= gehl_threshold)
+              ? /* taken */ 1
+              : /* not taken */ 0);
+    }
+    else {
+      return ((sum >= gehl_threshold)
+              ? /* taken */ pbtb->target
+              : /* not taken */ 0);
+    }
   }
 
 
@@ -1163,6 +1305,40 @@ bpred_update(struct bpred_t *pred,      /* branch predictor instance */
       l1index = (baddr >> MD_BR_SHIFT) & (pred->dirpred.percept->config.percept.bhtsize - 1);
       shift_reg = (pred->dirpred.percept->config.percept.histregs[l1index] << 1) | (!!taken);
       pred->dirpred.percept->config.percept.histregs[l1index] = shift_reg & ((1 << pred->dirpred.percept->config.percept.hist_width) - 1);
+      // printf("%s\n", );
+    }
+
+  if ((MD_OP_FLAGS(op) & (F_CTRL|F_UNCOND)) != (F_CTRL|F_UNCOND) &&
+      (pred->class == BPredGehl))
+    {
+      int l1index, shift_reg;
+
+      // printf("11 11 11 11 11 11\n");
+      
+      l1index = (baddr >> MD_BR_SHIFT) & (pred->dirpred.gehl1->config.two.l1size - 1); // always size 1: index 0, ideally
+
+      shift_reg = (pred->dirpred.gehl1->config.two.shiftregs[l1index] << 1) | (!!taken);
+      pred->dirpred.gehl1->config.two.shiftregs[l1index] = shift_reg & ((1 << pred->dirpred.gehl1->config.two.shift_width) - 1);
+
+      shift_reg = (pred->dirpred.gehl2->config.two.shiftregs[l1index] << 1) | (!!taken);
+      pred->dirpred.gehl2->config.two.shiftregs[l1index] = shift_reg & ((1 << pred->dirpred.gehl2->config.two.shift_width) - 1);
+
+      shift_reg = (pred->dirpred.gehl3->config.two.shiftregs[l1index] << 1) | (!!taken);
+      pred->dirpred.gehl3->config.two.shiftregs[l1index] = shift_reg & ((1 << pred->dirpred.gehl3->config.two.shift_width) - 1);
+
+      shift_reg = (pred->dirpred.gehl4->config.two.shiftregs[l1index] << 1) | (!!taken);
+      pred->dirpred.gehl4->config.two.shiftregs[l1index] = shift_reg & ((1 << pred->dirpred.gehl4->config.two.shift_width) - 1);
+
+      shift_reg = (pred->dirpred.gehl5->config.two.shiftregs[l1index] << 1) | (!!taken);
+      pred->dirpred.gehl5->config.two.shiftregs[l1index] = shift_reg & ((1 << pred->dirpred.gehl5->config.two.shift_width) - 1);
+
+      shift_reg = (pred->dirpred.gehl6->config.two.shiftregs[l1index] << 1) | (!!taken);
+      pred->dirpred.gehl6->config.two.shiftregs[l1index] = shift_reg & ((1 << pred->dirpred.gehl6->config.two.shift_width) - 1);
+
+      shift_reg = (pred->dirpred.gehl7->config.two.shiftregs[l1index] << 1) | (!!taken);
+      pred->dirpred.gehl7->config.two.shiftregs[l1index] = shift_reg & ((1 << pred->dirpred.gehl7->config.two.shift_width) - 1);
+
+      // printf("12 12 12 12 12 12\n");
     }
 
   /* find BTB entry if it's a taken branch (don't allocate for non-taken) */
@@ -1241,6 +1417,9 @@ bpred_update(struct bpred_t *pred,      /* branch predictor instance */
     case BPredPercept:
       saturation = (pred->dirpred.percept->config.percept.hist_width)*2 + 14; /* theta = (1.93h +14), where h is the history register width */
       break;
+    case BPredGehl:
+      saturation = 8; /* training threshold should be around the number of tables */
+      break;
     case BPred6bit:
       saturation = 63;
       break;
@@ -1298,11 +1477,13 @@ bpred_update(struct bpred_t *pred,      /* branch predictor instance */
         if ((sum <= saturation) || (correct == 0)) {
           /* train the perceptron by updating weights */
           for(i = 0; i < weight_width; ++i) {
-            if (adj_taken == input_arr[i]) {
+            if (adj_taken == input_arr[i] /*&& pweights[i]<127*/) {
               pweights[i] += 1; // We use 1 instead of ++ since the training speed should be adjustable if needed
             }
             else {
-              pweights[i] -= 1;
+              // if (pweights[i]>-128) {
+                pweights[i] -= 1;
+              // }
             }
           }
         }
@@ -1319,6 +1500,90 @@ bpred_update(struct bpred_t *pred,      /* branch predictor instance */
               --*dir_update_ptr->pdir1;
           }
       }
+    }
+
+  /* update ogehl predictor tables */
+  if (pred->class == BPredGehl && dir_update_ptr->pdirgehl0 && dir_update_ptr->pdirgehl1 
+      && dir_update_ptr->pdirgehl2 && dir_update_ptr->pdirgehl3 && dir_update_ptr->pdirgehl4 
+      && dir_update_ptr->pdirgehl5 && dir_update_ptr->pdirgehl6 && dir_update_ptr->pdirgehl7)
+    {
+
+      // printf("13 13 13 13 13 13 13\n");
+
+      int sum;
+      signed char c0 = *((signed char *)(dir_update_ptr->pdirgehl0));
+      signed char c1 = *((signed char *)(dir_update_ptr->pdirgehl1));
+      signed char c2 = *((signed char *)(dir_update_ptr->pdirgehl2));
+      signed char c3 = *((signed char *)(dir_update_ptr->pdirgehl3));
+      signed char c4 = *((signed char *)(dir_update_ptr->pdirgehl4));
+      signed char c5 = *((signed char *)(dir_update_ptr->pdirgehl5));
+      signed char c6 = *((signed char *)(dir_update_ptr->pdirgehl6));
+      signed char c7 = *((signed char *)(dir_update_ptr->pdirgehl7));
+
+      sum = c0+c1+c2+c3+c4+c5+c6+c7;
+      sum = abs(sum);
+
+      // printf("14 14 14 14 14 14 14 14 14\n");
+
+      if ((sum <= saturation) || (correct == 0))
+        {
+          if (taken)
+            {
+              if (c0 < 7) {
+                ++*dir_update_ptr->pdirgehl0;
+              }
+              if (c1 < 7) {
+                ++*dir_update_ptr->pdirgehl1;
+              }
+              if (c2 < 7) {
+                ++*dir_update_ptr->pdirgehl2;
+              }
+              if (c3 < 7) {
+                ++*dir_update_ptr->pdirgehl3;
+              }
+              if (c4 < 7) {
+                ++*dir_update_ptr->pdirgehl4;
+              }
+              if (c5 < 7) {
+                ++*dir_update_ptr->pdirgehl5;
+              }
+              if (c6 < 7) {
+                ++*dir_update_ptr->pdirgehl6;
+              }
+              if (c7 < 7) {
+                ++*dir_update_ptr->pdirgehl7;
+              }
+            }
+          else
+            {
+              if (c0 > -8) {
+                --*dir_update_ptr->pdirgehl0;
+              }
+              if (c1 > -8) {
+                --*dir_update_ptr->pdirgehl1;
+              }
+              if (c2 > -8) {
+                --*dir_update_ptr->pdirgehl2;
+              }
+              if (c3 > -8) {
+                --*dir_update_ptr->pdirgehl3;
+              }
+              if (c4 > -8) {
+                --*dir_update_ptr->pdirgehl4;
+              }
+              if (c5 > -8) {
+                --*dir_update_ptr->pdirgehl5;
+              }
+              if (c6 > -8) {
+                --*dir_update_ptr->pdirgehl6;
+              }
+              if (c7 > -8) {
+                --*dir_update_ptr->pdirgehl7;
+              }
+            }
+            // printf("15 15 15 15 15 15 15 15\n");
+        }
+
     }
 
   /* combining predictor also updates second predictor and meta predictor */

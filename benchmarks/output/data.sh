@@ -38,7 +38,7 @@ for file in "${files[@]}"; do
 	sim_num_insn=$(grep -Po --text "[0-9]+(?= # total number of instructions committed)" $file)
 	sim_num_branches=$(grep -Po --text "[0-9]+(?= # total number of branches committed)" $file)
 	sim_IPC=$(grep -Po --text "[0-9]+\.[0-9]+(?= # instructions per cycle)" $file)
-	# sim_IPB=$(grep -Po --text "[0-9]+\.[0-9]+(?= # instruction per branch)" $file)
+	sim_IPB=$(grep -Po --text "[0-9]+\.[0-9]+(?= # instruction per branch)" $file)
 
 	if echo $name | grep -q perfect; then
 		# -bpred perfect isn't an actual branch predictor, so it doesn't contain the metrics we want
